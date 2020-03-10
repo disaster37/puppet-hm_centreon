@@ -1,0 +1,18 @@
+version: '2'
+services:
+  puppet:
+    image: webcenter/puppet-dev:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /sys/fs/cgroup:/sys/fs/cgroup
+      - ./:$PWD
+      - .:/etc/puppetlabs/code/modules/hm_centreon:ro
+    environment:
+      - http_proxy=${http_proxy}
+      - https_proxy=${https_proxy}
+      - no_proxy=127.0.0.1,.test.local,10.221.78.61
+    privileged: true
+    hostname: puppet
+    domainname: test.local
+    working_dir: $PWD
+
