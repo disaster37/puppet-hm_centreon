@@ -10,6 +10,7 @@ RSpec.describe 'Test Centreon::Host' do
            expect(host.name()).to eq nil
            expect(host.address()).to eq nil
            expect(host.poller()).to eq nil
+           expect(host.comment()).to eq nil
            expect(host.groups()).to eq []
            expect(host.templates()).to eq []
            expect(host.macros()).to eq []

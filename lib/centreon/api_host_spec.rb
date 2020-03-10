@@ -132,7 +132,8 @@ RSpec.describe 'Test Centreon::Client' do
                             "macro name": "warning",
                             "macro value": "10",
                             "is_password": "0",
-                            "description": "Threshold warning"
+                            "description": "Threshold warning",
+                            "source": "direct"
                         }
                     ]
                 }
@@ -245,7 +246,8 @@ RSpec.describe 'Test Centreon::Client' do
                             "macro name": "warning",
                             "macro value": "10",
                             "is_password": "0",
-                            "description": "Threshold warning"
+                            "description": "Threshold warning",
+                            "source": "direct"
                         }
                     ]
                 }
@@ -358,7 +360,8 @@ RSpec.describe 'Test Centreon::Client' do
                             "macro name": "warning",
                             "macro value": "10",
                             "is_password": "0",
-                            "description": "Threshold warning"
+                            "description": "Threshold warning",
+                            "source": "direct"
                         }
                     ]
                 }

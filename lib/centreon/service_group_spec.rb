@@ -6,6 +6,7 @@ RSpec.describe 'Test Centreon::ServiceGroup' do
            serviceGroup = ::Centreon::ServiceGroup.new()
            expect(serviceGroup.id()).to eq nil
            expect(serviceGroup.name()).to eq nil
+           expect(serviceGroup.description()).to eq nil
         end
         
         it "test set/get id" do
@@ -19,6 +20,15 @@ RSpec.describe 'Test Centreon::ServiceGroup' do
             serviceGroup = ::Centreon::ServiceGroup.new()
             serviceGroup.set_name("test")
             expect(serviceGroup.name()).to eq "test"
+        end
+        
+        it "test set/get description" do
+            serviceGroup = ::Centreon::ServiceGroup.new()
+            serviceGroup.set_description("test")
+            expect(serviceGroup.description()).to eq "test"
+            
+            serviceGroup.set_description("")
+            expect(serviceGroup.description()).to eq ""
         end
         
         it "test is_valid" do
