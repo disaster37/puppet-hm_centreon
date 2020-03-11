@@ -15,7 +15,7 @@ RSpec.describe 'Test Centreon::Service' do
            expect(service.max_check_attempts()).to eq nil
            expect(service.active_check_enabled()).to eq nil
            expect(service.passive_check_enabled()).to eq nil
-           expect(service.url()).to eq nil
+           expect(service.note_url()).to eq nil
            expect(service.action_url()).to eq nil
            expect(service.comment()).to eq nil
            expect(service.command_args()).to eq []
@@ -106,13 +106,13 @@ RSpec.describe 'Test Centreon::Service' do
             expect(service.passive_check_enabled()).to eq "default"
         end
         
-        it "test set/get url" do
+        it "test set/get note_url" do
             service = ::Centreon::Service.new()
-            service.set_url("http://test")
-            expect(service.url()).to eq "http://test"
+            service.set_note_url("http://test")
+            expect(service.note_url()).to eq "http://test"
             
-            service.set_url("")
-            expect(service.url()).to eq ""
+            service.set_note_url("")
+            expect(service.note_url()).to eq ""
         end
         
         it "test set/get action_url" do

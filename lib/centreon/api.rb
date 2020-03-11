@@ -2,8 +2,8 @@ require 'rest-client'
 require 'json'
 
 require_relative './logger.rb'
-require_relative './host.rb'
 require_relative './api/host.rb'
+require_relative './api/service.rb'
 
 module Centreon
     class Client
@@ -63,10 +63,15 @@ module Centreon
             )
             
             @host = Centreon::APIClient::Host.new(@client)
+            @service = Centreon::APIClient::Service.new(@client)
         end
         
         def host()
            @host 
+        end
+        
+        def service()
+            @service
         end
        
     end

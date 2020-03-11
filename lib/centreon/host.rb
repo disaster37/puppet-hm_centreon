@@ -152,7 +152,7 @@ module Centreon
         
         def add_service(service)
             raise("wrong type: Centreon::Service required") unless service.is_a?(::Centreon::Service)
-            raise("wrong value: service must be valid") unless service.is_valid()
+            raise("wrong value: service must be valid") unless !service.name().nil? && !service.name().empty?
             @services << service
             logger.debug("Add service: " + service.to_s)
         end

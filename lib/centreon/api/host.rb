@@ -115,6 +115,9 @@ module Centreon
                 # Set extra parameters
                 set_param(host.name(), "comment", host.comment()) unless host.comment().nil?
                 
+                # Disable it if needed
+                disable(host.name()) unless host.is_activated()
+                
                 # Set macros
                 host.macros().each do |macro|
                    set_macro(host.name(), macro) 

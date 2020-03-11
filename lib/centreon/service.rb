@@ -20,7 +20,7 @@ module Centreon
             @max_check_attempts = nil
             @active_check_enabled = nil
             @passive_check_enabled = nil
-            @url = nil
+            @note_url = nil
             @action_url = nil
             @comment = nil
             @command_args = []
@@ -84,8 +84,8 @@ module Centreon
             @groups
         end
         
-        def url
-            @url
+        def note_url
+            @note_url
         end
         
         def action_url
@@ -164,15 +164,15 @@ module Centreon
             logger.debug("Passive check enabled: " + value)
         end
         
-        def set_url(value)
+        def set_note_url(value)
             raise("wrong type: string required") unless value.is_a?(String)
             
             if !value.empty?
                 uri = URI.parse(value) unless value.empty?
                 raise("URL must be valid") unless uri.is_a?(URI::HTTP) && !uri.host.nil?
             end
-            @url = value
-            logger.debug("URL: " + value)
+            @note_url = value
+            logger.debug("Note URL: " + value)
         end
         
         def set_action_url(value)

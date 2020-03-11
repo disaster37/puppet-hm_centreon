@@ -470,6 +470,7 @@ RSpec.describe 'Test Centreon::Client' do
             macro1.set_name("macro1")
             macro1.set_value("foo")
             host.add_macro(macro1)
+            host.set_is_activated(true)
             
             @client.host.add(host)
             expect(host.id()).to eq 82

@@ -7,6 +7,7 @@ module Centreon
             @id = nil
             @name = nil
             @descriptiion = nil
+            @services = []
         end
         
         def id
@@ -19,6 +20,10 @@ module Centreon
         
         def description
             @description
+        end
+        
+        def services
+            @services
         end
         
         def set_id(id)
@@ -38,6 +43,13 @@ module Centreon
             raise("wrong type: string required") unless value.is_a?(String)
             @description = value
             logger.debug("Description: " + value)
+        end
+        
+        def add_service(service)
+           raise("wrong type: Centreon::Service required") unless service.is_a?(::Centreon::Service)
+            raise("wrong value: service must be valid") unless service.is_valid()
+           @services << service 
+           logger.debug("Add service: " + service.to_s)
         end
         
         def is_valid()
