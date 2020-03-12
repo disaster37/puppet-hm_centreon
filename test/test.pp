@@ -23,7 +23,7 @@ centreon_service{"test-seb3 test":
     macros => [
         {
             name => "macro2",
-            value => "value3",
+            value => "value6",
             is_password => false,
             description => "test macro 1",
         }

@@ -176,7 +176,7 @@ Puppet::Type.type(:centreon_service).provide(:centreon_service, :parent => ::Hm:
       end unless @property_flush[:macros].nil?
   
       # Update service
-      client().service.update(service, groups = !@property_flush[:groups].nil?, macros = !@property_flush[:macros].nil?, activated = !@property_flush[:enable].nil?)
+      client().service.update(service, groups = !@property_flush[:groups].nil?, macros = !@property_flush[:macros].nil?, activated = !@property_flush[:enable].nil?, check_command_arguments = !@property_flush[:check_command_arguments].nil?)
 
     end
   end

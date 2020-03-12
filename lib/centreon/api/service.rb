@@ -246,7 +246,7 @@ module Centreon
                 service.host().set_id(service_tmp.host().id())
             end
             
-            def update(service, groups = true, macros = true, activated = true)
+            def update(service, groups = true, macros = true, activated = true, check_command_arguments = true)
                 raise("wrong type: Centreon::Service required") unless service.is_a?(::Centreon::Service)
                 raise("wrong value: service must be valid") unless service.is_valid()
                 
@@ -264,9 +264,14 @@ module Centreon
                 set_param(service.host.name(), service.name(), "passive_checks_enabled", "2") if !service.passive_check_enabled().nil? && service.passive_check_enabled() == "default"
                 set_param(service.host.name(), service.name(), "notes_url", service.note_url()) unless service.note_url().nil?
                 set_param(service.host.name(), service.name(), "action_url", service.action_url()) unless service.action_url().nil?
-                set_param(service.host.name(), service.name(), "check_command_arguments", "!" + service.command_args().join("!"))
-                set_param(service.host.name(), service.name(), "activate", "0") unless service.is_activated
-                set_param(service.host.name(), service.name(), "activate", "1") if service.is_activated
+                
+                set_param(service.host.name(), service.name(), "activate", "0") if !service.is_activated && activated
+                set_param(service.host.name(), service.name(), "activate", "1") if service.is_activated && activated
+                
+                if check_command_arguments
+                   set_param(service.host.name(), service.name(), "check_command_arguments", "!" + service.command_args().join("!"))  unless service.command_args().empty?
+                    
+                end
                 
                 # Set macros
                 if macros
@@ -277,7 +282,6 @@ module Centreon
                             if current_macro.name() == macro.name()
                                 if !macro.compare(current_macro)
                                     set_macro(service.host().name(), service.name(), macro)
-                                    break
                                 end
                                 isAlreadyExist = true
                                 current_macros.delete(current_macro)
