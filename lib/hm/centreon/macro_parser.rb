@@ -15,6 +15,7 @@ module Hm
 
         def macros_to_create(macros)
           stringify_values(@macros) - stringify_values(macros)
+          
         end
 
         def macros_to_delete(macros)
@@ -23,6 +24,7 @@ module Hm
 
         private
         def stringify_values(macros)
+          
           macros.collect do |obj|
             obj.each { |k,v| obj[k] = v.to_s }
           end

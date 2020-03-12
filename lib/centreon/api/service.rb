@@ -27,11 +27,20 @@ module Centreon
                 }.to_json)
             end
              
-            def fetch(lazzy = true)
-                r = @client.post({
+            def fetch(service_name = nil, lazzy = true)
+                
+                if service_name.nil? || service_name.empty?
+                    r = @client.post({
+                        "action": "show",
+                        "object": "service"
+                    }.to_json)
+                else
+                   r = @client.post({
                     "action": "show",
-                    "object": "service"
-                }.to_json)
+                    "object": "service",
+                    "values": service_name,
+                }.to_json) 
+                end
     
                 services = []
                 JSON.parse(r)["result"].each do |data|
@@ -80,18 +89,27 @@ module Centreon
                     services << service
                 end
                 
-                fetch_service_group(services) unless lazzy
+                fetch_service_group(service_group_name = nil, services = services) unless lazzy
                 
                 return services
             end
 
 
             
-            def fetch_service_group(services = [])
-                r = @client.post({
-                    "action": "show",
-                    "object": "sg"
-                }.to_json)
+            def fetch_service_group(service_group_name = nil, services = [])
+                
+                if service_group_name.nil?
+                    r = @client.post({
+                        "action": "show",
+                        "object": "sg"
+                    }.to_json)
+                else
+                    r = @client.post({
+                        "action": "show",
+                        "object": "sg",
+                        "values": service_group_name
+                    }.to_json)
+                end
     
                 service_groups = []
                 JSON.parse(r)["result"].each do |data|
@@ -148,12 +166,13 @@ module Centreon
                 end
                 
                 # Load extra params
-                get_param(service.host().name(), service.name(), "template|notes_url|action_url|comment").each do |data|
-                    service.set_template(data["template"]) unless data["template"].nil?
-                    service.set_comment(data["comment"]) unless data["comment"].nil?
-                    service.set_note_url(data["notes_url"]) unless data["notes_url"].nil?
-                    service.set_action_url(data["action_url"]) unless data["action_url"].nil?
-                end
+                # BUG Centreon, not yet implemented
+                #get_param(service.host().name(), service.name(), "template|notes_url|action_url|comment").each do |data|
+                #    service.set_template(data["template"]) unless data["template"].nil?
+                #    service.set_comment(data["comment"]) unless data["comment"].nil?
+                #    service.set_note_url(data["notes_url"]) unless data["notes_url"].nil?
+                #    service.set_action_url(data["action_url"]) unless data["action_url"].nil?
+                #end
             end
 
 
@@ -166,7 +185,7 @@ module Centreon
                 raise("wrong value: service_name must be valid") unless !service_name.nil? && !service_name.empty?
                 
                 # Search if host exist
-                services = fetch()
+                services = fetch(service_name = service_name)
                 found_service = nil
                 services.each  do |service|
                     if service.host().name() == host_name && service.name() == service_name
@@ -177,7 +196,7 @@ module Centreon
                 
                 if !found_service.nil? && !lazzy
                     load(found_service)
-                    fetch_service_group([found_service])
+                    fetch_service_group(service_group_name = nil, services = [found_service])
                 end
                 
                 return found_service
@@ -224,6 +243,7 @@ module Centreon
                 # Get and set id
                 service_tmp = get(service.host().name(), service.name(), true)
                 service.set_id(service_tmp.id())
+                service.host().set_id(service_tmp.host().id())
             end
             
             def update(service, groups = true, macros = true, activated = true)
@@ -281,7 +301,7 @@ module Centreon
                     service_tmp = Centreon::Service.new()
                     service_tmp.set_host(service.host())
                     service_tmp.set_name(service.name())
-                    fetch_service_group([service_tmp])
+                    fetch_service_group(service_group_name = nil, services = [service_tmp])
                     current_groups = service_tmp.groups()
                     service.groups().each do |group|
                         isAlreadyExist = false

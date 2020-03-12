@@ -79,9 +79,10 @@ Puppet::Type.type(:centreon_host).provide(:centreon_host, :parent => ::Hm::Centr
     host = ::Centreon::Host.new()
     host.set_name(resource[:name])
     host.set_description(resource[:description]) unless resource[:description].nil?
+    host.set_is_activated(resource[:enable])
     host.set_address(resource[:address])
     host.set_poller(resource[:poller])
-    host.set_comment(resource[:comment])
+    host.set_comment(resource[:comment]) unless resource[:comment].nil?
     resource[:groups].each do |name|
       host_group = Centreon::HostGroup.new()
       host_group.set_name(name)
