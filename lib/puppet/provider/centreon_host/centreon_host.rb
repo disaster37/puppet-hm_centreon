@@ -11,26 +11,20 @@ Puppet::Type.type(:centreon_host).provide(:centreon_host, :parent => ::Hm::Centr
     @property_flush = {}
   end
 
-  def self.instances()
-    begin
-      if @hosts.nil?
-        @hosts = []
-        client().host.fetch().each do |host|
-          hash = host_to_hash(host)
-          @hosts << new(hash) unless hash.empty?
-        end
-        Puppet.info("All hosts are loaded: " + @hosts.length.to_s)
-      end
-      @hosts
-    rescue Timeout::Error, StandardError => e
-      raise   Hm::Centreon::FetchingClapiDataError.new(url, self.resource_type.name.to_s, e.message)
-    end
-  end
 
   def self.prefetch(resources)
-    instances.each do |prov|
-      if resource = resources[prov.name] # rubocop:disable Lint/AssignmentInCondition
-        resource.provider = prov
+    resources.keys.each do |name|
+      filters = []
+      client().host.fetch(name = resources[name][:name], lazzy = false).each do |host|
+        
+        hash = host_to_hash(host)
+        
+        filters << new(hash) unless hash.empty?
+      end
+      
+      if provider = filters.find { |c| c.name == resources[name][:name] }
+        resources[name].provider = provider
+        Puppet.info("Found host #{resources[name][:name]}")
       end
     end
   end
@@ -45,28 +39,20 @@ Puppet::Type.type(:centreon_host).provide(:centreon_host, :parent => ::Hm::Centr
       description: host.description(),
       address: host.address(),
       enable: host.is_activated(),
+      poller: host.poller(),
+      groups: host.groups().map{ |host_group| host_group.name()  },
+      templates: host.templates().map{ |host_template| host_template.name()  },
+      comment: host.comment(),
+      macros: host.macros().map{ |macro| {
+        "name" => macro.name(),
+        "value"=> macro.value(),
+        "is_password" => macro.is_password(),
+        "description" => macro.description()
+      }}.flatten.uniq.compact,
       ensure: :present,
     }
   
   end
-  
-  # Load advances properties
-  def load_host()
-    host = Centreon::Host.new()
-    host.set_name(@property_hash[:name])
-    client().host.load(host)
-    @property_hash[:poller] = host.poller()
-    @property_hash[:groups] = host.groups().map{ |host_group| host_group.name()  }
-    @property_hash[:templates] = host.templates().map{ |host_template| host_template.name()  }
-    @property_hash[:comment] = host.comment()
-    @property_hash[:macros] = host.macros().map{ |macro| 
-      {
-        name: macro.name(),
-        value: macro.value()
-      }  
-    }
-  end
-
 
   def exists?
     Puppet.info("Checking if host #{name} exists")
@@ -170,62 +156,21 @@ Puppet::Type.type(:centreon_host).provide(:centreon_host, :parent => ::Hm::Centr
     @property_flush[:enable] = value
   end
   
-  def poller
-    if @property_hash[:poller].nil?
-      load_host()
-    end
-    return @property_hash[:poller]
-  end
   
   def poller=(value)
     @property_flush[:poller] = value
-  end
-  
-  def groups
-    if @property_hash[:groups].nil?
-      load_host()
-    end
-    
-    return @property_hash[:groups]
   end
   
   def groups=(value)
     @property_flush[:groups] = value
   end
   
-  def templates
-    if @property_hash[:templates].nil?
-      load_host()
-    end
-    
-    return @property_hash[:templates]
-  end
-  
   def templates=(value)
     @property_flush[:templates] = value
   end
   
-  def macros
-    if @property_hash[:macros].nil?
-      load_host()
-    end
-    
-    return @property_hash[:macros]
-  end
-  
   def macros=(value)
-    value.each do |hash|
-      hash["name"] = hash["name"].upcase() unless hash["name"].nil?
-    end
     @property_flush[:macros] = value
-  end
-  
-  def comment
-    if @property_hash[:templates].nil?
-      load_host()
-    end
-    
-    return @property_hash[:comment]
   end
   
   def comment=(value)

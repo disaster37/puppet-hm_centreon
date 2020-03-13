@@ -14,11 +14,20 @@ module Centreon
             end
         
             # Return all hosts in centreon
-            def fetch(lazzy = true)
-                r = @client.post({
-                    "action": "show",
-                    "object": "host"
-                }.to_json)
+            def fetch(name = nil, lazzy = true)
+                
+                if name.nil?
+                    r = @client.post({
+                        "action": "show",
+                        "object": "host"
+                    }.to_json)
+                else
+                    r = @client.post({
+                        "action": "show",
+                        "object": "host",
+                        "values": name,
+                    }.to_json)
+                end
     
                 hosts = []
                 JSON.parse(r)["result"].each do |data|
@@ -87,19 +96,13 @@ module Centreon
             def get(name, lazzy = true)
                 
                 # Search if host exist
-                hosts = fetch()
-                found_host = nil
-                hosts.each  do |host|
-                    if host.name() == name
-                        found_host = host
-                        break
-                    end
+                hosts = fetch(name = name, lazzy = lazzy)
+                
+                if hosts.length() > 0
+                   return hosts[0] 
                 end
                 
-                if !found_host.nil? && !lazzy
-                    load(found_host)
-                end
-                found_host
+                return nil
             end
             
             # Create new host on monitoring
@@ -122,6 +125,9 @@ module Centreon
                 host.macros().each do |macro|
                    set_macro(host.name(), macro) 
                 end
+                
+                # Apply template if needed
+                apply_template(host.name()) unless host.templates().empty?
                 
                 # Get and set id
                 host_tmp = get(host.name(), true)

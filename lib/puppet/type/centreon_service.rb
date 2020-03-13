@@ -138,8 +138,6 @@ Puppet::Type.newtype(:centreon_service) do
   newproperty(:macros, :array_matching => :all) do
     desc 'The macros of the host.'
     
-   
-    
     def insync?(is)
       for_comparison = Marshal.load(Marshal.dump(should))
       parser = Hm::Centreon::MacroParser.new(for_comparison)
@@ -177,15 +175,9 @@ Puppet::Type.newtype(:centreon_service) do
   def self.title_patterns
     [
       [
-        /^(\S+)\s+(.*)$/,
+        /^([^\|]+)\s*\|\s*(.*)$/,
         [
           [ :host ],
-          [ :name ],
-        ]
-      ],
-      [
-        /(.*)/,
-        [
           [ :name ],
         ]
       ]

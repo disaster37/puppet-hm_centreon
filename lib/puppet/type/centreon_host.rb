@@ -49,7 +49,7 @@ Puppet::Type.newtype(:centreon_host) do
     defaultto true
     
     validate do |value|
-      fail 'enable should be a String' unless [true, false].include? value
+      fail 'enable should be a Boolean' unless [true, false].include? value
     end
   end
   
@@ -96,6 +96,11 @@ Puppet::Type.newtype(:centreon_host) do
     
     validate do |value|
       fail 'macros should be a Hash' unless value.is_a?(Hash)
+    end
+    
+    munge do |value|
+      value["name"] = value["name"].upcase() if !value.nil? && !value["name"].nil?
+      super(value)
     end
   end
 

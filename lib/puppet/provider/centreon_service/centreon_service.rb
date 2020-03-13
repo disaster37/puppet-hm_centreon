@@ -9,7 +9,6 @@ Puppet::Type.type(:centreon_service).provide(:centreon_service, :parent => ::Hm:
   def initialize(value={})
     super(value)
     @property_flush = {}
-    @is_loaded = false
   end
 
   def self.prefetch(resources)

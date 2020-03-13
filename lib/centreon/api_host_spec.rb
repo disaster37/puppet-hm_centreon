@@ -26,7 +26,7 @@ RSpec.describe 'Test Centreon::Client' do
             expect(@client.host).to_not eq nil
         end
         
-        it "Test get_hosts when host" do
+        it "Test fetch when host" do
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
             with(body: "{\"action\":\"show\",\"object\":\"host\"}").
             to_return(status: 200, body:'
@@ -56,7 +56,7 @@ RSpec.describe 'Test Centreon::Client' do
         end
 
         
-        it "Test get_hosts when no host" do
+        it "Test fetch when no host" do
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
             with(body: "{\"action\":\"show\",\"object\":\"host\"}").
             to_return(status: 200, body:'
@@ -71,7 +71,7 @@ RSpec.describe 'Test Centreon::Client' do
             expect(hosts.length).to eq 0
         end
         
-        it "Test get_hosts when no lazzy" do
+        it "Test fetch when no lazzy" do
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
             with(body: "{\"action\":\"show\",\"object\":\"host\"}").
             to_return(status: 200, body:'
@@ -150,7 +150,7 @@ RSpec.describe 'Test Centreon::Client' do
                 }
             ')
             
-            hosts = @client.host.fetch(false)
+            hosts = @client.host.fetch(name = nil, lazzy = false)
             
             expect(hosts.length).to eq 1
             expect(hosts[0]).to have_attributes(
@@ -185,9 +185,9 @@ RSpec.describe 'Test Centreon::Client' do
         
         
         
-        it "Test get_host when host found" do
+        it "Test get when host found" do
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: "{\"action\":\"show\",\"object\":\"host\"}").
+            with(body: "{\"action\":\"show\",\"object\":\"host\",\"values\":\"test\"}").
             to_return(status: 200, body:'
                 {
                     "result": [
@@ -296,9 +296,9 @@ RSpec.describe 'Test Centreon::Client' do
             )
         end
         
-        it "Test get_host when host not found" do
+        it "Test get when host not found" do
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: "{\"action\":\"show\",\"object\":\"host\"}").
+            with(body: "{\"action\":\"show\",\"object\":\"host\",\"values\":\"test\"}").
             to_return(status: 200, body:'
                 {
                     "result": [
@@ -313,7 +313,7 @@ RSpec.describe 'Test Centreon::Client' do
         end
         
         
-        it "Test load_host when host found" do
+        it "Test load when host found" do
             
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
             with(body: '{"action":"gettemplate","object":"host","values":"test"}').
@@ -433,7 +433,13 @@ RSpec.describe 'Test Centreon::Client' do
                 }
             ')
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: "{\"action\":\"show\",\"object\":\"host\"}").
+            with(body: '{"action":"applytpl","object":"host","values":"test"}').
+            to_return(status: 200, body:'
+                {
+                }
+            ')
+            stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
+            with(body: "{\"action\":\"show\",\"object\":\"host\",\"values\":\"test\"}").
             to_return(status: 200, body:'
                 {
                     "result": [
