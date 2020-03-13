@@ -466,7 +466,7 @@ module Centreon
                 r = @client.post({
                     "action": "addservice",
                     "object": "sg",
-                    "values": sprintf("%s;%s;%s", name, host_name, service_name)
+                    "values": sprintf("%s;%s,%s", name, host_name, service_name)
                 }.to_json)
             end
             

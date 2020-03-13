@@ -46,10 +46,11 @@ Puppet::Type.newtype(:centreon_host) do
   newproperty(:enable) do
     desc 'The state of host'
     
-    defaultto true
     
-    validate do |value|
-      fail 'enable should be a Boolean' unless [true, false].include? value
+    defaultto :true
+    newvalues(:true, :'false')
+    def insync?(is)
+      is.to_s == should.to_s
     end
   end
   

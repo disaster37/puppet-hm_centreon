@@ -510,7 +510,7 @@ RSpec.describe 'Test Centreon::Client' do
                 }
             ')
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"addservice","object":"sg","values":"SG1;test;service1"}').
+            with(body: '{"action":"addservice","object":"sg","values":"SG1;test,service1"}').
             to_return(status: 200, body:'
                 {
                 }
@@ -731,7 +731,7 @@ RSpec.describe 'Test Centreon::Client' do
                 }
             ')
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"addservice","object":"sg","values":"SG1;test;service1"}').
+            with(body: '{"action":"addservice","object":"sg","values":"SG1;test,service1"}').
             to_return(status: 200, body:'
                 {
                 }

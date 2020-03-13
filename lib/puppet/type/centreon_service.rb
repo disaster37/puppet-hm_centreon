@@ -47,10 +47,10 @@ Puppet::Type.newtype(:centreon_service) do
   newproperty(:enable) do
     desc 'The state of host'
     
-    defaultto true
-    
-    validate do |value|
-      fail 'enable should be a String' unless [true, false].include? value
+    defaultto :true
+    newvalues(:true, :'false')
+    def insync?(is)
+      is.to_s == should.to_s
     end
   end
   
@@ -175,12 +175,26 @@ Puppet::Type.newtype(:centreon_service) do
   def self.title_patterns
     [
       [
-        /^([^\|]+)\s*\|\s*(.*)$/,
+        /^([^\|]+)\s*\|\s*(.+)$/,
         [
           [ :host ],
           [ :name ],
         ]
-      ]
+      ],
+      [
+        /^([^\/]+)\s*\/\s*(.+)$/,
+        [
+          [ :host ],
+          [ :name ],
+        ]
+      ],
+      [
+        /^(\S+)\s+(.+)$/,
+        [
+          [ :host ],
+          [ :name ],
+        ]
+      ],
     ]
   end
 

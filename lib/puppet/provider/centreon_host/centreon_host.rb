@@ -38,7 +38,7 @@ Puppet::Type.type(:centreon_host).provide(:centreon_host, :parent => ::Hm::Centr
       name: host.name(),
       description: host.description(),
       address: host.address(),
-      enable: host.is_activated(),
+      enable: host.is_activated().to_s,
       poller: host.poller(),
       groups: host.groups().map{ |host_group| host_group.name()  },
       templates: host.templates().map{ |host_template| host_template.name()  },
@@ -65,7 +65,12 @@ Puppet::Type.type(:centreon_host).provide(:centreon_host, :parent => ::Hm::Centr
     host = ::Centreon::Host.new()
     host.set_name(resource[:name])
     host.set_description(resource[:description]) unless resource[:description].nil?
-    host.set_is_activated(resource[:enable])
+    case resource[:enable]
+    when :true
+      host.set_is_activated(true)
+    else
+      host.set_is_activated(false)
+    end
     host.set_address(resource[:address])
     host.set_poller(resource[:poller])
     host.set_comment(resource[:comment]) unless resource[:comment].nil?
@@ -103,7 +108,7 @@ Puppet::Type.type(:centreon_host).provide(:centreon_host, :parent => ::Hm::Centr
   def flush
     Puppet.info("Update host #{name}")
     
-    if @property_hash[:ensure] != :absent
+    if @property_hash[:ensure] != :absent && !@property_flush.empty?
     
       host = Centreon::Host.new()
       host.set_name(@property_hash[:name])
@@ -111,7 +116,14 @@ Puppet::Type.type(:centreon_host).provide(:centreon_host, :parent => ::Hm::Centr
       host.set_address(@property_flush[:address]) unless @property_flush[:address].nil?
       host.set_poller(@property_flush[:poller]) unless @property_flush[:poller].nil?
       host.set_comment(@property_flush[:comment]) unless @property_flush[:comment].nil?
-      host.set_is_activated(@property_flush[:enable]) unless @property_flush[:enable].nil?
+      if !@property_flush[:enable].nil?
+        case resource[:enable]
+        when :true
+          host.set_is_activated(true)
+        else
+          host.set_is_activated(false)
+        end
+      end
       
       @property_flush[:groups].each do |name|
         host_group = Centreon::HostGroup.new()

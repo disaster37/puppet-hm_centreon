@@ -32,6 +32,7 @@ Puppet::Type.type(:centreon_service).provide(:centreon_service, :parent => ::Hm:
         
         
         hash = service_to_hash(service)
+        puts hash
         
         filters << new(hash) unless hash.empty?
       end
@@ -57,7 +58,7 @@ Puppet::Type.type(:centreon_service).provide(:centreon_service, :parent => ::Hm:
       name: service.name(),
       command: service.command(),
       command_args: service.command_args(),
-      enable: service.is_activated(),
+      enable: service.is_activated().to_s,
       normal_check_interval: service.normal_check_interval(),
       retry_check_interval: service.retry_check_interval(),
       max_check_attempts: service.max_check_attempts(),
@@ -80,19 +81,24 @@ Puppet::Type.type(:centreon_service).provide(:centreon_service, :parent => ::Hm:
 
 
   def exists?
-    Puppet.info("Checking if service #{host} #{name} exists")
+    Puppet.info("Checking if service #{name} exists")
     @property_hash[:ensure] == :present
   end
 
   def create
-    Puppet.info("Creating service #{host} #{name}")
+    Puppet.info("Creating service #{name}")
 
     host = ::Centreon::Host.new()
     host.set_name(resource[:host])
     service = ::Centreon::Service.new()
     service.set_host(host)
     service.set_name(resource[:name])
-    service.set_is_activated(resource[:enable])
+    case resource[:enable]
+    when :true
+      service.set_is_activated(true)
+    else
+      service.set_is_activated(false)
+    end
     service.set_command(resource[:command]) unless resource[:command].nil?
     service.set_template(resource[:template]) unless resource[:template].nil?
     service.set_normal_check_interval(resource[:normal_check_interval]) unless resource[:normal_check_interval].nil?
@@ -111,7 +117,7 @@ Puppet::Type.type(:centreon_service).provide(:centreon_service, :parent => ::Hm:
     end
     
     resource[:command_args].each do |arg|
-      service.add_arg(arg)
+      service.add_command_arg(arg)
     end
     resource[:macros].each do |hash|
       macro = Centreon::Macro.new()
@@ -131,21 +137,29 @@ Puppet::Type.type(:centreon_service).provide(:centreon_service, :parent => ::Hm:
   end
 
   def destroy
-    Puppet.info("Deleting service #{host}_#{name}")
+    Puppet.info("Deleting service #{host} #{name}")
     client().service.delete(@property_hash[:host], @property_hash[:name])
     @property_hash[:ensure] = :absent
   end
   
   def flush
-    Puppet.info("Update host #{host}_#{name}")
     
     if @property_hash[:ensure] != :absent && !@property_flush.empty?
+      Puppet.info("Updating service #{host} #{name}")
+      
       host = ::Centreon::Host.new()
       host.set_name(@property_hash[:host])
       service = ::Centreon::Service.new()
       service.set_host(host)
       service.set_name(@property_hash[:name])
-      service.set_is_activated(@property_flush[:enable]) unless @property_flush[:enable].nil?
+      if !@property_flush[:enable].nil?
+        case resource[:enable]
+        when :true
+          service.set_is_activated(true)
+        else
+          service.set_is_activated(false)
+        end
+      end
       service.set_command(@property_flush[:command]) unless @property_flush[:command].nil?
       service.set_template(@property_flush[:template]) unless @property_flush[:template].nil?
       service.set_normal_check_interval(@property_flush[:normal_check_interval]) unless @property_flush[:normal_check_interval].nil?
@@ -163,7 +177,7 @@ Puppet::Type.type(:centreon_service).provide(:centreon_service, :parent => ::Hm:
         service.add_group(service_group)
       end unless @property_flush[:groups].nil?
       @property_flush[:command_args].each do |arg|
-        service.add_arg(arg)
+        service.add_command_arg(arg)
       end unless  @property_flush[:command_args].nil?
       @property_flush[:macros].each do |hash|
         macro = Centreon::Macro.new()
@@ -175,7 +189,7 @@ Puppet::Type.type(:centreon_service).provide(:centreon_service, :parent => ::Hm:
       end unless @property_flush[:macros].nil?
   
       # Update service
-      client().service.update(service, groups = !@property_flush[:groups].nil?, macros = !@property_flush[:macros].nil?, activated = !@property_flush[:enable].nil?, check_command_arguments = !@property_flush[:check_command_arguments].nil?)
+      client().service.update(service, groups = !@property_flush[:groups].nil?, macros = !@property_flush[:macros].nil?, activated = !@property_flush[:enable].nil?, check_command_arguments = !@property_flush[:command_args].nil?)
 
     end
   end
@@ -198,6 +212,8 @@ Puppet::Type.type(:centreon_service).provide(:centreon_service, :parent => ::Hm:
   end
   
   def enable=(value)
+    puts "enable"
+    puts value
     @property_flush[:enable] = value
   end
   
