@@ -42,3 +42,7 @@ centreon_service{"test-seb3/test":
         }
     ]
 }
+
+centreon_host_group{'HG_TEST_SEB':
+    description => "My HG test2"
+}

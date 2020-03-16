@@ -106,9 +106,9 @@ Puppet::Type.type(:centreon_host).provide(:centreon_host, :parent => ::Hm::Centr
   end
   
   def flush
-    Puppet.info("Update host #{name}")
     
     if @property_hash[:ensure] != :absent && !@property_flush.empty?
+      Puppet.info("Update host #{name}")
     
       host = Centreon::Host.new()
       host.set_name(@property_hash[:name])

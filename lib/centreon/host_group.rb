@@ -6,6 +6,7 @@ module Centreon
         def initialize()
             @id = nil
             @name = nil
+            @description = nil
         end
         
         def id
@@ -14,6 +15,10 @@ module Centreon
         
         def name
             @name
+        end
+        
+        def description
+            @description
         end
         
         def set_id(id)
@@ -27,6 +32,12 @@ module Centreon
             raise("wrong value: name can't be empty") if name.empty?
             @name = name
             logger.debug("Name: " + name)
+        end
+        
+        def set_description(value)
+            raise("wrong type: string required") unless value.is_a?(String)
+            @description = value
+            logger.debug("Description: " + value)
         end
         
         def is_valid()

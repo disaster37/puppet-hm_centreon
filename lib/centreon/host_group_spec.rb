@@ -21,6 +21,15 @@ RSpec.describe 'Test Centreon::HostGroup' do
             expect(hostGroup.name()).to eq "test"
         end
         
+        it "test set/get description" do
+            hostGroup = ::Centreon::HostGroup.new()
+            hostGroup.set_description("test")
+            expect(hostGroup.description()).to eq "test"
+            
+            hostGroup.set_description("")
+            expect(hostGroup.description()).to eq ""
+        end
+        
         it "test is_valid" do
             hostGroup = ::Centreon::HostGroup.new()
             expect(hostGroup.is_valid()).to eq false

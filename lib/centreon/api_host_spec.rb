@@ -3,7 +3,7 @@ require 'webmock/rspec'
 require_relative './api.rb'
 
 
-RSpec.describe 'Test Centreon::Client' do
+RSpec.describe 'Test Centreon::Client::Host' do
     
     before do
         stub_request(:post, "localhost/centreon/api/index.php?action=authenticate").
