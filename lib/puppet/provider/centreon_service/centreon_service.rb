@@ -32,7 +32,6 @@ Puppet::Type.type(:centreon_service).provide(:centreon_service, :parent => ::Hm:
         
         
         hash = service_to_hash(service)
-        puts hash
         
         filters << new(hash) unless hash.empty?
       end
@@ -212,8 +211,6 @@ Puppet::Type.type(:centreon_service).provide(:centreon_service, :parent => ::Hm:
   end
   
   def enable=(value)
-    puts "enable"
-    puts value
     @property_flush[:enable] = value
   end
   
