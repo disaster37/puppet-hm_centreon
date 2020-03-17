@@ -173,8 +173,8 @@ Puppet::Type.newtype(:centreon_service) do
       [
         /^([^\|]+)\s+\|\s+(.+)$/,
         [
-          [ :host ],
-          [ :name ],
+          [:host],
+          [:name],
         ]
       ]
     ]
