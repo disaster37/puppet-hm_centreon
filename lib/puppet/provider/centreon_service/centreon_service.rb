@@ -9,6 +9,7 @@ Puppet::Type.type(:centreon_service).provide(:centreon_service, :parent => ::Hm:
   def initialize(value={})
     super(value)
     @property_flush = {}
+    @is_loaded = false
   end
 
   def self.prefetch(resources)
@@ -22,14 +23,10 @@ Puppet::Type.type(:centreon_service).provide(:centreon_service, :parent => ::Hm:
         service.set_action_url(resources[name][:action_url]) unless resources[name][:action_url].nil?
         service.set_comment(resources[name][:comment]) unless resources[name][:comment].nil?
         
-        # Load extra properties
-        client().service.load(service)
-        
         # Load service group
         resources[name][:groups].each do |service_group_name|
           client().service.fetch_service_group(service_group_name = service_group_name, services = [service])
         end
-        
         
         hash = service_to_hash(service)
         
@@ -43,13 +40,31 @@ Puppet::Type.type(:centreon_service).provide(:centreon_service, :parent => ::Hm:
     end
   end
   
+  def load()
+    if @is_loaded == false
+      host = Centreon::Host.new()
+      host.set_name(@property_hash[:host])
+      service = Centreon::Service.new()
+      service.set_host(host)
+      service.set_name(@property_hash[:name])
+      
+      # Load extra properties
+      client().service.load(service)
+      
+      @property_hash[:macros] = service.macros().map{ |macro| {
+        "name" => macro.name(),
+        "value"=> macro.value(),
+        "is_password" => macro.is_password(),
+        "description" => macro.description()
+      }}.flatten.uniq.compact,
+      
+      @is_loaded = true
+    end
+  end
+  
   # Convert host to hash
   def self.service_to_hash(service)
     return {} if service.nil?
-    
-    macros = []
-    
-    
     {
       host_id: service.host().id(),
       host: service.host().name(),
@@ -68,12 +83,6 @@ Puppet::Type.type(:centreon_service).provide(:centreon_service, :parent => ::Hm:
       action_url: service.action_url(),
       comment: service.comment(),
       groups: service.groups().map{ |service_group| service_group.name()  },
-      macros: service.macros().map{ |macro| {
-        "name" => macro.name(),
-        "value"=> macro.value(),
-        "is_password" => macro.is_password(),
-        "description" => macro.description()
-      }}.flatten.uniq.compact,
       ensure: :present,
     }
   end
@@ -258,4 +267,10 @@ Puppet::Type.type(:centreon_service).provide(:centreon_service, :parent => ::Hm:
   def macros=(value)
     @property_flush[:macros] = value
   end
+  
+  def macros
+    load()
+    resource[:macros]
+  end
+  
 end
