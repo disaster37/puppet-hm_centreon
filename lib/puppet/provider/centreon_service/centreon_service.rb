@@ -126,10 +126,11 @@ Puppet::Type.type(:centreon_service).provide(:centreon_service, :parent => ::Hm:
       macro.set_is_password(hash["is_password"]) unless hash["is_password"].nil?
       service.add_macro(macro)
     end unless resource[:macros].nil?
-    client().service.add(service)
+    client().service.add(service, retrive_id = false)
     
-    @property_hash[:id] = service.id()
-    @property_hash[:host_id] = service.host().id()
+    # Take a long time
+    #@property_hash[:id] = service.id()
+    #@property_hash[:host_id] = service.host().id()
     @property_hash[:ensure] = :present
     
     

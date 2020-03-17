@@ -203,7 +203,7 @@ module Centreon
             end
             
             
-            def add(service)
+            def add(service, retrive_id = true)
                 raise("wrong type: Centreon::Service required") unless service.is_a?(::Centreon::Service)
                 raise("wrong value: service must be valid") unless service.is_valid()
                 @client.post({
@@ -241,9 +241,11 @@ module Centreon
                 end
                 
                 # Get and set id
-                service_tmp = get(service.host().name(), service.name(), true)
-                service.set_id(service_tmp.id())
-                service.host().set_id(service_tmp.host().id())
+                if retrive_id
+                    service_tmp = get(service.host().name(), service.name(), true)
+                    service.set_id(service_tmp.id())
+                    service.host().set_id(service_tmp.host().id())
+                end
             end
             
             def update(service, groups = true, macros = true, activated = true, check_command_arguments = true)
