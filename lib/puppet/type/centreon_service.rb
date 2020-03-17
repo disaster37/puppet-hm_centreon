@@ -155,10 +155,6 @@ Puppet::Type.newtype(:centreon_service) do
       super(value)
     end
   end
-
-
-  newproperty(:id)
-  newproperty(:host_id)
   
   autorequire(:centreon_host) do
     self[:host]

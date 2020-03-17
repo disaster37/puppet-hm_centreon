@@ -66,9 +66,7 @@ Puppet::Type.type(:centreon_service).provide(:centreon_service, :parent => ::Hm:
   def self.service_to_hash(service)
     return {} if service.nil?
     {
-      host_id: service.host().id(),
       host: service.host().name(),
-      id: service.id(),
       name: service.name(),
       command: service.command(),
       command_args: service.command_args(),
