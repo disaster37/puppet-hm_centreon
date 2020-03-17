@@ -47,13 +47,13 @@ centreon_host_group{'HG_TEST_SEB':
     description => "My HG test2"
 }
 
-#centreon_service{'sr062161cti3700.hm.dm.ad | OS-Linux-Disk-/var': 
-#    ensure => present,
-#    enable => true,
-#    template => 'TS_OS-Linux-Disk-Generic-Name-SNMP',
-#    macros => [{
-#        name => 'DISKNAME',
-#        value => '/var',
-#    }],
-#    comment  => "Handle by Puppet",
-#}
+centreon_service{'sr062161cti3700.hm.dm.ad | OS-Linux-Disk-/var': 
+    ensure => present,
+    enable => true,
+    template => 'TS_OS-Linux-Disk-Generic-Name-SNMP',
+    macros => [{
+        name => 'DISKNAME',
+        value => '/var',
+    }],
+    comment  => "Handle by Puppet",
+}
