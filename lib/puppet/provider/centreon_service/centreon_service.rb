@@ -33,10 +33,6 @@ Puppet::Type.type(:centreon_service).provide(:centreon_service, :parent => ::Hm:
         filters << new(hash) unless hash.empty?
       end
       
-      filters.each do |c|
-        puts "'#{c.host}' == '#{resources[name][:host]}' and '#{c.name}' == '#{resources[name][:name]}'"
-      end
-      
       if provider = filters.find { |c| (c.host == resources[name][:host]) && (c.name == resources[name][:name]) }
         resources[name].provider = provider
         Puppet.info("Found service #{resources[name][:host]} #{resources[name][:name]}")
