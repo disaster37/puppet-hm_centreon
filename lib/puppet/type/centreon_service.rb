@@ -175,14 +175,6 @@ Puppet::Type.newtype(:centreon_service) do
   def self.title_patterns
     [
       [
-        /^(([^\|]+)\|([^\|]+))$/,
-        [
-          [:name],
-          [:host],
-          [:servicename],
-        ]
-      ],
-      [
         /^(.*)$/,
         [
           [:name],
