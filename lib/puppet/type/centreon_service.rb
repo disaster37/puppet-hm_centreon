@@ -9,7 +9,7 @@ Puppet::Type.newtype(:centreon_service) do
     desc 'The name of the resource'
   end
   
-  newparam(:service_name) do
+  newparam(:service_name, namevar: true) do
     desc 'The name of the service'
     validate do |value|
       fail 'service name must have a name' if value == ''
@@ -19,7 +19,7 @@ Puppet::Type.newtype(:centreon_service) do
   
   
   
-  newparam(:host) do
+  newparam(:host, namevar: true) do
     desc 'The host name associated with the service.'
     validate do |value|
       fail 'service must have a host name' if value == ''
@@ -170,6 +170,19 @@ Puppet::Type.newtype(:centreon_service) do
   
   autorequire(:centreon_service_template) do
     self[:template]
+  end
+  
+  def self.title_patterns
+    [
+      [
+        /^(([^\|]+)\|([^\|]+))$/,
+        [
+          [:name],
+          [:host],
+          [:service_name],
+        ]
+      ]
+    ]
   end
   
   
