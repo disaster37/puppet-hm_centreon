@@ -35,10 +35,10 @@ Puppet::Type.type(:centreon_service).provide(:centreon_service, :parent => ::Hm:
       end
       
       filters.each do |c|
-        puts "'#{c.host}' == '#{resources[name][:host]}' and '#{c.name}' == '#{resources[name][:service_name]}'"
+        puts "'#{c.host}' == '#{resources[name][:host]}' and '#{c.service_name}' == '#{resources[name][:service_name]}'"
       end
       
-      if provider = filters.find { |c| (c.host == resources[name][:host]) && (c.name == resources[name][:service_name]) }
+      if provider = filters.find { |c| (c.host == resources[name][:host]) && (c.service_name == resources[name][:service_name]) }
         resources[name].provider = provider
         Puppet.info("Found service #{resources[name][:host]} #{resources[name][:service_name]}")
       end
@@ -71,8 +71,9 @@ Puppet::Type.type(:centreon_service).provide(:centreon_service, :parent => ::Hm:
   def self.service_to_hash(service)
     return {} if service.nil?
     {
+      name: sprintf("%s|%s", service.host().name(), service.name()),
       host: service.host().name(),
-      name: service.name(),
+      service_name: service.name(),
       command: service.command(),
       command_args: service.command_args(),
       enable: service.is_activated().to_s,
