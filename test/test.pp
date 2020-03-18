@@ -14,6 +14,8 @@ centreon_service{'sr062161cti3700.hm.dm.ad|OS-Linux-Disk-/var/lib/docker':
 centreon_service{'sr062161cti3700.hm.dm.ad|OS-Linux-Disk-/': 
     ensure => present,
     enable => true,
+    host => 'sr062161cti3700.hm.dm.ad',
+    service_name => 'OS-Linux-Disk-/',
     template => 'TS_OS-Linux-Disk-Generic-Name-SNMP',
     macros => [{
         name => 'DISKNAME',
