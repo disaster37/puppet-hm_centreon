@@ -9,7 +9,7 @@ Puppet::Type.newtype(:centreon_service) do
     desc 'The name of the resource'
   end
   
-  newparam(:service_name, :namevar: true) do
+  newparam(:servicename, :namevar: true) do
     desc 'The name of the service'
     validate do |value|
       fail 'service name must have a name' if value == ''
@@ -179,7 +179,7 @@ Puppet::Type.newtype(:centreon_service) do
         [
           [:name],
           [:host],
-          [:service_name],
+          [:servicename],
         ]
       ],
       [
