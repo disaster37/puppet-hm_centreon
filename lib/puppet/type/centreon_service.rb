@@ -5,7 +5,7 @@ Puppet::Type.newtype(:centreon_service) do
 
   ensurable
 
-  newparam(:name, :namevar: true) do
+  newparam(:name, namevar: true) do
     desc 'The name of the resource'
   end
   
