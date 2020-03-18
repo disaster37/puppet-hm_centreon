@@ -181,6 +181,12 @@ Puppet::Type.newtype(:centreon_service) do
           [:host],
           [:service_name],
         ]
+      ],
+      [
+        /^(.*)$/,
+        [
+          [:name],
+        ]
       ]
     ]
   end
