@@ -5,11 +5,11 @@ Puppet::Type.newtype(:centreon_service) do
 
   ensurable
 
-  newparam(:name, namevar: true) do
+  newparam(:name, :namevar: true) do
     desc 'The name of the resource'
   end
   
-  newparam(:service_name, namevar: true) do
+  newparam(:service_name, :namevar: true) do
     desc 'The name of the service'
     validate do |value|
       fail 'service name must have a name' if value == ''
@@ -19,7 +19,7 @@ Puppet::Type.newtype(:centreon_service) do
   
   
   
-  newparam(:host, namevar: true) do
+  newparam(:host, :namevar: true) do
     desc 'The host name associated with the service.'
     validate do |value|
       fail 'service must have a host name' if value == ''
