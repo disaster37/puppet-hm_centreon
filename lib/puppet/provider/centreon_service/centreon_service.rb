@@ -15,8 +15,8 @@ Puppet::Type.type(:centreon_service).provide(:centreon_service, :parent => ::Hm:
   def self.prefetch(resources)
     resources.keys.each do |name|
       filters = []
-      puts "process '#{resources[name][:host]}' and '#{resources[name][:name]}'"
-      client().service.fetch(service_name = resources[name][:name], lazzy = true).each do |service|
+      puts "process '#{resources[name][:host]}' and '#{resources[name][:service_name]}'"
+      client().service.fetch(service_name = resources[name][:service_name], lazzy = true).each do |service|
         
         # Don't update unmanaged properties
         service.set_template(resources[name][:template]) unless resources[name][:template].nil?
@@ -35,12 +35,12 @@ Puppet::Type.type(:centreon_service).provide(:centreon_service, :parent => ::Hm:
       end
       
       filters.each do |c|
-        puts "'#{c.host}' == '#{resources[name][:host]}' and '#{c.name}' == '#{resources[name][:name]}'"
+        puts "'#{c.host}' == '#{resources[name][:host]}' and '#{c.name}' == '#{resources[name][:service_name]}'"
       end
       
-      if provider = filters.find { |c| (c.host == resources[name][:host]) && (c.name == resources[name][:name]) }
+      if provider = filters.find { |c| (c.host == resources[name][:host]) && (c.name == resources[name][:service_name]) }
         resources[name].provider = provider
-        Puppet.info("Found service #{resources[name][:host]} #{resources[name][:name]}")
+        Puppet.info("Found service #{resources[name][:host]} #{resources[name][:service_name]}")
       end
     end
   end
@@ -51,7 +51,7 @@ Puppet::Type.type(:centreon_service).provide(:centreon_service, :parent => ::Hm:
       host.set_name(@property_hash[:host])
       service = Centreon::Service.new()
       service.set_host(host)
-      service.set_name(@property_hash[:name])
+      service.set_name(@property_hash[:service_name])
       
       # Load extra properties
       client().service.load(service)
@@ -103,7 +103,7 @@ Puppet::Type.type(:centreon_service).provide(:centreon_service, :parent => ::Hm:
     host.set_name(resource[:host])
     service = ::Centreon::Service.new()
     service.set_host(host)
-    service.set_name(resource[:name])
+    service.set_name(resource[:service_name])
     case resource[:enable]
     when :true
       service.set_is_activated(true)
@@ -150,7 +150,7 @@ Puppet::Type.type(:centreon_service).provide(:centreon_service, :parent => ::Hm:
 
   def destroy
     Puppet.info("Deleting service #{host} #{name}")
-    client().service.delete(@property_hash[:host], @property_hash[:name])
+    client().service.delete(@property_hash[:host], @property_hash[:service_name])
     @property_hash[:ensure] = :absent
   end
   
@@ -163,7 +163,7 @@ Puppet::Type.type(:centreon_service).provide(:centreon_service, :parent => ::Hm:
       host.set_name(@property_hash[:host])
       service = ::Centreon::Service.new()
       service.set_host(host)
-      service.set_name(@property_hash[:name])
+      service.set_name(@property_hash[:service_name])
       if !@property_flush[:enable].nil?
         case resource[:enable]
         when :true
@@ -211,8 +211,8 @@ Puppet::Type.type(:centreon_service).provide(:centreon_service, :parent => ::Hm:
     @property_flush[:host] = value
   end
   
-  def name=(value)
-    @property_flush[:name] = value
+  def service_name=(value)
+    @property_flush[:service_name] = value
   end
   
   def command=(value)

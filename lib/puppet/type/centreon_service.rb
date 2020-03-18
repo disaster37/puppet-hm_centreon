@@ -6,7 +6,11 @@ Puppet::Type.newtype(:centreon_service) do
   ensurable
 
   newparam(:name, namevar: true) do
-    desc 'The name of the service.'
+    desc 'The name of the resource'
+  end
+  
+  newparam(:service_name, namevar: true) do
+    desc 'The name of the resource'
     validate do |value|
       fail 'service must have a name' if value == ''
       fail 'service should be a String' unless value.is_a?(String)
@@ -171,10 +175,11 @@ Puppet::Type.newtype(:centreon_service) do
   def self.title_patterns
     [
       [
-        /^([^\|]+)\|([^\|]+)$/,
+        /^(([^\|]+)\|([^\|]+))$/,
         [
-          [:host],
           [:name],
+          [:host],
+          [:service_name]
         ]
       ]
     ]
