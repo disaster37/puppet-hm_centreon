@@ -15,7 +15,7 @@ Puppet::Type.type(:centreon_service).provide(:centreon_service, :parent => ::Hm:
   def self.prefetch(resources)
     resources.keys.each do |name|
       filters = []
-      puts "process '#{resources[name][:host]}' and '#{resources[name][:service_name]}'"
+      puts "process '#{resources[name][:name]}': '#{resources[name][:host]}' and '#{resources[name][:service_name]}'"
       client().service.fetch(service_name = resources[name][:service_name], lazzy = true).each do |service|
         
         # Don't update unmanaged properties
