@@ -1,23 +1,26 @@
-
-
-centreon_service{'sr062161cti3700.hm.dm.ad|OS-Linux-Disk-/var/lib/docker': 
-    ensure => present,
-    enable => true,
-    template => 'TS_OS-Linux-Disk-Generic-Name-SNMP',
-    macros => [{
-        name => 'DISKNAME',
-        value => '/var',
-    }],
-    comment  => "Handle by Puppet",
+centreon_host{ "test-seb3":
+    ensure      => present,
+    enable      => true,
+    description => "test3",
+    address     => "localhost",
+    poller      => "poller1",
+    macros      => [
+        {
+            name => "macro2",
+            value => "value1",
+            is_password => false,
+            description => "test macro 1",
+        }
+    ]
 }
 
-centreon_service{'sr062161cti3700.hm.dm.ad|OS-Linux-Disk-/': 
-    ensure => present,
-    enable => true,
-    template => 'TS_OS-Linux-Disk-Generic-Name-SNMP',
-    macros => [{
-        name => 'DISKNAME',
-        value => '/var',
-    }],
-    comment  => "Handle by Puppet",
+
+centreon_host_in_host_template{"Set host templates":
+    host => "test-seb3",
+    templates => ["TH_OS-SYS-AIX"]
+}
+
+centreon_host_in_host_group{"Set host groups":
+    host => "test-seb3",
+    groups => ["HG_CENTRAL"]
 }

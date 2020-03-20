@@ -1,6 +1,6 @@
 require_relative '../../../hm/centreon/client.rb'
 
-Puppet::Type.type(:centreon_host_group).provide(:centreon_host_group, :parent => ::Hm::Centreon::Client) do
+Puppet::Type.type(:centreon_host_group).provide(:v1, :parent => ::Hm::Centreon::Client) do
 
   confine feature: :centreon
 
@@ -13,17 +13,17 @@ Puppet::Type.type(:centreon_host_group).provide(:centreon_host_group, :parent =>
 
 
   def self.prefetch(resources)
-    resources.keys.each do |name|
+    resources.keys.each do |resource_name|
       filters = []
-      client().host_group.fetch(name = resources[name][:name]).each do |host_group|
+      client().host_group.fetch(resources[resource_name][:name]).each do |host_group|
         hash = host_group_to_hash(host_group)
         
         filters << new(hash) unless hash.empty?
       end
       
-      if provider = filters.find { |c| c.name == resources[name][:name] }
-        resources[name].provider = provider
-        Puppet.info("Found host group #{resources[name][:name]}")
+      if provider = filters.find { |c| c.name == resources[resource_name][:name] }
+        resources[resource_name].provider = provider
+        Puppet.info("Found host group #{resources[resource_name][:name]}")
       end
     end
   end

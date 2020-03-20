@@ -1,6 +1,6 @@
 require_relative '../../../hm/centreon/client.rb'
 
-Puppet::Type.type(:centreon_host).provide(:centreon_host, :parent => ::Hm::Centreon::Client) do
+Puppet::Type.type(:centreon_host).provide(:v1, :parent => ::Hm::Centreon::Client) do
 
   confine feature: :centreon
 
@@ -13,18 +13,18 @@ Puppet::Type.type(:centreon_host).provide(:centreon_host, :parent => ::Hm::Centr
 
 
   def self.prefetch(resources)
-    resources.keys.each do |name|
+    resources.keys.each do |resource_name|
       filters = []
-      client().host.fetch(name = resources[name][:name], lazzy = false).each do |host|
+      client().host.fetch(resources[resource_name][:name], false).each do |host|
         
         hash = host_to_hash(host)
         
         filters << new(hash) unless hash.empty?
       end
       
-      if provider = filters.find { |c| c.name == resources[name][:name] }
-        resources[name].provider = provider
-        Puppet.info("Found host #{resources[name][:name]}")
+      if provider = filters.find { |c| c.name == resources[resource_name][:name] }
+        resources[resource_name].provider = provider
+        Puppet.info("Found host #{resources[resource_name][:name]}")
       end
     end
   end
@@ -145,7 +145,7 @@ Puppet::Type.type(:centreon_host).provide(:centreon_host, :parent => ::Hm::Centr
       end unless @property_flush[:macros].nil?
       
       # Update host
-      client().host.update(host, groups = !@property_flush[:groups].nil?, templates = !@property_flush[:templates].nil?, macros = !@property_flush[:macros].nil?, activated = !@property_flush[:enable].nil?)
+      client().host.update(host, !@property_flush[:groups].nil?, !@property_flush[:templates].nil?, !@property_flush[:macros].nil?, !@property_flush[:enable].nil?)
     
     end
   end

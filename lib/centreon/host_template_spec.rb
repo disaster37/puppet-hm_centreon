@@ -1,4 +1,5 @@
 require_relative './host_template.rb'
+require_relative './service_template.rb'
 
 RSpec.describe 'Test Centreon::HostTemplate' do
     context "Test all getter / setter" do
@@ -27,6 +28,14 @@ RSpec.describe 'Test Centreon::HostTemplate' do
             
             hostTemplate.set_name("test")
             expect(hostTemplate.is_valid()).to eq true
+        end
+        
+         it "test add/get service" do
+            host = ::Centreon::HostTemplate.new()
+            service = ::Centreon::ServiceTemplate.new()
+            service.set_name("test")
+            host.add_service(service)
+            expect(host.services()).to eq [service]
         end
         
     end

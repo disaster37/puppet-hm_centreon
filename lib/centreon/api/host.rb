@@ -147,9 +147,37 @@ module Centreon
                     disable(host.name()) unless host.is_activated()
                 end
                 
-                set_groups(host.name(), host.groups_to_s()) if groups
-                set_templates(host.name(), host.templates_to_s()) if templates
-                apply_template(host.name()) if templates
+                
+                if groups
+                    # Set groups if needed or remove all groups
+                    if host.groups().empty?
+                        host_tmp = Centreon::Host.new()
+                        host_tmp.set_name(host.name())
+                        get_groups(host.name()).each do |host_group|
+                           host_tmp.add_group(host_group) 
+                        end
+                        delete_groups(host_tmp)
+                    else
+                        set_groups(host.name(), host.groups_to_s())
+                    end
+                end
+                
+                if templates
+                    # Set templates if needed or remove all templates
+                    if host.templates().empty?
+                        host_tmp = Centreon::Host.new()
+                        host_tmp.set_name(host.name())
+                        get_templates(host.name()).each do |host_template|
+                           host_tmp.add_template(host_template) 
+                        end
+                        delete_templates(host_tmp)
+                    else
+                        set_templates(host.name(), host.templates_to_s()) if templates
+                    end
+                    
+                    apply_template(host.name())
+                end
+               
                 
                 if macros
                     current_macros = get_macros(host.name())
@@ -187,6 +215,59 @@ module Centreon
                     "action": "del",
                     "object": "host",
                     "values": name,
+                }.to_json)
+            end
+            
+            
+            def add_templates(host)
+                raise("wrong type: Centreon:Host required") unless host.is_a?(Centreon::Host)
+                raise("wrong value: host must be valid") unless !host.name().nil? && !host.name.empty?
+                raise("wrong value: templates can't be empty") if host.templates().empty?
+                
+                
+                 r = @client.post({
+                    "action": "addtemplate",
+                    "object": "host",
+                    "values": sprintf("%s;%s", host.name, host.templates_to_s()),
+                }.to_json)
+            end
+            
+            def delete_templates(host)
+                raise("wrong type: Centreon:Host required") unless host.is_a?(Centreon::Host)
+                raise("wrong value: host must be valid") unless !host.name().nil? && !host.name.empty?
+                raise("wrong value: templates can't be empty") if host.templates().empty?
+                
+                
+                 r = @client.post({
+                    "action": "deltemplate",
+                    "object": "host",
+                    "values": sprintf("%s;%s", host.name, host.templates_to_s()),
+                }.to_json)
+            end
+            
+            def add_groups(host)
+                raise("wrong type: Centreon:Host required") unless host.is_a?(Centreon::Host)
+                raise("wrong value: host must be valid") unless !host.name().nil? && !host.name.empty?
+                raise("wrong value: groups can't be empty") if host.groups().empty?
+                
+                
+                 r = @client.post({
+                    "action": "addhostgroup",
+                    "object": "host",
+                    "values": sprintf("%s;%s", host.name, host.groups_to_s()),
+                }.to_json)
+            end
+            
+            def delete_groups(host)
+                raise("wrong type: Centreon:Host required") unless host.is_a?(Centreon::Host)
+                raise("wrong value: host must be valid") unless !host.name().nil? && !host.name.empty?
+                raise("wrong value: groups can't be empty") if host.groups().empty?
+                
+                
+                 r = @client.post({
+                    "action": "delhostgroup",
+                    "object": "host",
+                    "values": sprintf("%s;%s", host.name, host.groups_to_s()),
                 }.to_json)
             end
             

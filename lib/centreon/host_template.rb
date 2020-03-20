@@ -1,33 +1,22 @@
 require_relative './logger.rb'
+require_relative './host_model.rb'
+require_relative './host_group.rb'
+require_relative './macro.rb'
 
 module Centreon
-    class HostTemplate
+    class HostTemplate < HostModel
         include Logging
         def initialize()
-            @id = nil
-            @name = nil
+            super()
         end
         
-        def id
-           @id 
+        def add_service(service)
+            raise("wrong type: Centreon::ServiceTemplate required") unless service.is_a?(::Centreon::ServiceTemplate)
+            raise("wrong value: service must be valid") unless !service.name().nil? && !service.name().empty?
+            @services << service
+            logger.debug("Add service: " + service.to_s)
         end
         
-        def name
-            @name
-        end
-        
-        def set_id(id)
-           raise("wrong type: integer required") unless id.is_a?(Integer)
-           @id = id
-           logger.debug("ID: " + id.to_s)
-        end
-        
-        def set_name(name)
-            raise("wrong type: string required") unless name.is_a?(String)
-            raise("wrong value: name can't be empty") if name.empty?
-            @name = name
-            logger.debug("Name: " + name)
-        end
         
         def is_valid()
             !@name.nil? && !@name.empty?

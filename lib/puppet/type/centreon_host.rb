@@ -57,7 +57,6 @@ Puppet::Type.newtype(:centreon_host) do
   newproperty(:templates, :array_matching => :all) do
     desc 'The templates of the host.'
     
-    defaultto []
     
     def insync?(is)
       is.to_set == should.to_set
@@ -71,8 +70,6 @@ Puppet::Type.newtype(:centreon_host) do
   newproperty(:groups, :array_matching => :all) do
     desc 'The groups of the host.'
     
-    defaultto []
-    
     def insync?(is)
       is.to_set == should.to_set
     end
@@ -80,6 +77,7 @@ Puppet::Type.newtype(:centreon_host) do
     validate do |value|
       fail 'groups should be a String' unless value.is_a?(String)
     end
+    
   end
   
   newproperty(:macros, :array_matching => :all) do

@@ -588,6 +588,86 @@ RSpec.describe 'Test Centreon::Client::Host' do
             
             @client.host.delete("test")
         end
+        
+        it "Test add_templates" do
+            stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
+            with(body: '{"action":"addtemplate","object":"host","values":"test;HT1|HT2"}').
+            to_return(status: 200, body:'
+                {
+                }
+            ')
+            
+            host = Centreon::Host.new()
+            host.set_name("test")
+            host_template1 = Centreon::HostTemplate.new()
+            host_template1.set_name("HT1")
+            host.add_template(host_template1)
+            host_template2 = Centreon::HostTemplate.new()
+            host_template2.set_name("HT2")
+            host.add_template(host_template2)
+            
+            @client.host.add_templates(host)
+        end
+        
+        it "Test delete_templates" do
+            stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
+            with(body: '{"action":"deltemplate","object":"host","values":"test;HT1|HT2"}').
+            to_return(status: 200, body:'
+                {
+                }
+            ')
+            
+            host = Centreon::Host.new()
+            host.set_name("test")
+            host_template1 = Centreon::HostTemplate.new()
+            host_template1.set_name("HT1")
+            host.add_template(host_template1)
+            host_template2 = Centreon::HostTemplate.new()
+            host_template2.set_name("HT2")
+            host.add_template(host_template2)
+            
+            @client.host.delete_templates(host)
+        end
+        
+        it "Test add_groups" do
+            stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
+            with(body: '{"action":"addhostgroup","object":"host","values":"test;HG1|HG2"}').
+            to_return(status: 200, body:'
+                {
+                }
+            ')
+            
+            host = Centreon::Host.new()
+            host.set_name("test")
+            host_group1 = Centreon::HostGroup.new()
+            host_group1.set_name("HG1")
+            host.add_group(host_group1)
+            host_group2 = Centreon::HostGroup.new()
+            host_group2.set_name("HG2")
+            host.add_group(host_group2)
+            
+            @client.host.add_groups(host)
+        end
+        
+        it "Test delete_groups" do
+            stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
+            with(body: '{"action":"delhostgroup","object":"host","values":"test;HG1|HG2"}').
+            to_return(status: 200, body:'
+                {
+                }
+            ')
+            
+            host = Centreon::Host.new()
+            host.set_name("test")
+            host_group1 = Centreon::HostGroup.new()
+            host_group1.set_name("HG1")
+            host.add_group(host_group1)
+            host_group2 = Centreon::HostGroup.new()
+            host_group2.set_name("HG2")
+            host.add_group(host_group2)
+            
+            @client.host.delete_groups(host)
+        end
 
     end
 end

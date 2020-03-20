@@ -13,30 +13,31 @@ Puppet::Type.type(:centreon_service).provide(:centreon_service, :parent => ::Hm:
   end
 
   def self.prefetch(resources)
-    resources.keys.each do |name|
+    resources.keys.each do |resource_name|
       filters = []
-      client().service.fetch(service_name = resources[name][:service_name], lazzy = true).each do |service|
+      client().service.fetch(resources[resource_name][:service_name], true).each do |service|
         
         # Don't update unmanaged properties
-        service.set_template(resources[name][:template]) unless resources[name][:template].nil?
-        service.set_note_url(resources[name][:note_url]) unless resources[name][:note_url].nil?
-        service.set_action_url(resources[name][:action_url]) unless resources[name][:action_url].nil?
-        service.set_comment(resources[name][:comment]) unless resources[name][:comment].nil?
+        service.set_template(resources[resource_name][:template]) unless resources[resource_name][:template].nil?
+        service.set_note_url(resources[resource_name][:note_url]) unless resources[resource_name][:note_url].nil?
+        service.set_action_url(resources[resource_name][:action_url]) unless resources[resource_name][:action_url].nil?
+        service.set_comment(resources[resource_name][:comment]) unless resources[resource_name][:comment].nil?
         
         # Load service group
-        resources[name][:groups].each do |service_group_name|
+        resources[resource_name][:groups].each do |service_group_name|
           client().service.fetch_service_group(service_group_name = service_group_name, services = [service])
         end
         
         hash = service_to_hash(service)
+        hash[:name] = resources[resource_name][:name]
         
         filters << new(hash) unless hash.empty?
       end
       
       
-      if provider = filters.find { |c| (c.host == resources[name][:host]) && (c.service_name == resources[name][:service_name]) }
-        resources[name].provider = provider
-        Puppet.info("Found service #{resources[name][:host]} #{resources[name][:service_name]}")
+      if provider = filters.find { |c| (c.host == resources[resource_name][:host]) && (c.service_name == resources[resource_name][:service_name]) }
+        resources[resource_name].provider = provider
+        Puppet.info("Found service #{resources[resource_name][:host]} #{resources[resource_name][:service_name]}")
       end
     end
   end
@@ -67,7 +68,6 @@ Puppet::Type.type(:centreon_service).provide(:centreon_service, :parent => ::Hm:
   def self.service_to_hash(service)
     return {} if service.nil?
     {
-      name: sprintf("%s|%s", service.host().name(), service.name()),
       host: service.host().name(),
       service_name: service.name(),
       command: service.command(),
