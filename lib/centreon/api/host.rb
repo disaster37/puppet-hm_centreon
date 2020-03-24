@@ -271,6 +271,25 @@ module Centreon
                 }.to_json)
             end
             
+            def add_macros(host)
+                raise("wrong type: Centreon:Host required") unless host.is_a?(Centreon::Host)
+                raise("wrong value: host must be valid") unless !host.name().nil? && !host.name.empty?
+                raise("wrong value: macros can't be empty") if host.macros().empty?
+                
+                host.macros().each do |macro|
+                   set_macro(host.name(), macro) 
+                end
+            end
+            def delete_macros(host)
+                raise("wrong type: Centreon:Host required") unless host.is_a?(Centreon::Host)
+                raise("wrong value: host must be valid") unless !host.name().nil? && !host.name.empty?
+                raise("wrong value: macros can't be empty") if host.macros().empty?
+                
+                host.macros().each do |macro|
+                   delete_macro(host.name(), macro.name()) 
+                end
+            end
+            
             
             private
             def get_param(name, property)

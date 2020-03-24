@@ -668,6 +668,46 @@ RSpec.describe 'Test Centreon::Client::Host' do
             
             @client.host.delete_groups(host)
         end
+        
+        it "Test add_macros" do
+            stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
+            with(body: '{"action":"setmacro","object":"host","values":"test;MACRO1;value;0;my macro"}').
+            to_return(status: 200, body:'
+                {
+                }
+            ')
+            
+            host = Centreon::Host.new()
+            host.set_name("test")
+            macro = Centreon::Macro.new()
+            macro.set_name("MACRO1")
+            macro.set_value("value")
+            macro.set_description("my macro")
+            macro.set_is_password(false)
+            host.add_macro(macro)
+            
+            @client.host.add_macros(host)
+        end
+        
+        it "Test delete_macros" do
+            stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
+            with(body: '{"action":"delmacro","object":"host","values":"test;MACRO1"}').
+            to_return(status: 200, body:'
+                {
+                }
+            ')
+            
+            host = Centreon::Host.new()
+            host.set_name("test")
+            macro = Centreon::Macro.new()
+            macro.set_name("MACRO1")
+            macro.set_value("value")
+            macro.set_description("my macro")
+            macro.set_is_password(false)
+            host.add_macro(macro)
+            
+            @client.host.delete_macros(host)
+        end
 
     end
 end

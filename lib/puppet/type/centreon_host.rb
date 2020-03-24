@@ -83,8 +83,6 @@ Puppet::Type.newtype(:centreon_host) do
   newproperty(:macros, :array_matching => :all) do
     desc 'The macros of the host.'
     
-    defaultto []
-    
     def insync?(is)
       for_comparison = Marshal.load(Marshal.dump(should))
       parser = Hm::Centreon::MacroParser.new(for_comparison)
