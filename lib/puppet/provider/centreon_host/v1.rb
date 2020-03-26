@@ -78,12 +78,12 @@ Puppet::Type.type(:centreon_host).provide(:v1, :parent => ::Hm::Centreon::Client
       host_group = Centreon::HostGroup.new()
       host_group.set_name(name)
       host.add_group(host_group)
-    end
+    end unless resource[:groups].nil?
     resource[:templates].each do |name|
       host_template = Centreon::HostTemplate.new()
       host_template.set_name(name)
       host.add_template(host_template)
-    end
+    end unless resource[:templates].nil?
     resource[:macros].each do |hash|
       macro = Centreon::Macro.new()
       macro.set_name(hash["name"])
@@ -91,7 +91,7 @@ Puppet::Type.type(:centreon_host).provide(:v1, :parent => ::Hm::Centreon::Client
       macro.set_description(hash["description"]) unless hash["description"].nil?
       macro.set_is_password(hash["is_password"]) unless hash["is_password"].nil?
       host.add_macro(macro)
-    end
+    end unless resource[:macros].nil?
     client().host.add(host)
     
     @property_hash[:id] = host.id()
