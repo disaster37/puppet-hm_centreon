@@ -1,7 +1,8 @@
-require_relative '../../hm/centreon/macro_parser.rb'
+require_relative '../../puppet_x/centreon/macro_parser.rb'
 
 Puppet::Type.newtype(:centreon_host) do
   @doc = 'Type representing a host.'
+  
 
   ensurable
 

@@ -1,6 +1,6 @@
-require_relative '../../../hm/centreon/client.rb'
+require_relative '../../../puppet_x/centreon/client.rb'
 
-Puppet::Type.type(:centreon_host_group).provide(:v1, :parent => ::Hm::Centreon::Client) do
+Puppet::Type.type(:centreon_host_group).provide(:centreon_api, :parent => ::Hm::Centreon::Client) do
 
   confine feature: :centreon
 
