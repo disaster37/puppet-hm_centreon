@@ -112,14 +112,12 @@ module Centreon
         
         def set_address(address)
             raise("wrong type: string required") unless address.is_a?(String)
-            raise("wrong value: address can't be empty") if address.empty?
             @address = address
             logger.debug("Address: " + address)
         end
         
         def set_poller(poller)
             raise("wrong type: string required") unless poller.is_a?(String)
-            raise("wrong value: poller can't be empty") if poller.empty?
             @poller = poller
             logger.debug("Poller: " + poller)
         end

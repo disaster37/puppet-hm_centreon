@@ -1,6 +1,6 @@
 require_relative '../../../puppet_x/centreon/client.rb'
 
-Puppet::Type.type(:centreon_service).provide(:centreon_api, :parent => ::Hm::Centreon::Client) do
+Puppet::Type.type(:centreon_service).provide(:centreon_api, :parent => ::PuppetX::Centreon::Client) do
 
   confine feature: :centreon
 
@@ -72,7 +72,7 @@ Puppet::Type.type(:centreon_service).provide(:centreon_api, :parent => ::Hm::Cen
       service_name: service.name(),
       command: service.command(),
       command_args: service.command_args(),
-      enable: service.is_activated().to_s,
+      enable: service.is_activated(),
       normal_check_interval: service.normal_check_interval(),
       retry_check_interval: service.retry_check_interval(),
       max_check_attempts: service.max_check_attempts(),
@@ -101,12 +101,7 @@ Puppet::Type.type(:centreon_service).provide(:centreon_api, :parent => ::Hm::Cen
     service = ::Centreon::Service.new()
     service.set_host(host)
     service.set_name(resource[:service_name])
-    case resource[:enable]
-    when :true
-      service.set_is_activated(true)
-    else
-      service.set_is_activated(false)
-    end
+    service.set_is_activated(resource[:enable])
     service.set_command(resource[:command]) unless resource[:command].nil?
     service.set_template(resource[:template]) unless resource[:template].nil?
     service.set_normal_check_interval(resource[:normal_check_interval]) unless resource[:normal_check_interval].nil?
@@ -161,14 +156,7 @@ Puppet::Type.type(:centreon_service).provide(:centreon_api, :parent => ::Hm::Cen
       service = ::Centreon::Service.new()
       service.set_host(host)
       service.set_name(@property_hash[:service_name])
-      if !@property_flush[:enable].nil?
-        case resource[:enable]
-        when :true
-          service.set_is_activated(true)
-        else
-          service.set_is_activated(false)
-        end
-      end
+      service.set_is_activated(@property_flush[:enable]) unless @property_flush[:enable].nil?
       service.set_command(@property_flush[:command]) unless @property_flush[:command].nil?
       service.set_template(@property_flush[:template]) unless @property_flush[:template].nil?
       service.set_normal_check_interval(@property_flush[:normal_check_interval]) unless @property_flush[:normal_check_interval].nil?

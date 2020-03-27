@@ -1,7 +1,7 @@
 require_relative '../../centreon/api.rb'
 require_relative '../../centreon/logger.rb'
 
-module Hm
+module PuppetX
   module Centreon
     # We purposefully inherit from Exception here due to PUP-3656
     # If we throw something based on StandardError prior to Puppet 4

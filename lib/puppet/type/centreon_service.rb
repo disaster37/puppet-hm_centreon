@@ -1,3 +1,4 @@
+require 'puppet/property/boolean'
 require_relative '../../puppet_x/centreon/macro_parser.rb'
 
 Puppet::Type.newtype(:centreon_service) do
@@ -48,14 +49,11 @@ Puppet::Type.newtype(:centreon_service) do
     end
   end
   
-  newproperty(:enable) do
+  newproperty(:enable, :parent => Puppet::Property::Boolean) do
     desc 'The state of host'
     
-    defaultto :true
-    newvalues(:true, :'false')
-    def insync?(is)
-      is.to_s == should.to_s
-    end
+    defaultto(:true)
+    newvalues(:true, :false)
   end
   
   newproperty(:template) do
@@ -89,19 +87,15 @@ Puppet::Type.newtype(:centreon_service) do
   newproperty(:active_check) do
     desc 'The active check of the service.'
     
-    defaultto "default"
-    validate do |value|
-      fail 'active_check should be a true, false or default' unless ["true", "false", "default"].include? value
-    end
+    defaultto("default")
+    newvalues("true", "false", "default")
   end
   
   newproperty(:passive_check) do
     desc 'The passive check of the service.'
     
-    defaultto "default"
-    validate do |value|
-      fail 'passive_check should be a true, false or default' unless ["true", "false", "default"].include? value
-    end
+    defaultto("default")
+    newvalues("true", "false", "default")
   end
   
   newproperty(:note_url) do
@@ -128,7 +122,7 @@ Puppet::Type.newtype(:centreon_service) do
   newproperty(:groups, :array_matching => :all) do
     desc 'The groups of the service.'
     
-    defaultto []
+    defaultto([])
     
     def insync?(is)
       is.to_set == should.to_set
@@ -144,7 +138,7 @@ Puppet::Type.newtype(:centreon_service) do
     
     def insync?(is)
       for_comparison = Marshal.load(Marshal.dump(should))
-      parser = Hm::Centreon::MacroParser.new(for_comparison)
+      parser = PuppetX::Centreon::MacroParser.new(for_comparison)
       to_create = parser.macros_to_create(is)
       to_delete = parser.macros_to_delete(is)
       to_create.empty? && to_delete.empty?
@@ -184,7 +178,4 @@ Puppet::Type.newtype(:centreon_service) do
       ]
     ]
   end
-  
-  
-
 end

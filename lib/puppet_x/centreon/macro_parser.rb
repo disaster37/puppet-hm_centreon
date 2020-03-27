@@ -1,4 +1,4 @@
-module Hm
+module PuppetX
   module Centreon
     class MacroParser
         def initialize(macros)

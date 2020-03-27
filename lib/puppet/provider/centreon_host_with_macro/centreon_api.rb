@@ -1,6 +1,6 @@
 require_relative '../../../puppet_x/centreon/client.rb'
 
-Puppet::Type.type(:centreon_host_with_macro).provide(:centreon_api, :parent => ::Hm::Centreon::Client) do
+Puppet::Type.type(:centreon_host_with_macro).provide(:centreon_api, :parent => ::PuppetX::Centreon::Client) do
 
   confine feature: :centreon
 

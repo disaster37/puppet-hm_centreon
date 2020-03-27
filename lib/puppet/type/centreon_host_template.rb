@@ -1,52 +1,49 @@
 require 'puppet/property/boolean'
 require_relative '../../puppet_x/centreon/macro_parser.rb'
 
-Puppet::Type.newtype(:centreon_host) do
-  @doc = 'Type representing a host.'
+Puppet::Type.newtype(:centreon_host_template) do
+  @doc = 'Type representing a host template'
   
-
   ensurable
 
   newparam(:name, namevar: true) do
-    desc 'The name of the host.'
+    desc 'The name of the host template.'
     validate do |value|
-      fail 'host must have a name' if value == ''
+      fail 'host template must have a name' if value == ''
       fail 'name should be a String' unless value.is_a?(String)
     end
   end
   
   newproperty(:description) do
-    desc 'The description of the host.'
+    desc 'The description of the host template.'
     validate do |value|
       fail 'description should be a String' unless value.is_a?(String)
     end
   end
   
   newproperty(:comment) do
-    desc 'The comment of the host.'
+    desc 'The comment of the host template.'
     validate do |value|
       fail 'comment should be a String' unless value.is_a?(String)
     end
   end
   
   newproperty(:address) do
-    desc 'The IP/DNS of the host.'
+    desc 'The IP/DNS of the host template.'
     validate do |value|
-      fail 'host must have an address' if value == ''
       fail 'address should be a String' unless value.is_a?(String)
     end
   end
   
   newproperty(:poller) do
-    desc 'The poller of the host.'
+    desc 'The poller of the host template.'
     validate do |value|
-      fail 'host must have an poller' if value == ''
       fail 'poller should be a String' unless value.is_a?(String)
     end
   end
   
   newproperty(:enable, :parent => Puppet::Property::Boolean) do
-    desc 'The state of host'
+    desc 'The state of host template'
     
     
     defaultto(:true)
@@ -54,7 +51,7 @@ Puppet::Type.newtype(:centreon_host) do
   end
   
   newproperty(:templates, :array_matching => :all) do
-    desc 'The templates of the host.'
+    desc 'The templates of the host template.'
     
     
     def insync?(is)
@@ -67,7 +64,7 @@ Puppet::Type.newtype(:centreon_host) do
   end
   
   newproperty(:groups, :array_matching => :all) do
-    desc 'The groups of the host.'
+    desc 'The groups of the host template.'
     
     def insync?(is)
       is.to_set == should.to_set
@@ -80,7 +77,7 @@ Puppet::Type.newtype(:centreon_host) do
   end
   
   newproperty(:macros, :array_matching => :all) do
-    desc 'The macros of the host.'
+    desc 'The macros of the host template.'
     
     def insync?(is)
       for_comparison = Marshal.load(Marshal.dump(should))
