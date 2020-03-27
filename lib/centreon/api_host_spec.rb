@@ -23,7 +23,7 @@ RSpec.describe 'Test Centreon::Client::Host' do
     context "Test all" do
         it "Test constructor" do
             expect(@client).to_not eq nil
-            expect(@client.host).to_not eq nil
+            expect(@client.host_template).to_not eq nil
         end
         
         it "Test fetch when host" do

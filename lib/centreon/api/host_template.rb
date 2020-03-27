@@ -55,11 +55,6 @@ module Centreon
                     host_template.add_template(ht)
                 end
                 
-                # Load host groups
-                get_groups(host_template.name()).each do |host_group|
-                    host_template.add_group(host_group)
-                end
-                
                 # Load macros
                 get_macros(host_template.name()).each do |macro|
                    host_template.add_macro(macro)
@@ -84,7 +79,7 @@ module Centreon
             def get(name, lazzy = true)
                 
                 # Search if host exist
-                host_templates = fetch(name = name, lazzy = lazzy)
+                host_templates = fetch(name, lazzy)
                 
                 if host_templates.length() > 0
                    return host_templates[0] 
@@ -100,7 +95,7 @@ module Centreon
                 @client.post({
                     "action": "add",
                     "object": "htpl",
-                    "values": sprintf("%s;%s;%s;%s;%s;%s", host_template.name(), host_template.description(), host_template.address(), host_template.templates_to_s(), host_template.poller(), host_template.groups_to_s())
+                    "values": sprintf("%s;%s;%s;%s;%s;", host_template.name(), host_template.description(), host_template.address(), host_template.templates_to_s(), host_template.poller())
                 }.to_json)
                 
                 # Set extra parameters
@@ -134,21 +129,6 @@ module Centreon
                 if activated
                     enable(host_template.name()) if host_template.is_activated()
                     disable(host_template.name()) unless host_template.is_activated()
-                end
-                
-                
-                if groups
-                    # Set groups if needed or remove all groups
-                    if host_template.groups().empty?
-                        host_template_tmp = Centreon::HostTemplate.new()
-                        host_template_tmp.set_name(host_template.name())
-                        get_groups(host_template.name()).each do |host_group|
-                           host_template_tmp.add_group(host_group) 
-                        end
-                        delete_groups(host_template_tmp)
-                    else
-                        set_groups(host_template.name(), host_template.groups_to_s())
-                    end
                 end
                 
                 if templates
@@ -236,33 +216,6 @@ module Centreon
                 }.to_json)
             end
             
-            # Add host group in host template on Centreon
-            def add_groups(host_template)
-                raise("wrong type: Centreon:HostTemplate required") unless host_template.is_a?(Centreon::HostTemplate)
-                raise("wrong value: host template must be valid") unless !host_template.name().nil? && !host_template.name().empty?
-                raise("wrong value: groups can't be empty") if host_template.groups().empty?
-                
-                
-                 r = @client.post({
-                    "action": "addhostgroup",
-                    "object": "htpl",
-                    "values": sprintf("%s;%s", host_template.name, host_template.groups_to_s()),
-                }.to_json)
-            end
-            
-            # Delete host group in host template on Centreon
-            def delete_groups(host_template)
-                raise("wrong type: Centreon:HostTemplate required") unless host_template.is_a?(Centreon::HostTemplate)
-                raise("wrong value: host template must be valid") unless !host_template.name().nil? && !host_template.name().empty?
-                raise("wrong value: groups can't be empty") if host_template.groups().empty?
-                
-                
-                 r = @client.post({
-                    "action": "delhostgroup",
-                    "object": "htpl",
-                    "values": sprintf("%s;%s", host_template.name(), host_template.groups_to_s()),
-                }.to_json)
-            end
             
             # Add macro in host template on Centreon
             def add_macros(host_template)
@@ -341,27 +294,6 @@ module Centreon
                 end
                 
                 return templates
-            end
-        
-            # Get all host group on given host name
-            def get_groups(name)
-                raise("wrong type: String required") unless name.is_a?(String)
-                raise("wrong value: name must be valid") unless !name.nil? && !name.empty?
-                r = @client.post({
-                    "action": "gethostgroup",
-                    "object": "htpl",
-                    "values": name
-                }.to_json)
-    
-                groups = []
-                JSON.parse(r)["result"].each do |data|
-                    host_group = ::Centreon::HostGroup.new()
-                    host_group.set_id(data["id"].to_i)
-                    host_group.set_name(data["name"])
-                    groups << host_group
-                end
-                
-                return groups
             end
         
             # Get all macro on given host name
@@ -460,20 +392,6 @@ module Centreon
                     "action": "settemplate",
                     "object": "htpl",
                     "values": sprintf("%s;%s", name, templates)
-                }.to_json)
-            end
-            
-            # Set host groups for host template
-            def set_groups(name, groups)
-                raise("wrong type: String required") unless name.is_a?(String)
-                raise("wrong value: name must be valid") unless !name.nil? && !name.empty?
-                raise("wrong type: String required") unless groups.is_a?(String)
-                raise("wrong value: groups must be valid") unless !groups.nil? && !groups.empty?
-                
-                r = @client.post({
-                    "action": "sethostgroup",
-                    "object": "htpl",
-                    "values": sprintf("%s;%s", name, groups)
                 }.to_json)
             end
             
