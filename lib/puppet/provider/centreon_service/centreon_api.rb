@@ -104,14 +104,20 @@ Puppet::Type.type(:centreon_service).provide(:centreon_api, :parent => ::PuppetX
     service.set_is_activated(resource[:enable])
     service.set_command(resource[:command]) unless resource[:command].nil?
     service.set_template(resource[:template]) unless resource[:template].nil?
+    
+    
     service.set_normal_check_interval(resource[:normal_check_interval]) unless resource[:normal_check_interval].nil?
     service.set_retry_check_interval(resource[:retry_check_interval]) unless resource[:retry_check_interval].nil?
     service.set_max_check_attempts(resource[:max_check_attempts]) unless resource[:max_check_attempts].nil?
+    
     service.set_active_check_enabled(resource[:active_check]) unless resource[:active_check].nil?
+    puts "plop"
     service.set_passive_check_enabled(resource[:passive_check]) unless resource[:passive_check].nil?
     service.set_note_url(resource[:note_url]) unless resource[:note_url].nil?
     service.set_action_url(resource[:action_url]) unless resource[:action_url].nil?
     service.set_comment(resource[:comment]) unless resource[:comment].nil?
+    
+    
 
     resource[:groups].each do |name|
       service_group = Centreon::ServiceGroup.new()

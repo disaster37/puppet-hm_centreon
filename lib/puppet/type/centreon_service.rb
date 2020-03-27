@@ -88,14 +88,21 @@ Puppet::Type.newtype(:centreon_service) do
     desc 'The active check of the service.'
     
     defaultto("default")
-    newvalues("true", "false", "default")
+    
+    validate do |value|
+      fail 'active_check should be a true, false or default' unless ["true", "false", "default"].include? value
+    end
+
   end
   
   newproperty(:passive_check) do
     desc 'The passive check of the service.'
     
     defaultto("default")
-    newvalues("true", "false", "default")
+    validate do |value|
+      fail 'active_check should be a true, false or default' unless ["true", "false", "default"].include? value
+    end
+    
   end
   
   newproperty(:note_url) do

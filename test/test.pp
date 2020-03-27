@@ -16,3 +16,8 @@ centreon_host{ "test-seb3":
 centreon_host_template{'HT_TEST_SEB':
     ensure      => 'present',
 }
+
+centreon_service{'SR072605CTI3700.hm.dm.ad|App-TEST-API-MAQ-URL-Health-11001':
+    enable   => true,
+    template => 'TS_App-Protocol-HTTP-MultiCheck-Health'
+}
