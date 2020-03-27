@@ -2,12 +2,21 @@ require_relative './logger.rb'
 require_relative './host_model.rb'
 require_relative './host_group.rb'
 require_relative './macro.rb'
+require_relative './service_template.rb'
 
 module Centreon
     class HostTemplate < HostModel
         include Logging
         def initialize()
             super()
+        end
+        
+        def groups
+            raise("Service group is not available in service template")
+        end
+        
+        def add_group(group)
+            raise("Service group is not available in service template")
         end
         
         def add_service(service)

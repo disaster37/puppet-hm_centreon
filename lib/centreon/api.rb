@@ -6,6 +6,7 @@ require_relative './api/host.rb'
 require_relative './api/host_group.rb'
 require_relative './api/service.rb'
 require_relative './api/host_template.rb'
+require_relative './api/service_template.rb'
 
 module Centreon
     class Client
@@ -68,6 +69,7 @@ module Centreon
             @host_group = Centreon::APIClient::HostGroup.new(@client)
             @service = Centreon::APIClient::Service.new(@client)
             @host_template = Centreon::APIClient::HostTemplate.new(@client)
+            @service_template = Centreon::APIClient::ServiceTemplate.new(@client)
         end
         
         def host()
@@ -84,6 +86,9 @@ module Centreon
         
         def host_template()
            return @host_template 
+        end
+        def service_template()
+           return @service_template 
         end
        
     end

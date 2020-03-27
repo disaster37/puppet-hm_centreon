@@ -100,18 +100,6 @@ RSpec.describe 'Test Centreon::Client::HostTemplate' do
                 }
             ')
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"gethostgroup","object":"htpl","values":"test"}').
-            to_return(status: 200, body:'
-                {
-                    "result": [
-                        {
-                            "id": "1",
-                            "name": "HG_TEST"
-                        }
-                    ]
-                }
-            ')
-            stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
             with(body: '{"action":"showinstance","object":"htpl","values":"test"}').
             to_return(status: 200, body:'
                 {
@@ -168,11 +156,6 @@ RSpec.describe 'Test Centreon::Client::HostTemplate' do
                 :name           => "HT_TEST"
             )
             
-            expect(host_templates[0].groups().length).to eq 1
-            expect(host_templates[0].groups()[0]).to have_attributes(
-                :id             => 1, 
-                :name           => "HG_TEST"
-            )
             
             expect(host_templates[0].macros().length).to eq 1
             expect(host_templates[0].macros()[0]).to have_attributes(
@@ -209,18 +192,6 @@ RSpec.describe 'Test Centreon::Client::HostTemplate' do
                         {
                             "id": "1",
                             "name": "HT_TEST"
-                        }
-                    ]
-                }
-            ')
-            stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"gethostgroup","object":"htpl","values":"test"}').
-            to_return(status: 200, body:'
-                {
-                    "result": [
-                        {
-                            "id": "1",
-                            "name": "HG_TEST"
                         }
                     ]
                 }
@@ -281,11 +252,6 @@ RSpec.describe 'Test Centreon::Client::HostTemplate' do
                 :name           => "HT_TEST"
             )
             
-            expect(host_template.groups().length).to eq 1
-            expect(host_template.groups()[0]).to have_attributes(
-                :id             => 1, 
-                :name           => "HG_TEST"
-            )
             
             expect(host_template.macros().length).to eq 1
             expect(host_template.macros()[0]).to have_attributes(
@@ -323,18 +289,6 @@ RSpec.describe 'Test Centreon::Client::HostTemplate' do
                         {
                             "id": "1",
                             "name": "HT_TEST"
-                        }
-                    ]
-                }
-            ')
-            stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"gethostgroup","object":"htpl","values":"test"}').
-            to_return(status: 200, body:'
-                {
-                    "result": [
-                        {
-                            "id": "1",
-                            "name": "HG_TEST"
                         }
                     ]
                 }
@@ -397,12 +351,6 @@ RSpec.describe 'Test Centreon::Client::HostTemplate' do
                 :name           => "HT_TEST"
             )
             
-            expect(host_template.groups().length).to eq 1
-            expect(host_template.groups()[0]).to have_attributes(
-                :id             => 1, 
-                :name           => "HG_TEST"
-            )
-            
             expect(host_template.macros().length).to eq 1
             expect(host_template.macros()[0]).to have_attributes(
                 :name           => "warning",
@@ -415,7 +363,7 @@ RSpec.describe 'Test Centreon::Client::HostTemplate' do
         it "Test add host template" do
             
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"add","object":"htpl","values":"test;my description;127.0.0.1;HT1|HT2;poller1;HG1|HG2"}').
+            with(body: '{"action":"add","object":"htpl","values":"test;my description;127.0.0.1;HT1|HT2;poller1;"}').
             to_return(status: 200, body:'
                 {
                 }
@@ -460,12 +408,6 @@ RSpec.describe 'Test Centreon::Client::HostTemplate' do
             host_template.set_comment("foo")
             host_template.set_address("127.0.0.1")
             host_template.set_poller("poller1")
-            hg1 = Centreon::HostGroup.new()
-            hg1.set_name("HG1")
-            host_template.add_group(hg1)
-            hg2 = Centreon::HostGroup.new()
-            hg2.set_name("HG2")
-            host_template.add_group(hg2)
             ht1 = Centreon::HostTemplate.new()
             ht1.set_name("HT1")
             host_template.add_template(ht1)
@@ -520,12 +462,6 @@ RSpec.describe 'Test Centreon::Client::HostTemplate' do
                 }
             ')
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"sethostgroup","object":"htpl","values":"test;HG1"}').
-            to_return(status: 200, body:'
-                {
-                }
-            ')
-            stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
             with(body: '{"action":"applytpl","object":"htpl","values":"test"}').
             to_return(status: 200, body:'
                 {
@@ -563,9 +499,6 @@ RSpec.describe 'Test Centreon::Client::HostTemplate' do
             host_template.set_poller("poller1")
             host_template.set_description("my description")
             host_template.set_comment("foo")
-            host_group = Centreon::HostGroup.new()
-            host_group.set_name("HG1")
-            host_template.add_group(host_group)
             ht = Centreon::HostTemplate.new()
             ht.set_name("HT1")
             host_template.add_template(ht)
@@ -627,46 +560,6 @@ RSpec.describe 'Test Centreon::Client::HostTemplate' do
             host_template.add_template(host_template2)
             
             @client.host_template.delete_templates(host_template)
-        end
-        
-        it "Test add_groups" do
-            stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"addhostgroup","object":"htpl","values":"test;HG1|HG2"}').
-            to_return(status: 200, body:'
-                {
-                }
-            ')
-            
-            host_template = Centreon::HostTemplate.new()
-            host_template.set_name("test")
-            host_group1 = Centreon::HostGroup.new()
-            host_group1.set_name("HG1")
-            host_template.add_group(host_group1)
-            host_group2 = Centreon::HostGroup.new()
-            host_group2.set_name("HG2")
-            host_template.add_group(host_group2)
-            
-            @client.host_template.add_groups(host_template)
-        end
-        
-        it "Test delete_groups" do
-            stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"delhostgroup","object":"htpl","values":"test;HG1|HG2"}').
-            to_return(status: 200, body:'
-                {
-                }
-            ')
-            
-            host_template = Centreon::HostTemplate.new()
-            host_template.set_name("test")
-            host_group1 = Centreon::HostGroup.new()
-            host_group1.set_name("HG1")
-            host_template.add_group(host_group1)
-            host_group2 = Centreon::HostGroup.new()
-            host_group2.set_name("HG2")
-            host_template.add_group(host_group2)
-            
-            @client.host_template.delete_groups(host_template)
         end
         
         it "Test add_macros" do
