@@ -11,6 +11,11 @@ module Centreon
         include Logging
         def initialize()
             super()
+            @host = nil
+        end
+        
+        def host
+           @host 
         end
         
         def set_host(host)

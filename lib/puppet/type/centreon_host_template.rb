@@ -63,18 +63,6 @@ Puppet::Type.newtype(:centreon_host_template) do
     end
   end
   
-  newproperty(:groups, :array_matching => :all) do
-    desc 'The groups of the host template.'
-    
-    def insync?(is)
-      is.to_set == should.to_set
-    end
-    
-    validate do |value|
-      fail 'groups should be a String' unless value.is_a?(String)
-    end
-    
-  end
   
   newproperty(:macros, :array_matching => :all) do
     desc 'The macros of the host template.'
@@ -99,10 +87,6 @@ Puppet::Type.newtype(:centreon_host_template) do
 
 
   newproperty(:id)
-  
-  autorequire(:centreon_host_group) do
-    self[:groups]
-  end
   
   autorequire(:centreon_host_template) do
     self[:templates]

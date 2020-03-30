@@ -104,14 +104,10 @@ Puppet::Type.type(:centreon_service).provide(:centreon_api, :parent => ::PuppetX
     service.set_is_activated(resource[:enable])
     service.set_command(resource[:command]) unless resource[:command].nil?
     service.set_template(resource[:template]) unless resource[:template].nil?
-    
-    
     service.set_normal_check_interval(resource[:normal_check_interval]) unless resource[:normal_check_interval].nil?
     service.set_retry_check_interval(resource[:retry_check_interval]) unless resource[:retry_check_interval].nil?
     service.set_max_check_attempts(resource[:max_check_attempts]) unless resource[:max_check_attempts].nil?
-    
     service.set_active_check_enabled(resource[:active_check]) unless resource[:active_check].nil?
-    puts "plop"
     service.set_passive_check_enabled(resource[:passive_check]) unless resource[:passive_check].nil?
     service.set_note_url(resource[:note_url]) unless resource[:note_url].nil?
     service.set_action_url(resource[:action_url]) unless resource[:action_url].nil?
@@ -147,7 +143,7 @@ Puppet::Type.type(:centreon_service).provide(:centreon_api, :parent => ::PuppetX
   end
 
   def destroy
-    Puppet.info("Deleting service #{host} #{name}")
+    Puppet.info("Deleting service #{name}")
     client().service.delete(@property_hash[:host], @property_hash[:service_name])
     @property_hash[:ensure] = :absent
   end
@@ -155,7 +151,7 @@ Puppet::Type.type(:centreon_service).provide(:centreon_api, :parent => ::PuppetX
   def flush
     
     if @property_hash[:ensure] != :absent && !@property_flush.empty?
-      Puppet.info("Updating service #{host} #{name}")
+      Puppet.info("Updating service #{name}")
       
       host = ::Centreon::Host.new()
       host.set_name(@property_hash[:host])

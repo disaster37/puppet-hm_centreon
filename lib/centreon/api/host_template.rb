@@ -118,7 +118,7 @@ module Centreon
             end
             
             # Update host template on centreon
-            def update(host_template, groups = true, templates = true, macros = true, activated = true)
+            def update(host_template, templates = true, macros = true, activated = true)
                 raise("wrong type: Centreon::HostTemplate required") unless host_template.is_a?(::Centreon::HostTemplate)
                 raise("wrong value: host template must be valid") unless host_template.is_valid()
                 

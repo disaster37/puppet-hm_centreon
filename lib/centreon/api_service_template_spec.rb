@@ -33,8 +33,6 @@ RSpec.describe 'Test Centreon::Client::ServiceTemplate' do
                 {
                     "result": [
                         {
-                            "host id": "1",
-                            "host name": "test",
                             "id": "2",
                             "description": "service1",
                             "check command": "ls",
@@ -43,8 +41,7 @@ RSpec.describe 'Test Centreon::Client::ServiceTemplate' do
                             "retry check interval": "1",
                             "max check attempts": "3",
                             "active checks enabled": "2",
-                            "passive checks enabled": "2",
-                            "activate": "1"
+                            "passive checks enabled": "2"
                         }
                     ]
                 }
@@ -62,12 +59,8 @@ RSpec.describe 'Test Centreon::Client::ServiceTemplate' do
                 :retry_check_interval   => 1,
                 :max_check_attempts     => 3,
                 :active_check_enabled   => "default",
-                :passive_check_enabled  => "default",
-                :is_activated           => true,
+                :passive_check_enabled  => "default"
             )
-            expect(service_templates[0].host()).to_not eq nil
-            expect(service_templates[0].host().id()).to eq 1
-            expect(service_templates[0].host().name()).to eq "test"
         end
         
         it "Test fetch when no service template" do
@@ -93,8 +86,6 @@ RSpec.describe 'Test Centreon::Client::ServiceTemplate' do
                 {
                     "result": [
                         {
-                            "host id": "1",
-                            "host name": "test",
                             "id": "2",
                             "description": "service1",
                             "check command": "ls",
@@ -103,18 +94,18 @@ RSpec.describe 'Test Centreon::Client::ServiceTemplate' do
                             "retry check interval": "1",
                             "max check attempts": "3",
                             "active checks enabled": "2",
-                            "passive checks enabled": "2",
-                            "activate": "1"
+                            "passive checks enabled": "2"
                         }
                     ]
                 }
             ')
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"getparam","object":"stpl","values":"test;service1;template|notes_url|action_url|comment"}').
+            with(body: '{"action":"getparam","object":"stpl","values":"service1;alias|template|notes_url|action_url|comment"}').
             to_return(status: 200, body:'
                 {
                     "result": [
                         {
+                            "alias": "my template",
                             "template": "template1",
                             "notes_url": "http://localhost",
                             "action_url": "http://127.0.0.1",
@@ -124,7 +115,7 @@ RSpec.describe 'Test Centreon::Client::ServiceTemplate' do
                 }
             ')
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"getmacro","object":"stpl","values":"test;service1"}').
+            with(body: '{"action":"getmacro","object":"stpl","values":"service1"}').
             to_return(status: 200, body:'
                 {
                     "result": [
@@ -153,16 +144,12 @@ RSpec.describe 'Test Centreon::Client::ServiceTemplate' do
                 :max_check_attempts     => 3,
                 :active_check_enabled   => "default",
                 :passive_check_enabled  => "default",
-                :is_activated           => true,
                 # Bug centreon
                 #:template               => "template1",
                 #:note_url               => "http://localhost",
                 #:action_url             => "http://127.0.0.1",
                 #:comment                => "this is a test"
             )
-            expect(service_templates[0].host()).to_not eq nil
-            expect(service_templates[0].host().id()).to eq 1
-            expect(service_templates[0].host().name()).to eq "test"
             
             expect(service_templates[0].macros().length).to eq 1
             expect(service_templates[0].macros()[0].name()).to eq "macro1"
@@ -180,8 +167,6 @@ RSpec.describe 'Test Centreon::Client::ServiceTemplate' do
                 {
                     "result": [
                         {
-                            "host id": "1",
-                            "host name": "test",
                             "id": "2",
                             "description": "service1",
                             "check command": "ls",
@@ -190,18 +175,18 @@ RSpec.describe 'Test Centreon::Client::ServiceTemplate' do
                             "retry check interval": "1",
                             "max check attempts": "3",
                             "active checks enabled": "2",
-                            "passive checks enabled": "2",
-                            "activate": "1"
+                            "passive checks enabled": "2"
                         }
                     ]
                 }
             ')
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"getparam","object":"stpl","values":"test;service1;template|notes_url|action_url|comment"}').
+            with(body: '{"action":"getparam","object":"stpl","values":"service1;alias|template|notes_url|action_url|comment"}').
             to_return(status: 200, body:'
                 {
                     "result": [
                         {
+                            "alias": "my template",
                             "template": "template1",
                             "notes_url": "http://localhost",
                             "action_url": "http://127.0.0.1",
@@ -211,7 +196,7 @@ RSpec.describe 'Test Centreon::Client::ServiceTemplate' do
                 }
             ')
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"getmacro","object":"stpl","values":"test;service1"}').
+            with(body: '{"action":"getmacro","object":"stpl","values":"service1"}').
             to_return(status: 200, body:'
                 {
                     "result": [
@@ -226,7 +211,7 @@ RSpec.describe 'Test Centreon::Client::ServiceTemplate' do
                 }
             ')
             
-            service_template = @client.service_template.get("test", "service1", false)
+            service_template = @client.service_template.get("service1", false)
             
             expect(service_template).to_not eq nil
             expect(service_template).to have_attributes(
@@ -239,16 +224,12 @@ RSpec.describe 'Test Centreon::Client::ServiceTemplate' do
                 :max_check_attempts     => 3,
                 :active_check_enabled   => "default",
                 :passive_check_enabled  => "default",
-                :is_activated           => true,
                 # Bug centreon
                 #:template               => "template1",
                 #:note_url               => "http://localhost",
                 #:action_url             => "http://127.0.0.1",
                 #:comment                => "this is a test"
             )
-            expect(service_template.host()).to_not eq nil
-            expect(service_template.host().id()).to eq 1
-            expect(service_template.host().name()).to eq "test"
             
             expect(service_template.macros().length).to eq 1
             expect(service_template.macros()[0].name()).to eq "macro1"
@@ -268,18 +249,19 @@ RSpec.describe 'Test Centreon::Client::ServiceTemplate' do
                 }
             ')
             
-            service = @client.service_template.get("test", "service1")
+            service = @client.service_template.get("service1")
             
             expect(service).to eq nil
         end
         
         it "Test load" do
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"getparam","object":"stpl","values":"test;service1;template|notes_url|action_url|comment"}').
+            with(body: '{"action":"getparam","object":"stpl","values":"service1;alias|template|notes_url|action_url|comment"}').
             to_return(status: 200, body:'
                 {
                     "result": [
                         {
+                            "alias": "my template",
                             "template": "template1",
                             "notes_url": "http://localhost",
                             "action_url": "http://127.0.0.1",
@@ -289,7 +271,7 @@ RSpec.describe 'Test Centreon::Client::ServiceTemplate' do
                 }
             ')
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"getmacro","object":"stpl","values":"test;service1"}').
+            with(body: '{"action":"getmacro","object":"stpl","values":"service1"}').
             to_return(status: 200, body:'
                 {
                     "result": [
@@ -305,11 +287,8 @@ RSpec.describe 'Test Centreon::Client::ServiceTemplate' do
             ')
             
             
-            host_template = Centreon::HostTemplate.new()
-            host_template.set_name("test")
             service_template = Centreon::ServiceTemplate.new()
             service_template.set_name("service1")
-            service_template.set_host(host_template)
             @client.service_template.load(service_template)
             
             
@@ -322,8 +301,6 @@ RSpec.describe 'Test Centreon::Client::ServiceTemplate' do
                 #:action_url             => "http://127.0.0.1",
                 #:comment                => "this is a test"
             )
-            expect(service_template.host()).to_not eq nil
-            expect(service_template.host().name()).to eq "test"
             
             expect(service_template.macros().length).to eq 1
             expect(service_template.macros()[0].name()).to eq "macro1"
@@ -341,8 +318,6 @@ RSpec.describe 'Test Centreon::Client::ServiceTemplate' do
                 {
                     "result": [
                         {
-                            "host id": "1",
-                            "host name": "test",
                             "id": "2",
                             "description": "service1",
                             "check command": "ls",
@@ -351,103 +326,94 @@ RSpec.describe 'Test Centreon::Client::ServiceTemplate' do
                             "retry check interval": "1",
                             "max check attempts": "3",
                             "active checks enabled": "2",
-                            "passive checks enabled": "2",
-                            "activate": "1"
+                            "passive checks enabled": "2"
                         }
                     ]
                 }
             ')
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"add","object":"stpl","values":"test;service1;template1"}').
+            with(body: '{"action":"add","object":"stpl","values":"service1;my template;template1"}').
             to_return(status: 200, body:'
                 {
                 }
             ')
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"setparam","object":"stpl","values":"test;service1;activate;1"}').
+            with(body: '{"action":"setparam","object":"stpl","values":"service1;activate;1"}').
             to_return(status: 200, body:'
                 {
                 }
             ')
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"setparam","object":"stpl","values":"test;service1;check_command;ls"}').
+            with(body: '{"action":"setparam","object":"stpl","values":"service1;check_command;ls"}').
             to_return(status: 200, body:'
                 {
                 }
             ')
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"setparam","object":"stpl","values":"test;service1;check_command_arguments;!l!h"}').
+            with(body: '{"action":"setparam","object":"stpl","values":"service1;check_command_arguments;!l!h"}').
             to_return(status: 200, body:'
                 {
                 }
             ')
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"setparam","object":"stpl","values":"test;service1;max_check_attempts;3"}').
+            with(body: '{"action":"setparam","object":"stpl","values":"service1;max_check_attempts;3"}').
             to_return(status: 200, body:'
                 {
                 }
             ')
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"setparam","object":"stpl","values":"test;service1;normal_check_interval;5"}').
+            with(body: '{"action":"setparam","object":"stpl","values":"service1;normal_check_interval;5"}').
             to_return(status: 200, body:'
                 {
                 }
             ')
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"setparam","object":"stpl","values":"test;service1;retry_check_interval;1"}').
+            with(body: '{"action":"setparam","object":"stpl","values":"service1;retry_check_interval;1"}').
             to_return(status: 200, body:'
                 {
                 }
             ')
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"setparam","object":"stpl","values":"test;service1;active_checks_enabled;2"}').
+            with(body: '{"action":"setparam","object":"stpl","values":"service1;active_checks_enabled;2"}').
             to_return(status: 200, body:'
                 {
                 }
             ')
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"setparam","object":"stpl","values":"test;service1;passive_checks_enabled;2"}').
+            with(body: '{"action":"setparam","object":"stpl","values":"service1;passive_checks_enabled;2"}').
             to_return(status: 200, body:'
                 {
                 }
             ')
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"setparam","object":"stpl","values":"test;service1;notes_url;http://localhost"}').
+            with(body: '{"action":"setparam","object":"stpl","values":"service1;notes_url;http://localhost"}').
             to_return(status: 200, body:'
                 {
                 }
             ')
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"setparam","object":"stpl","values":"test;service1;action_url;http://127.0.0.1"}').
+            with(body: '{"action":"setparam","object":"stpl","values":"service1;action_url;http://127.0.0.1"}').
             to_return(status: 200, body:'
                 {
                 }
             ')
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"setparam","object":"stpl","values":"test;service1;comment;foo"}').
+            with(body: '{"action":"setparam","object":"stpl","values":"service1;comment;foo"}').
             to_return(status: 200, body:'
                 {
                 }
             ')
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"setmacro","object":"stpl","values":"test;service1;MACRO1;foo;0;my macro"}').
-            to_return(status: 200, body:'
-                {
-                }
-            ')
-            stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"addservice","object":"sg","values":"SG1;test,service1"}').
+            with(body: '{"action":"setmacro","object":"stpl","values":"service1;MACRO1;foo;0;my macro"}').
             to_return(status: 200, body:'
                 {
                 }
             ')
             
             
-            host = Centreon::HostTemplate.new()
-            host.set_name("test")
             service_template = Centreon::ServiceTemplate.new()
-            service_template.set_host(host)
             service_template.set_name("service1")
+            service_template.set_description("my template")
             service_template.set_command("ls")
             service_template.add_command_arg("l")
             service_template.add_command_arg("h")
@@ -476,14 +442,14 @@ RSpec.describe 'Test Centreon::Client::ServiceTemplate' do
         
         it "Test delete" do
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"del","object":"stpl","values":"test;service1"}').
+            with(body: '{"action":"del","object":"stpl","values":"service1"}').
             to_return(status: 200, body:'
                 {
                 }
             ')
             
             
-            @client.service_template.delete("test", "service1")
+            @client.service_template.delete("service1")
         end
         
         
@@ -494,8 +460,6 @@ RSpec.describe 'Test Centreon::Client::ServiceTemplate' do
                 {
                     "result": [
                         {
-                            "host id": "1",
-                            "host name": "test",
                             "id": "2",
                             "description": "service1",
                             "check command": "ls",
@@ -504,104 +468,103 @@ RSpec.describe 'Test Centreon::Client::ServiceTemplate' do
                             "retry check interval": "1",
                             "max check attempts": "3",
                             "active checks enabled": "2",
-                            "passive checks enabled": "2",
-                            "activate": "1"
+                            "passive checks enabled": "2"
                         }
                     ]
                 }
             ')
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"add","object":"stpl","values":"test;service1;template1"}').
+            with(body: '{"action":"add","object":"stpl","values":"service1;my template;template1"}').
             to_return(status: 200, body:'
                 {
                 }
             ')
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"setparam","object":"stpl","values":"test;service1;activate;1"}').
+            with(body: '{"action":"setparam","object":"stpl","values":"service1;activate;1"}').
             to_return(status: 200, body:'
                 {
                 }
             ')
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"setparam","object":"stpl","values":"test;service1;check_command;ls"}').
+            with(body: '{"action":"setparam","object":"stpl","values":"service1;alias;my template"}').
             to_return(status: 200, body:'
                 {
                 }
             ')
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"setparam","object":"stpl","values":"test;service1;check_command_arguments;!l!h"}').
+            with(body: '{"action":"setparam","object":"stpl","values":"service1;check_command;ls"}').
             to_return(status: 200, body:'
                 {
                 }
             ')
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"setparam","object":"stpl","values":"test;service1;max_check_attempts;3"}').
+            with(body: '{"action":"setparam","object":"stpl","values":"service1;check_command_arguments;!l!h"}').
             to_return(status: 200, body:'
                 {
                 }
             ')
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"setparam","object":"stpl","values":"test;service1;normal_check_interval;5"}').
+            with(body: '{"action":"setparam","object":"stpl","values":"service1;max_check_attempts;3"}').
             to_return(status: 200, body:'
                 {
                 }
             ')
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"setparam","object":"stpl","values":"test;service1;retry_check_interval;1"}').
+            with(body: '{"action":"setparam","object":"stpl","values":"service1;normal_check_interval;5"}').
             to_return(status: 200, body:'
                 {
                 }
             ')
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"setparam","object":"stpl","values":"test;service1;active_checks_enabled;2"}').
+            with(body: '{"action":"setparam","object":"stpl","values":"service1;retry_check_interval;1"}').
             to_return(status: 200, body:'
                 {
                 }
             ')
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"setparam","object":"stpl","values":"test;service1;passive_checks_enabled;2"}').
+            with(body: '{"action":"setparam","object":"stpl","values":"service1;active_checks_enabled;2"}').
             to_return(status: 200, body:'
                 {
                 }
             ')
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"setparam","object":"stpl","values":"test;service1;notes_url;http://localhost"}').
+            with(body: '{"action":"setparam","object":"stpl","values":"service1;passive_checks_enabled;2"}').
             to_return(status: 200, body:'
                 {
                 }
             ')
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"setparam","object":"stpl","values":"test;service1;action_url;http://127.0.0.1"}').
+            with(body: '{"action":"setparam","object":"stpl","values":"service1;notes_url;http://localhost"}').
             to_return(status: 200, body:'
                 {
                 }
             ')
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"setparam","object":"stpl","values":"test;service1;comment;foo"}').
+            with(body: '{"action":"setparam","object":"stpl","values":"service1;action_url;http://127.0.0.1"}').
             to_return(status: 200, body:'
                 {
                 }
             ')
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"setparam","object":"stpl","values":"test;service1;template;template1"}').
+            with(body: '{"action":"setparam","object":"stpl","values":"service1;comment;foo"}').
             to_return(status: 200, body:'
                 {
                 }
             ')
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"setmacro","object":"stpl","values":"test;service1;MACRO1;foo;0;my macro"}').
+            with(body: '{"action":"setparam","object":"stpl","values":"service1;template;template1"}').
             to_return(status: 200, body:'
                 {
                 }
             ')
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"addservice","object":"sg","values":"SG1;test,service1"}').
+            with(body: '{"action":"setmacro","object":"stpl","values":"service1;MACRO1;foo;0;my macro"}').
             to_return(status: 200, body:'
                 {
                 }
             ')
             stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"getmacro","object":"stpl","values":"test;service1"}').
+            with(body: '{"action":"getmacro","object":"stpl","values":"service1"}').
             to_return(status: 200, body:'
                 {
                     "result": [
@@ -609,40 +572,12 @@ RSpec.describe 'Test Centreon::Client::ServiceTemplate' do
                     ]
                 }
             ')
-            stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"show","object":"sg"}').
-            to_return(status: 200, body:'
-                {
-                    "result": [
-                        {
-                            "id": "1",
-                            "name": "SG1",
-                            "alias": "my sg 1"
-                        }
-                    ]
-                }
-            ')
-            stub_request(:post, "localhost/centreon/api/index.php?action=action&object=centreon_clapi").
-            with(body: '{"action":"getservice","object":"sg","values":"SG1"}').
-            to_return(status: 200, body:'
-                {
-                    "result": [
-                        {
-                            "host id": "1",
-                            "host name": "test",
-                            "service id": "3",
-                            "service description": "service3"
-                        }
-                    ]
-                }
-            ')
             
             
-            host_template = Centreon::HostTemplate.new()
-            host_template.set_name("test")
+           
             service_template = Centreon::ServiceTemplate.new()
-            service_template.set_host(host_template)
             service_template.set_name("service1")
+            service_template.set_description("my template")
             service_template.set_command("ls")
             service_template.add_command_arg("l")
             service_template.add_command_arg("h")

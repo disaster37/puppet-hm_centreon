@@ -12,6 +12,17 @@ module Centreon
         include Logging
         def initialize()
             super()
+            @description = nil
+            @host_templates = []
+        end
+        
+        def description
+           return @description
+        end
+        
+        def set_description(value)
+            raise("wrong type: String required") unless value.is_a?(String)
+            @description = value
         end
         
         def groups
@@ -20,13 +31,6 @@ module Centreon
         
         def add_group(group)
             raise("Service group is not available in service template")
-        end
-        
-        def set_host(host)
-            raise("wrong type: Centreon::HostTemplate required") unless host.is_a?(::Centreon::HostTemplate)
-            raise("wrong value: host must be valid") unless !host.name().nil? && !host.name().empty?
-            @host = host
-            logger.debug("Host: " + host.to_s)
         end
         
         

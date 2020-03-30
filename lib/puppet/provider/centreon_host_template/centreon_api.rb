@@ -40,7 +40,6 @@ Puppet::Type.type(:centreon_host_template).provide(:centreon_api, :parent => ::P
       address: host.address(),
       enable: host.is_activated(),
       poller: host.poller(),
-      groups: host.groups().map{ |host_group| host_group.name()  },
       templates: host.templates().map{ |host_template| host_template.name()  },
       comment: host.comment(),
       macros: host.macros().map{ |macro| {
@@ -69,11 +68,6 @@ Puppet::Type.type(:centreon_host_template).provide(:centreon_api, :parent => ::P
     host_template.set_address(resource[:address]) unless resource[:address].nil?
     host_template.set_poller(resource[:poller]) unless resource[:poller].nil?
     host_template.set_comment(resource[:comment]) unless resource[:comment].nil?
-    resource[:groups].each do |name|
-      host_group = Centreon::HostGroup.new()
-      host_group.set_name(name)
-      host_template.add_group(host_group)
-    end unless resource[:groups].nil?
     resource[:templates].each do |name|
       ht = Centreon::HostTemplate.new()
       ht.set_name(name)
@@ -112,11 +106,6 @@ Puppet::Type.type(:centreon_host_template).provide(:centreon_api, :parent => ::P
       host_template.set_comment(@property_flush[:comment]) unless @property_flush[:comment].nil?
       host_template.set_is_activated(@property_flush[:enable]) unless @property_flush[:enable].nil?
       
-      @property_flush[:groups].each do |name|
-        host_group = Centreon::HostGroup.new()
-        host_group.set_name(name)
-        host_template.add_group(host_group)
-      end unless @property_flush[:groups].nil?
       @property_flush[:templates].each do |name|
         ht = Centreon::HostTemplate.new()
         ht.set_name(name)
@@ -133,7 +122,7 @@ Puppet::Type.type(:centreon_host_template).provide(:centreon_api, :parent => ::P
       
       
       # Update host
-      client().host_template.update(host_template, !@property_flush[:groups].nil?, !@property_flush[:templates].nil?, !@property_flush[:macros].nil?, !@property_flush[:enable].nil?)
+      client().host_template.update(host_template, !@property_flush[:templates].nil?, !@property_flush[:macros].nil?, !@property_flush[:enable].nil?)
     end
   end
   
@@ -158,10 +147,6 @@ Puppet::Type.type(:centreon_host_template).provide(:centreon_api, :parent => ::P
   
   def poller=(value)
     @property_flush[:poller] = value
-  end
-  
-  def groups=(value)
-    @property_flush[:groups] = value
   end
   
   def templates=(value)

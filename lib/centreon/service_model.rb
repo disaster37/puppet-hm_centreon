@@ -3,7 +3,6 @@ module Centreon
     class ServiceModel
         include Logging
         def initialize()
-            @host = nil
             @id = nil
             @name = nil
             @command = nil
@@ -20,10 +19,6 @@ module Centreon
             @command_args = []
             @macros = []
             @groups = []
-        end
-        
-        def host
-           @host 
         end
         
         def id
