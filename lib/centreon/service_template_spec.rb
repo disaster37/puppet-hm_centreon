@@ -30,12 +30,13 @@ RSpec.describe 'Test Centreon::ServiceTemplate' do
             expect(serviceTemplate.is_valid()).to eq true
         end
         
-        it "test set/get host" do
-            host = ::Centreon::HostTemplate.new()
-            host.set_name("test")
+        it "test set/get description" do
             service = ::Centreon::ServiceTemplate.new()
-            service.set_host(host)
-            expect(service.host()).to eq host
+            service.set_description("my template")
+            expect(service.description()).to eq "my template"
+            
+            service.set_description("")
+            expect(service.description()).to eq ""
         end
         
     end
