@@ -47,10 +47,13 @@ Puppet::Type.newtype(:centreon) do
     end
     centreon_types.each do |type|
       provider_class = Puppet::Type.type(type).provider(:centreon_api)
-      provider_class.url = self[:url]
-      provider_class.username = self[:username]
-      provider_class.password = self[:password]
-      provider_class.debug = self[:debug]
+      provider_class.configs = {} unless provider_class.configs.is_a?(Hash)
+      provider_class.configs[self[:name]] = {
+        'url'      => self[:url],
+        'username' => self[:username],
+        'password' => self[:password],
+        'debug'    => self[:debug]
+      }
     end
     []
   end

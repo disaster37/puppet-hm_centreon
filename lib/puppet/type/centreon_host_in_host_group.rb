@@ -27,6 +27,21 @@ Puppet::Type.newtype(:centreon_host_in_host_group) do
     end
   end
   
+  newparam(:config) do
+    desc 'The Centreon configuration to use'
+    
+    defaultto("default")
+    
+    validate do |value|
+      fail 'host must have a config' if value == ''
+      fail 'config should be a String' unless value.is_a?(String)
+    end
+  end
+  
+  autorequire(:centreon) do
+    self[:config]
+  end
+  
   autorequire(:centreon_host_group) do
     self[:groups]
   end
@@ -34,5 +49,6 @@ Puppet::Type.newtype(:centreon_host_in_host_group) do
   autorequire(:centreon_host) do
     self[:host]
   end
+
 
 end

@@ -15,7 +15,7 @@ Puppet::Type.type(:centreon_host_template).provide(:centreon_api, :parent => ::P
   def self.prefetch(resources)
     resources.keys.each do |resource_name|
       filters = []
-      client().host_template.fetch(resources[resource_name][:name], false).each do |host|
+      client(resources[resource_name][:config]).host_template().fetch(resources[resource_name][:name], false).each do |host|
         
         hash = host_template_to_hash(host)
         
@@ -81,7 +81,7 @@ Puppet::Type.type(:centreon_host_template).provide(:centreon_api, :parent => ::P
       macro.set_is_password(hash["is_password"]) unless hash["is_password"].nil?
       host_template.add_macro(macro)
     end unless resource[:macros].nil?
-    client().host_template.add(host_template)
+    client(resource[:config]).host_template().add(host_template)
     
     @property_hash[:id] = host_template.id()
     @property_hash[:ensure] = :present
@@ -89,7 +89,7 @@ Puppet::Type.type(:centreon_host_template).provide(:centreon_api, :parent => ::P
 
   def destroy
     Puppet.info("Deleting host template #{name}")
-    client().host_template.delete(@property_hash[:name])
+    client(resource[:config]).host_template().delete(@property_hash[:name])
     @property_hash[:ensure] = :absent
   end
   
@@ -122,7 +122,7 @@ Puppet::Type.type(:centreon_host_template).provide(:centreon_api, :parent => ::P
       
       
       # Update host
-      client().host_template.update(host_template, !@property_flush[:templates].nil?, !@property_flush[:macros].nil?, !@property_flush[:enable].nil?)
+      client(resource[:config]).host_template().update(host_template, !@property_flush[:templates].nil?, !@property_flush[:macros].nil?, !@property_flush[:enable].nil?)
     end
   end
   

@@ -15,7 +15,7 @@ Puppet::Type.type(:centreon_service).provide(:centreon_api, :parent => ::PuppetX
   def self.prefetch(resources)
     resources.keys.each do |resource_name|
       filters = []
-      client().service.fetch(resources[resource_name][:service_name], true).each do |service|
+      client(resources[resource_name][:config]).service().fetch(resources[resource_name][:service_name], true).each do |service|
         
         # Don't update unmanaged properties
         service.set_template(resources[resource_name][:template]) unless resources[resource_name][:template].nil?
@@ -25,7 +25,7 @@ Puppet::Type.type(:centreon_service).provide(:centreon_api, :parent => ::PuppetX
         
         # Load service group
         resources[resource_name][:groups].each do |service_group_name|
-          client().service.fetch_service_group(service_group_name = service_group_name, services = [service])
+          client(resources[resource_name][:config]).service().fetch_service_group(service_group_name, [service])
         end
         
         hash = service_to_hash(service)
@@ -51,7 +51,7 @@ Puppet::Type.type(:centreon_service).provide(:centreon_api, :parent => ::PuppetX
       service.set_name(@property_hash[:service_name])
       
       # Load extra properties
-      client().service.load(service)
+      client(resource[:config]).service().load(service)
       
       @property_hash[:macros] = service.macros().map{ |macro| {
         "name" => macro.name(),
@@ -132,7 +132,7 @@ Puppet::Type.type(:centreon_service).provide(:centreon_api, :parent => ::PuppetX
       macro.set_is_password(hash["is_password"]) unless hash["is_password"].nil?
       service.add_macro(macro)
     end unless resource[:macros].nil?
-    client().service.add(service, retrive_id = false)
+    client(resource[:config]).service().add(service, false)
     
     # Take a long time
     #@property_hash[:id] = service.id()
@@ -144,7 +144,7 @@ Puppet::Type.type(:centreon_service).provide(:centreon_api, :parent => ::PuppetX
 
   def destroy
     Puppet.info("Deleting service #{name}")
-    client().service.delete(@property_hash[:host], @property_hash[:service_name])
+    client(resource[:config]).service().delete(@property_hash[:host], @property_hash[:service_name])
     @property_hash[:ensure] = :absent
   end
   
@@ -188,7 +188,7 @@ Puppet::Type.type(:centreon_service).provide(:centreon_api, :parent => ::PuppetX
       end unless @property_flush[:macros].nil?
   
       # Update service
-      client().service.update(service, groups = !@property_flush[:groups].nil?, macros = !@property_flush[:macros].nil?, activated = !@property_flush[:enable].nil?, check_command_arguments = !@property_flush[:command_args].nil?)
+      client(resource[:config]).service().update(service, !@property_flush[:groups].nil?, !@property_flush[:macros].nil?, !@property_flush[:enable].nil?, !@property_flush[:command_args].nil?)
 
     end
   end

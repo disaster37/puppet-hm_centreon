@@ -15,16 +15,6 @@ Puppet::Type.newtype(:centreon_service_template) do
     end
   end
   
-  
-  
-  newparam(:host) do
-    desc 'The host name associated with the service.'
-    validate do |value|
-      fail 'service must have a host name' if value == ''
-      fail 'host should be a String' unless value.is_a?(String)
-    end
-  end
-  
   newproperty(:command) do
     desc 'The command of the service.'
     validate do |value|
@@ -47,7 +37,7 @@ Puppet::Type.newtype(:centreon_service_template) do
   end
   
   newproperty(:enable, :parent => Puppet::Property::Boolean) do
-    desc 'The state of host'
+    desc 'The state of service template'
     
     defaultto(:true)
     newvalues(:true, :false)
@@ -124,7 +114,7 @@ Puppet::Type.newtype(:centreon_service_template) do
   end
   
   newproperty(:macros, :array_matching => :all) do
-    desc 'The macros of the host.'
+    desc 'The macros of the service template.'
     
     def insync?(is)
       for_comparison = Marshal.load(Marshal.dump(should))
@@ -144,9 +134,21 @@ Puppet::Type.newtype(:centreon_service_template) do
     end
   end
   
-  autorequire(:centreon_host) do
-    self[:host]
+  newparam(:config) do
+    desc 'The Centreon configuration to use'
+    
+    defaultto("default")
+    
+    validate do |value|
+      fail 'service template must have a config' if value == ''
+      fail 'config should be a String' unless value.is_a?(String)
+    end
   end
+  
+  autorequire(:centreon) do
+    self[:config]
+  end
+  
   
   autorequire(:centreon_service_template) do
     self[:template]

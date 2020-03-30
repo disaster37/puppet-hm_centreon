@@ -15,7 +15,7 @@ Puppet::Type.type(:centreon_host_in_host_template).provide(:centreon_api, :paren
   def self.prefetch(resources)
     resources.keys.each do |resource_name|
       filters = []
-      client().host().fetch(resources[resource_name][:host], false).each do |host|
+      client(resources[resource_name][:config]).host().fetch(resources[resource_name][:host], false).each do |host|
         hash = host_to_hash(host, resources[resource_name][:templates])
         hash[:name] = resources[resource_name][:name]
         filters << new(hash) unless hash.empty?
@@ -56,7 +56,7 @@ Puppet::Type.type(:centreon_host_in_host_template).provide(:centreon_api, :paren
       host.add_template(host_template)
     end
     
-    client.host.add_templates(host)
+    client(resource[:config]).host().add_templates(host)
     @property_hash[:ensure] = :present
     
   end
@@ -72,7 +72,7 @@ Puppet::Type.type(:centreon_host_in_host_template).provide(:centreon_api, :paren
       host.add_template(host_template)
     end
     
-    client.host.delete_templates(host)
+    client(resource[:config]).host().delete_templates(host)
     @property_hash[:ensure] = :absent
   end
   
@@ -92,7 +92,7 @@ Puppet::Type.type(:centreon_host_in_host_template).provide(:centreon_api, :paren
           host_template.set_name(template_name)
           host.add_template(host_template)
         end
-        client.host.add_templates(host)
+        client(resource[:config]).host().add_templates(host)
       end
       
     end

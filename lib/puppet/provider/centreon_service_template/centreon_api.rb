@@ -15,7 +15,7 @@ Puppet::Type.type(:centreon_service_template).provide(:centreon_api, :parent => 
   def self.prefetch(resources)
     resources.keys.each do |resource_name|
       filters = []
-      client().service.fetch(resources[resource_name][:name], true).each do |service_template|
+      client(resources[resource_name][:config]).service_template().fetch(resources[resource_name][:name], true).each do |service_template|
         
         # Don't update unmanaged properties
         service_template.set_template(resources[resource_name][:template]) unless resources[resource_name][:template].nil?
@@ -29,7 +29,7 @@ Puppet::Type.type(:centreon_service_template).provide(:centreon_api, :parent => 
       end
       
       
-      if provider = filters.find { |c| (c.name == resources[resource_name][:name]) }
+      if provider = filters.find { |c| c.name == resources[resource_name][:name] }
         resources[resource_name].provider = provider
         Puppet.info("Found service template #{resources[resource_name][:name]}")
       end
@@ -42,7 +42,7 @@ Puppet::Type.type(:centreon_service_template).provide(:centreon_api, :parent => 
       service_template.set_name(@property_hash[:name])
       
       # Load extra properties
-      client().service_template.load(service_template)
+      client(resource[:config]).service_template().load(service_template)
       
       @property_hash[:macros] = service_template.macros().map{ |macro| {
         "name" => macro.name(),
@@ -55,11 +55,10 @@ Puppet::Type.type(:centreon_service_template).provide(:centreon_api, :parent => 
     end
   end
   
-  # Convert host to hash
+  # Convert service template to hash
   def self.service_template_to_hash(service_template)
     return {} if service_template.nil?
     {
-      host: service_template.host().name(),
       name: service_template.name(),
       command: service_template.command(),
       command_args: service_template.command_args(),
@@ -89,11 +88,6 @@ Puppet::Type.type(:centreon_service_template).provide(:centreon_api, :parent => 
     
     service_template = ::Centreon::ServiceTemplate.new()
     service_template.set_name(resource[:name])
-    if !resource[:host].nil? {
-      host_template = ::Centreon::HostTemplate.new()
-      host_template.set_name(resource[:host])
-      service_template.set_host(host_template)
-    }
     service_template.set_is_activated(resource[:enable])
     service_template.set_command(resource[:command]) unless resource[:command].nil?
     service_template.set_template(resource[:template]) unless resource[:template].nil?
@@ -117,17 +111,15 @@ Puppet::Type.type(:centreon_service_template).provide(:centreon_api, :parent => 
       macro.set_is_password(hash["is_password"]) unless hash["is_password"].nil?
       service_template.add_macro(macro)
     end unless resource[:macros].nil?
-    client().serviceu_template.add(service_template, retrive_id = false)
+    client(resource[:config]).service_template().add(service_template, false)
     
     # Take a long time
-    #@property_hash[:id] = service.id()
-    #@property_hash[:host_id] = service.host().id()
     @property_hash[:ensure] = :present
   end
 
   def destroy
     Puppet.info("Deleting service template #{name}")
-    client().service_template.delete(@property_hash[:name])
+    client(resource[:config]).service_template().delete(@property_hash[:name])
     @property_hash[:ensure] = :absent
   end
   
@@ -139,11 +131,6 @@ Puppet::Type.type(:centreon_service_template).provide(:centreon_api, :parent => 
       
       service_template = ::Centreon::ServiceTemplate.new()
       service_template.set_name(@property_hash[:name])
-      if !@property_flush[:host].nil? {
-        host_template = ::Centreon::HostTemplate.new()
-        host_template.set_name(@property_hash[:host])
-        service_template.set_host(host_template)
-      }
       service_template.set_is_activated(@property_flush[:enable]) unless @property_flush[:enable].nil?
       service_template.set_command(@property_flush[:command]) unless @property_flush[:command].nil?
       service_template.set_template(@property_flush[:template]) unless @property_flush[:template].nil?
@@ -169,18 +156,15 @@ Puppet::Type.type(:centreon_service_template).provide(:centreon_api, :parent => 
       end unless @property_flush[:macros].nil?
   
       # Update service
-      client().service_template.update(service_template, macros = !@property_flush[:macros].nil?, activated = !@property_flush[:enable].nil?, check_command_arguments = !@property_flush[:command_args].nil?)
+      client(resource[:config]).service_template().update(service_template, !@property_flush[:macros].nil?, !@property_flush[:enable].nil?, !@property_flush[:command_args].nil?)
 
     end
   end
 
   # Getter and setter
-  def host=(value)
-    @property_flush[:host] = value
-  end
   
   def name=(value)
-    @property_flush[:service_name] = value
+    @property_flush[:name] = value
   end
   
   def command=(value)

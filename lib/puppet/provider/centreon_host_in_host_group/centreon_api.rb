@@ -15,7 +15,7 @@ Puppet::Type.type(:centreon_host_in_host_group).provide(:centreon_api, :parent =
   def self.prefetch(resources)
     resources.keys.each do |resource_name|
       filters = []
-      client().host().fetch(resources[resource_name][:host], false).each do |host|
+      client(resources[resource_name][:config]).host().fetch(resources[resource_name][:host], false).each do |host|
         hash = host_to_hash(host, resources[resource_name][:groups])
         hash[:name] = resources[resource_name][:name]
         filters << new(hash) unless hash.empty?
@@ -56,7 +56,7 @@ Puppet::Type.type(:centreon_host_in_host_group).provide(:centreon_api, :parent =
       host.add_group(host_group)
     end
     
-    client.host.add_groups(host)
+    client(resource[:config]).host().add_groups(host)
     @property_hash[:ensure] = :present
     
   end
@@ -72,7 +72,7 @@ Puppet::Type.type(:centreon_host_in_host_group).provide(:centreon_api, :parent =
       host.add_group(host_group)
     end
     
-    client.host.delete_groups(host)
+    client(resource[:config]).host().delete_groups(host)
     @property_hash[:ensure] = :absent
   end
   
@@ -92,7 +92,7 @@ Puppet::Type.type(:centreon_host_in_host_group).provide(:centreon_api, :parent =
           host_group.set_name(group_name)
           host.add_group(host_group)
         end
-        client.host.add_groups(host)
+        client(resource[:config]).host().add_groups(host)
       end
       
     end

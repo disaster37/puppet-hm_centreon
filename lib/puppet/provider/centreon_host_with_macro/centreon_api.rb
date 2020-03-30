@@ -15,7 +15,7 @@ Puppet::Type.type(:centreon_host_with_macro).provide(:centreon_api, :parent => :
   def self.prefetch(resources)
     resources.keys.each do |resource_name|
       filters = []
-      client().host().fetch(resources[resource_name][:host], false).each do |host|
+      client(resources[resource_name][:config]).host().fetch(resources[resource_name][:host], false).each do |host|
         hash = host_to_hash(host, resources[resource_name][:macros])
         hash[:name] = resources[resource_name][:name]
         filters << new(hash) unless hash.empty?
@@ -75,7 +75,7 @@ Puppet::Type.type(:centreon_host_with_macro).provide(:centreon_api, :parent => :
       host.add_macro(macro)
     end
     
-    client.host.add_macros(host)
+    client(resource[:config]).host().add_macros(host)
     @property_hash[:ensure] = :present
     
   end
@@ -94,7 +94,7 @@ Puppet::Type.type(:centreon_host_with_macro).provide(:centreon_api, :parent => :
       host.add_macro(macro)
     end
     
-    client.host.delete_macros(host)
+    client(resource[:config]).host().delete_macros(host)
     @property_hash[:ensure] = :absent
   end
   
@@ -132,7 +132,7 @@ Puppet::Type.type(:centreon_host_with_macro).provide(:centreon_api, :parent => :
           macro.set_is_password(hash["is_password"]) unless hash["is_password"].nil?
           host.add_macro(macro)
         end
-        client.host.add_macros(host)
+        client(resource[:config]).host().add_macros(host)
       end
       
     end

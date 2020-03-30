@@ -28,25 +28,28 @@ This could be because some other process is modifying AWS at the same time."""
       initvars
       
       class << self
-        attr_accessor :url
-        attr_accessor :username
-        attr_accessor :password
-        attr_accessor :debug
+        attr_accessor :configs
       end
 
-      def self.client()
-        if !debug()
+      def self.client(config_name)
+        if configs[config_name].nil?
+          raise("#{config_name} must match with centreon resource name" )
+        end
+        if !configs[config_name]['debug']
           ::Logging.logger.level = Logger::INFO
         end
         
         if @client.nil?
-          raise("You must provide Centreon URL") unless !url().nil? && !url().empty?
-          raise("You must provide Centreon username") unless !username().nil? && !username().empty?
-          raise("You must provide Centreon password") unless !password().nil? && !password().empty?
+          url = configs[config_name]['url']
+          username = configs[config_name]['username']
+          password = configs[config_name]['password']
+          raise("You must provide Centreon URL") unless !url.nil? && !url.empty?
+          raise("You must provide Centreon username") unless !username.nil? && !username.empty?
+          raise("You must provide Centreon password") unless !password.nil? && !password.empty?
             @client = ::Centreon::Client.new(
-                url(),
-                username(),
-                password()
+                url,
+                username,
+                password
             )
             @hosts = []
             @services = []
@@ -55,8 +58,8 @@ This could be because some other process is modifying AWS at the same time."""
         return @client
       end
       
-      def client()
-        return self.class.client()
+      def client(config_name)
+        return self.class.client(config_name)
       end
       
     end
