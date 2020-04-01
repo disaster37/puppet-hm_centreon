@@ -33,6 +33,9 @@ hosts.each do |host|
   on host, "echo 'export http_proxy=" + ENV['http_proxy'] + "' >> /root/.bashrc"
   on host, "echo 'export https_proxy=" + ENV['https_proxy'] + "' >> /root/.bashrc"
   on host, "echo 'export no_proxy=\"" + ENV['no_proxy'] + ",#{host.name},10.221.78.61\"' >> /root/.bashrc"
+  on host, "echo 'export CENTREON_URL=" + ENV['CENTREON_URL'] + "' >> /root/.bashrc"
+  on host, "echo 'export CENTREON_USERNAME=" + ENV['CENTREON_USERNAME'] + "' >> /root/.bashrc"
+  on host, "echo 'export CENTREON_PASSWORD=" + ENV['CENTREON_PASSWORD'] + "' >> /root/.bashrc"
 
   # Facts for role/profile
   on(host, 'mkdir -p /etc/puppetlabs/facter/facts.d')

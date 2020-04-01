@@ -1,5 +1,6 @@
 require 'logger'
 
+# Logger module
 module Logging
   # This is the magical bit that gets mixed into your classes
   def logger
@@ -10,9 +11,10 @@ module Logging
   def self.logger
     @logger ||= MyLogger.new(STDOUT)
   end
-  
+
+  # Logger class
   class MyLogger < Logger
-    def << (msg)
+    def <<(msg)
       debug(msg.strip)
     end
   end

@@ -6,116 +6,113 @@ Puppet::Type.newtype(:centreon_service_template) do
 
   ensurable
 
-  
   newparam(:name, namevar: true) do
     desc 'The name of the service'
     validate do |value|
-      fail 'service name must have a name' if value == ''
-      fail 'service name should be a String' unless value.is_a?(String)
+      raise 'service name must have a name' if value == ''
+      raise 'service name should be a String' unless value.is_a?(String)
     end
   end
-  
+
   newproperty(:command) do
     desc 'The command of the service.'
     validate do |value|
-      fail 'command should be a String' unless value.is_a?(String)
+      raise 'command should be a String' unless value.is_a?(String)
     end
   end
-  
-  newproperty(:command_args, :array_matching => :all) do
+
+  newproperty(:command_args, array_matching: :all) do
     desc 'The command argument of the service.'
-    
+
     defaultto []
-    
+
     def insync?(is)
       is.to_set == should.to_set
     end
-    
+
     validate do |value|
-      fail 'templates should be a String' unless value.is_a?(String)
+      raise 'templates should be a String' unless value.is_a?(String)
     end
   end
-  
-  newproperty(:enable, :parent => Puppet::Property::Boolean) do
+
+  newproperty(:enable, parent: Puppet::Property::Boolean) do
     desc 'The state of service template'
-    
+
     defaultto(:true)
     newvalues(:true, :false)
   end
-  
+
   newproperty(:template) do
     desc 'The template of the service.'
     validate do |value|
-      fail 'template should be a String' unless value.is_a?(String)
+      raise 'template should be a String' unless value.is_a?(String)
     end
   end
-  
+
   newproperty(:normal_check_interval) do
     desc 'The normal check interval of the service.'
     validate do |value|
-      fail 'normal_check_interval should be a Interger' unless value.is_a?(Integer)
+      raise 'normal_check_interval should be a Interger' unless value.is_a?(Integer)
     end
   end
-  
+
   newproperty(:retry_check_interval) do
     desc 'The retry check interval of the service.'
     validate do |value|
-      fail 'retry_check_intervall should be a Interger' unless value.is_a?(Integer)
+      raise 'retry_check_intervall should be a Interger' unless value.is_a?(Integer)
     end
   end
-  
+
   newproperty(:max_check_attempts) do
     desc 'The max check attempts of the service.'
     validate do |value|
-      fail 'max_check_attempts should be a Interger' unless value.is_a?(Integer)
+      raise 'max_check_attempts should be a Interger' unless value.is_a?(Integer)
     end
   end
-  
+
   newproperty(:active_check) do
     desc 'The active check of the service.'
-    
-    defaultto("default")
-    
-    validate do |value|
-      fail 'active_check should be a true, false or default' unless ["true", "false", "default"].include? value
-    end
 
+    defaultto('default')
+
+    validate do |value|
+      raise 'active_check should be a true, false or default' unless ['true', 'false', 'default'].include? value
+    end
   end
-  
+
   newproperty(:passive_check) do
     desc 'The passive check of the service.'
-    
-    defaultto("default")
+
+    defaultto('default')
     validate do |value|
-      fail 'active_check should be a true, false or default' unless ["true", "false", "default"].include? value
+      raise 'active_check should be a true, false or default' unless ['true', 'false', 'default'].include? value
     end
-    
   end
-  
+
   newproperty(:note_url) do
     desc 'The note url of the service.'
     validate do |value|
-      fail 'note url should be a String' unless value.is_a?(String)
+      raise 'note url should be a String' unless value.is_a?(String)
     end
   end
-  
+
   newproperty(:action_url) do
     desc 'The action url of the service.'
     validate do |value|
-      fail 'action_url should be a String' unless value.is_a?(String)
+      raise 'action_url should be a String' unless value.is_a?(String)
     end
   end
-  
+
   newproperty(:comment) do
     desc 'The comment of the service.'
     validate do |value|
-      fail 'comment should be a String' unless value.is_a?(String)
+      raise 'comment should be a String' unless value.is_a?(String)
     end
   end
-  
-  newproperty(:macros, :array_matching => :all) do
+
+  newproperty(:macros, array_matching: :all) do
     desc 'The macros of the service template.'
-    
+
     def insync?(is)
       for_comparison = Marshal.load(Marshal.dump(should))
       parser = PuppetX::Centreon::MacroParser.new(for_comparison)
@@ -123,35 +120,33 @@ Puppet::Type.newtype(:centreon_service_template) do
       to_delete = parser.macros_to_delete(is)
       to_create.empty? && to_delete.empty?
     end
-    
+
     validate do |value|
-      fail 'macros should be a Hash' unless value.is_a?(Hash)
+      raise 'macros should be a Hash' unless value.is_a?(Hash)
     end
-    
+
     munge do |value|
-      value["name"] = value["name"].upcase() if !value.nil? && !value["name"].nil?
+      value['name'] = value['name'].upcase if !value.nil? && !value['name'].nil?
       super(value)
     end
   end
-  
+
   newparam(:config) do
     desc 'The Centreon configuration to use'
-    
-    defaultto("default")
-    
+
+    defaultto('default')
+
     validate do |value|
-      fail 'service template must have a config' if value == ''
-      fail 'config should be a String' unless value.is_a?(String)
+      raise 'service template must have a config' if value == ''
+      raise 'config should be a String' unless value.is_a?(String)
     end
   end
-  
+
   autorequire(:centreon) do
     self[:config]
   end
-  
-  
+
   autorequire(:centreon_service_template) do
     self[:template]
   end
-  
 end
