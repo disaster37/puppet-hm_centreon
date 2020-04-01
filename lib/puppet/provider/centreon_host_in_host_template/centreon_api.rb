@@ -19,7 +19,8 @@ Puppet::Type.type(:centreon_host_in_host_template).provide(:centreon_api, parent
         filters << new(hash) unless hash.empty?
       end
 
-      if provider = filters.find { |c| c.name == resources[resource_name][:name] }
+      provider = filters.find { |c| c.name == resources[resource_name][:name] }
+      if provider
         resources[resource_name].provider = provider
         Puppet.info("Found host #{resources[resource_name][:host]}")
       end
@@ -46,10 +47,10 @@ Puppet::Type.type(:centreon_host_in_host_template).provide(:centreon_api, parent
     Puppet.info("Adding templates on host #{host}")
 
     host = Centreon::Host.new
-    host.set_name(resource[:host])
+    host.name = resource[:host]
     resource[:templates].each do |template_name|
       host_template = Centreon::HostTemplate.new
-      host_template.set_name(template_name)
+      host_template.name = template_name
       host.add_template(host_template)
     end
 
@@ -61,10 +62,10 @@ Puppet::Type.type(:centreon_host_in_host_template).provide(:centreon_api, parent
     Puppet.info("Deleting templates on host #{host}")
 
     host = Centreon::Host.new
-    host.set_name(@property_hash[:host])
+    host.name = @property_hash[:host]
     resource[:templates].each do |template_name|
       host_template = Centreon::HostTemplate.new
-      host_template.set_name(template_name)
+      host_template.name = template_name
       host.add_template(host_template)
     end
 
@@ -73,23 +74,20 @@ Puppet::Type.type(:centreon_host_in_host_template).provide(:centreon_api, parent
   end
 
   def flush
-    if @property_hash[:ensure] != :absent && !@property_flush.empty? && !@property_flush[:templates].nil? && !@property_flush[:templates].empty?
-      Puppet.info("Update templates on host #{host}")
+    return unless @property_hash[:ensure] != :absent && !@property_flush.empty? && !@property_flush[:templates].nil? && !@property_flush[:templates].empty?
+    Puppet.info("Update templates on host #{host}")
 
-      templates_to_create = @property_flush[:templates] - @property_hash[:templates]
+    templates_to_create = @property_flush[:templates] - @property_hash[:templates]
 
-      unless templates_to_create.empty?
-        host = Centreon::Host.new
-        host.set_name(@property_hash[:host])
-        templates_to_create.each do |template_name|
-          host_template = Centreon::HostTemplate.new
-          host_template.set_name(template_name)
-          host.add_template(host_template)
-        end
-        client(resource[:config]).host.add_templates(host)
-      end
-
+    return if templates_to_create.empty?
+    host = Centreon::Host.new
+    host.name = @property_hash[:host]
+    templates_to_create.each do |template_name|
+      host_template = Centreon::HostTemplate.new
+      host_template.name = template_name
+      host.add_template(host_template)
     end
+    client(resource[:config]).host.add_templates(host)
   end
 
   # Getter and setter

@@ -3,10 +3,10 @@ require 'json'
 
 require_relative './apiclient.rb'
 require_relative '../logger.rb'
-require_relative '../host_group.rb'
+require_relative '../service_group.rb'
 
-# Manage the host group API
-class Centreon::APIClient::HostGroup
+# Manage the service group API
+class Centreon::APIClient::ServiceGroup
   include Logging
 
   def initialize(client)
@@ -17,44 +17,40 @@ class Centreon::APIClient::HostGroup
     r = if name.nil?
           @client.post({
             'action' => 'show',
-            'object' => 'hg',
+            'object' => 'sg',
           }.to_json)
         else
           @client.post({
             'action' => 'show',
-            'object' => 'hg',
+            'object' => 'sg',
             'values' => name,
           }.to_json)
         end
 
-    host_groups = []
+    service_groups = []
     JSON.parse(r)['result'].each do |data|
-      host_group = Centreon::HostGroup.new
-      host_group.id = data['id'].to_i
-      host_group.name = data['name']
-      host_group.description = data['alias']
-      host_groups << host_group
+      service_group = Centreon::ServiceGroup.new
+      service_group.id = data['id'].to_i
+      service_group.name = data['name']
+      service_group.description = data['alias']
+      service_groups << service_group
     end
 
-    host_groups
+    service_groups
   end
 
   def add(group)
-    raise('wrong type: Centreon::HostGroup required') unless group.is_a?(::Centreon::HostGroup)
-    raise('wrong value: host group must be valid') unless group.valid
+    raise('wrong type: Centreon::ServiceGroup required') unless group.is_a?(::Centreon::ServiceGroup)
+    raise('wrong value: service group must be valid') unless group.valid
 
     @client.post({
       'action' => 'add',
-      'object' => 'hg',
+      'object' => 'sg',
       'values' => '%s;%s' % [group.name, group.description],
     }.to_json)
 
     # Add optional item
     set_param(group.name, 'comment', group.comment) unless group.comment.nil?
-    set_param(group.name, 'notes', group.note) unless group.note.nil?
-    set_param(group.name, 'notes_url', group.note_url) unless group.note_url.nil?
-    set_param(group.name, 'action_url', group.action_url) unless group.action_url.nil?
-    set_param(group.name, 'icon_image', group.icon_image) unless group.icon_image.nil?
     set_param(group.name, 'activate', 0) unless group.activated
   end
 
@@ -64,21 +60,17 @@ class Centreon::APIClient::HostGroup
 
     @client.post({
       'action' => 'del',
-      'object' => 'hg',
+      'object' => 'sg',
       'values' => name,
     }.to_json)
   end
 
   def update(group, activated = true)
-    raise('wrong type: Centreon::HostGroup required') unless group.is_a?(::Centreon::HostGroup)
-    raise('wrong value: host group must be valid') unless group.valid
+    raise('wrong type: Centreon::ServiceGroup required') unless group.is_a?(::Centreon::ServiceGroup)
+    raise('wrong value: service group must be valid') unless group.valid
 
     set_param(group.name, 'alias', group.description) unless group.description.nil?
     set_param(group.name, 'comment', group.comment) unless group.comment.nil?
-    set_param(group.name, 'notes', group.note) unless group.note.nil?
-    set_param(group.name, 'notes_url', group.note_url) unless group.note_url.nil?
-    set_param(group.name, 'action_url', group.action_url) unless group.action_url.nil?
-    set_param(group.name, 'icon_image', group.icon_image) unless group.icon_image.nil?
 
     return unless activated
     set_param(group.name, 'activate', 1) if group.activated
@@ -96,7 +88,7 @@ class Centreon::APIClient::HostGroup
 
     @client.post({
       'action' => 'setparam',
-      'object' => 'hg',
+      'object' => 'sg',
       'values' => '%s;%s;%s' % [name, property, value.to_s],
     }.to_json)
   end

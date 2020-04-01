@@ -1,7 +1,7 @@
 require 'puppet/property/boolean'
 
-Puppet::Type.newtype(:centreon_host_group) do
-  @doc = 'Type representing a host group.'
+Puppet::Type.newtype(:centreon_service_group) do
+  @doc = 'Type representing a service group.'
 
   ensurable
 
@@ -24,34 +24,6 @@ Puppet::Type.newtype(:centreon_host_group) do
     desc 'The comment of the host group.'
     validate do |value|
       raise 'comment should be a String' unless value.is_a?(String)
-    end
-  end
-
-  newproperty(:note) do
-    desc 'The note of the host group.'
-    validate do |value|
-      raise 'note should be a String' unless value.is_a?(String)
-    end
-  end
-
-  newproperty(:note_url) do
-    desc 'The note url of the host group.'
-    validate do |value|
-      raise 'note_url should be a String' unless value.is_a?(String)
-    end
-  end
-
-  newproperty(:action_url) do
-    desc 'The action url of the host group.'
-    validate do |value|
-      raise 'action_url should be a String' unless value.is_a?(String)
-    end
-  end
-
-  newproperty(:icon_image) do
-    desc 'The icon image of the host group.'
-    validate do |value|
-      raise 'icon image should be a String' unless value.is_a?(String)
     end
   end
 

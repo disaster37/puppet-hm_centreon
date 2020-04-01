@@ -19,7 +19,8 @@ Puppet::Type.type(:centreon_host).provide(:centreon_api, parent: ::PuppetX::Cent
         filters << new(hash) unless hash.empty?
       end
 
-      if provider = filters.find { |c| c.name == resources[resource_name][:name] }
+      provider = filters.find { |c| c.name == resources[resource_name][:name] }
+      if provider
         resources[resource_name].provider = provider
         Puppet.info("Found host #{resources[resource_name][:name]}")
       end
@@ -31,11 +32,10 @@ Puppet::Type.type(:centreon_host).provide(:centreon_api, parent: ::PuppetX::Cent
     return {} if host.nil?
 
     {
-      id: host.id,
       name: host.name,
       description: host.description,
       address: host.address,
-      enable: host.is_activated,
+      enable: host.activated,
       poller: host.poller,
       groups: host.groups.map { |host_group| host_group.name },
       templates: host.templates.map { |host_template| host_template.name },
@@ -44,7 +44,7 @@ Puppet::Type.type(:centreon_host).provide(:centreon_api, parent: ::PuppetX::Cent
                 {
                   'name' => macro.name,
                   'value' => macro.value,
-                  'is_password' => macro.is_password,
+                  'is_password' => macro.password,
                   'description' => macro.description,
                 }}.flatten.uniq.compact,
       ensure: :present,
@@ -60,39 +60,37 @@ Puppet::Type.type(:centreon_host).provide(:centreon_api, parent: ::PuppetX::Cent
     Puppet.info("Creating host #{name}")
 
     host = ::Centreon::Host.new
-    host.set_name(resource[:name])
-    host.set_description(resource[:description]) unless resource[:description].nil?
-    host.set_is_activated(resource[:enable])
-    host.set_address(resource[:address])
-    host.set_poller(resource[:poller])
-    host.set_comment(resource[:comment]) unless resource[:comment].nil?
+    host.name = resource[:name]
+    host.description = resource[:description] unless resource[:description].nil?
+    host.activated = resource[:enable]
+    host.address = resource[:address]
+    host.poller = resource[:poller]
+    host.comment = resource[:comment] unless resource[:comment].nil?
     unless resource[:groups].nil?
       resource[:groups].each do |name|
         host_group = Centreon::HostGroup.new
-        host_group.set_name(name)
+        host_group.name = name
         host.add_group(host_group)
       end
     end
     unless resource[:templates].nil?
       resource[:templates].each do |name|
         host_template = Centreon::HostTemplate.new
-        host_template.set_name(name)
+        host_template.name = name
         host.add_template(host_template)
       end
     end
     unless resource[:macros].nil?
       resource[:macros].each do |hash|
         macro = Centreon::Macro.new
-        macro.set_name(hash['name'])
-        macro.set_value(hash['value'])
-        macro.set_description(hash['description']) unless hash['description'].nil?
-        macro.set_is_password(hash['is_password']) unless hash['is_password'].nil?
+        macro.name = hash['name']
+        macro.value = hash['value']
+        macro.description = hash['description'] unless hash['description'].nil?
+        macro.password = hash['is_password'] unless hash['is_password'].nil?
         host.add_macro(macro)
       end
     end
     client(resource[:config]).host.add(host)
-
-    @property_hash[:id] = host.id
     @property_hash[:ensure] = :present
   end
 
@@ -103,46 +101,45 @@ Puppet::Type.type(:centreon_host).provide(:centreon_api, parent: ::PuppetX::Cent
   end
 
   def flush
-    if @property_hash[:ensure] != :absent && !@property_flush.empty?
-      Puppet.info("Update host #{name}")
+    return unless @property_hash[:ensure] != :absent && !@property_flush.empty?
 
-      host = Centreon::Host.new
-      host.set_name(@property_hash[:name])
-      host.set_description(@property_flush[:description]) unless @property_flush[:description].nil?
-      host.set_address(@property_flush[:address]) unless @property_flush[:address].nil?
-      host.set_poller(@property_flush[:poller]) unless @property_flush[:poller].nil?
-      host.set_comment(@property_flush[:comment]) unless @property_flush[:comment].nil?
-      host.set_is_activated(@property_flush[:enable]) unless @property_flush[:enable].nil?
+    Puppet.info("Update host #{name}")
 
-      unless @property_flush[:groups].nil?
-        @property_flush[:groups].each do |name|
-          host_group = Centreon::HostGroup.new
-          host_group.set_name(name)
-          host.add_group(host_group)
-        end
+    host = Centreon::Host.new
+    host.name = @property_hash[:name]
+    host.description = @property_flush[:description] unless @property_flush[:description].nil?
+    host.address = @property_flush[:address] unless @property_flush[:address].nil?
+    host.poller = @property_flush[:poller] unless @property_flush[:poller].nil?
+    host.comment = @property_flush[:comment] unless @property_flush[:comment].nil?
+    host.activated = @property_flush[:enable] unless @property_flush[:enable].nil?
+
+    unless @property_flush[:groups].nil?
+      @property_flush[:groups].each do |name|
+        host_group = Centreon::HostGroup.new
+        host_group.name = name
+        host.add_group(host_group)
       end
-      unless @property_flush[:templates].nil?
-        @property_flush[:templates].each do |name|
-          host_template = Centreon::HostTemplate.new
-          host_template.set_name(name)
-          host.add_template(host_template)
-        end
-      end
-      unless @property_flush[:macros].nil?
-        @property_flush[:macros].each do |hash|
-          macro = Centreon::Macro.new
-          macro.set_name(hash['name'])
-          macro.set_value(hash['value'])
-          macro.set_description(hash['description']) unless hash['description'].nil?
-          macro.set_is_password(hash['is_password']) unless hash['is_password'].nil?
-          host.add_macro(macro)
-        end
-      end
-
-      # Update host
-      client(resource[:config]).host.update(host, !@property_flush[:groups].nil?, !@property_flush[:templates].nil?, !@property_flush[:macros].nil?, !@property_flush[:enable].nil?)
-
     end
+    unless @property_flush[:templates].nil?
+      @property_flush[:templates].each do |name|
+        host_template = Centreon::HostTemplate.new
+        host_template.name = name
+        host.add_template(host_template)
+      end
+    end
+    unless @property_flush[:macros].nil?
+      @property_flush[:macros].each do |hash|
+        macro = Centreon::Macro.new
+        macro.name = hash['name']
+        macro.value = hash['value']
+        macro.description = hash['description'] unless hash['description'].nil?
+        macro.password = hash['is_password'] unless hash['is_password'].nil?
+        host.add_macro(macro)
+      end
+    end
+
+    # Update host
+    client(resource[:config]).host.update(host, !@property_flush[:groups].nil?, !@property_flush[:templates].nil?, !@property_flush[:macros].nil?, !@property_flush[:enable].nil?)
   end
 
   # Getter and setter

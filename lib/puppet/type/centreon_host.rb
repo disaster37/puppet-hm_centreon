@@ -96,8 +96,6 @@ Puppet::Type.newtype(:centreon_host) do
     end
   end
 
-  newproperty(:id)
-
   newparam(:config) do
     desc 'The Centreon configuration to use'
 

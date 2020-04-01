@@ -9,6 +9,8 @@ RSpec.describe 'Test Centreon::ServiceGroup' do
       expect(service_group.id).to eq nil
       expect(service_group.name).to eq nil
       expect(service_group.description).to eq nil
+      expect(service_group.comment).to eq nil
+      expect(service_group.activated).to eq false
       expect(service_group.services).to eq []
     end
 
@@ -31,6 +33,24 @@ RSpec.describe 'Test Centreon::ServiceGroup' do
 
       service_group.description = ''
       expect(service_group.description).to eq ''
+    end
+    
+    it 'test set/get comment' do
+      service_group = ::Centreon::ServiceGroup.new
+      service_group.comment = 'test'
+      expect(service_group.comment).to eq 'test'
+
+      service_group.comment = ''
+      expect(service_group.comment).to eq ''
+    end
+    
+    it 'test set/get activated' do
+      service_group = ::Centreon::ServiceGroup.new
+      service_group.activated = true
+      expect(service_group.activated).to eq true
+
+      service_group.activated = false
+      expect(service_group.activated).to eq false
     end
 
     it 'test valid' do

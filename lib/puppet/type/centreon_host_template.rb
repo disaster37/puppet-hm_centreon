@@ -35,13 +35,6 @@ Puppet::Type.newtype(:centreon_host_template) do
     end
   end
 
-  newproperty(:poller) do
-    desc 'The poller of the host template.'
-    validate do |value|
-      raise 'poller should be a String' unless value.is_a?(String)
-    end
-  end
-
   newproperty(:enable, parent: Puppet::Property::Boolean) do
     desc 'The state of host template'
 
@@ -81,8 +74,6 @@ Puppet::Type.newtype(:centreon_host_template) do
       super(value)
     end
   end
-
-  newproperty(:id)
 
   newparam(:config) do
     desc 'The Centreon configuration to use'

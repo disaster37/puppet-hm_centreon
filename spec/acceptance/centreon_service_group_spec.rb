@@ -7,14 +7,14 @@ apply_manifest_opts = {
   trace: true,
 }
 
-describe 'Centreon host group resource:' do
+describe 'Centreon service group resource:' do
   before(:each) do
   end
 
   describe 'Manage With minimal parameter' do
     it 'create successfully' do
       pp = <<-EOS
-        centreon_host_group{'test_rspec':
+        centreon_service_group{'test_rspec':
           ensure => 'present'
         }
       EOS
@@ -29,14 +29,11 @@ describe 'Centreon host group resource:' do
   describe 'Manage With all parameter' do
     it 'create successfully' do
       pp = <<-EOS
-        centreon_host_group{'test_rspec2':
+        centreon_service_group{'test_rspec2':
           ensure      => 'present',
           enable      => true,
           description => 'my HG',
-          comment     => 'Managed by puppet',
-          note        => 'this is my note',
-          note_url    => 'http://localhost/note',
-          action_url  => 'http://localhost/action',
+          comment     => 'Managed by puppet'
         }
       EOS
       result = apply_manifest(pp, apply_manifest_opts)
@@ -50,14 +47,11 @@ describe 'Centreon host group resource:' do
   describe 'Update' do
     it 'update successfully' do
       pp = <<-EOS
-        centreon_host_group{'test_rspec':
+        centreon_service_group{'test_rspec':
           ensure      => 'present',
           enable      => true,
           description => 'my HG',
-          comment     => 'Managed by puppet',
-          note        => 'this is my note',
-          note_url    => 'http://localhost/note',
-          action_url  => 'http://localhost/action',
+          comment     => 'Managed by puppet'
         }
       EOS
       result = apply_manifest(pp, apply_manifest_opts)
@@ -71,10 +65,10 @@ describe 'Centreon host group resource:' do
   describe 'Destroy' do
     it 'destroy successfully' do
       pp = <<-EOS
-        centreon_host_group{'test_rspec':
+        centreon_service_group{'test_rspec':
           ensure      => 'absent',
         }
-        centreon_host_group{'test_rspec2':
+        centreon_service_group{'test_rspec2':
           ensure      => 'absent',
         }
       EOS

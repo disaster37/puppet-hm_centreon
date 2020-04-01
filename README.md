@@ -50,3 +50,22 @@ The resource `centreon_host_group` have the following parameters:
   - **note_url** (optional): The note url for host group
   - **action_url** (optional): The action url for host group
   - **icon_image** (optional): The icon image for host group
+  - **enable** (optional): Enable or disable host group. Default to `true`
+
+### Centreon service group
+
+The following example will configure service group on Centreon.
+
+```puppet
+centreon_service_group{'SG_TEST':
+    ensure      => 'present',
+    description => 'My service group for test purpose'
+}
+```
+
+The resource `centreon_service_group` have the following parameters:
+  - **title**: The service group name
+  - **ensure**: present or absent
+  - **description** (optional): The description for service group
+  - **comment** (optional): The comment for service group
+  - **enable** (optional): Enable or disable service group. Default to `true`

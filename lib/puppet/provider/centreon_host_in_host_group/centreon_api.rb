@@ -19,7 +19,8 @@ Puppet::Type.type(:centreon_host_in_host_group).provide(:centreon_api, parent: :
         filters << new(hash) unless hash.empty?
       end
 
-      if provider = filters.find { |c| c.name == resources[resource_name][:name] }
+      provider = filters.find { |c| c.name == resources[resource_name][:name] }
+      if provider
         resources[resource_name].provider = provider
         Puppet.info("Found host #{resources[resource_name][:host]}")
       end
@@ -46,10 +47,10 @@ Puppet::Type.type(:centreon_host_in_host_group).provide(:centreon_api, parent: :
     Puppet.info("Adding group on host #{host}")
 
     host = Centreon::Host.new
-    host.set_name(resource[:host])
+    host.name = resource[:host]
     resource[:groups].each do |group_name|
       host_group = Centreon::HostGroup.new
-      host_group.set_name(group_name)
+      host_group.name = group_name
       host.add_group(host_group)
     end
 
@@ -61,10 +62,10 @@ Puppet::Type.type(:centreon_host_in_host_group).provide(:centreon_api, parent: :
     Puppet.info("Deleting groups on host #{host}")
 
     host = Centreon::Host.new
-    host.set_name(@property_hash[:host])
+    host.name = @property_hash[:host]
     resource[:groups].each do |group_name|
       host_group = Centreon::HostGroup.new
-      host_group.set_name(group_name)
+      host_group.name = group_name
       host.add_group(host_group)
     end
 
@@ -73,23 +74,20 @@ Puppet::Type.type(:centreon_host_in_host_group).provide(:centreon_api, parent: :
   end
 
   def flush
-    if @property_hash[:ensure] != :absent && !@property_flush.empty? && !@property_flush[:groups].nil? && !@property_flush[:groups].empty?
-      Puppet.info("Update groups on host #{host}")
+    return unless @property_hash[:ensure] != :absent && !@property_flush.empty? && !@property_flush[:groups].nil? && !@property_flush[:groups].empty?
+    Puppet.info("Update groups on host #{host}")
 
-      groups_to_create = @property_flush[:groups] - @property_hash[:groups]
+    groups_to_create = @property_flush[:groups] - @property_hash[:groups]
 
-      unless groups_to_create.empty?
-        host = Centreon::Host.new
-        host.set_name(@property_hash[:host])
-        groups_to_create.each do |group_name|
-          host_group = Centreon::HostGroup.new
-          host_group.set_name(group_name)
-          host.add_group(host_group)
-        end
-        client(resource[:config]).host.add_groups(host)
-      end
-
+    return if groups_to_create.empty?
+    host = Centreon::Host.new
+    host.name = @property_hash[:host]
+    groups_to_create.each do |group_name|
+      host_group = Centreon::HostGroup.new
+      host_group.name = group_name
+      host.add_group(host_group)
     end
+    client(resource[:config]).host.add_groups(host)
   end
 
   # Getter and setter

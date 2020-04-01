@@ -8,6 +8,8 @@ class Centreon::ServiceGroup
     @id = nil
     @name = nil
     @descriptiion = nil
+    @comment = nil
+    @activated = false
     @services = []
   end
 
@@ -18,6 +20,10 @@ class Centreon::ServiceGroup
   attr_reader :description
 
   attr_reader :services
+  
+  attr_reader :comment
+  
+  attr_reader :activated
 
   def id=(id)
     raise('wrong type: integer required') unless id.is_a?(Integer)
@@ -43,6 +49,18 @@ class Centreon::ServiceGroup
     raise('wrong value: service must be valid') unless service.valid
     @services << service
     logger.debug('Add service: ' + service.to_s)
+  end
+  
+  def comment=(value)
+    raise('wrong type: string required') unless value.is_a?(String)
+    @comment = value
+    logger.debug('Comment: ' + value)
+  end
+  
+  def activated=(activated)
+    raise('wrong type: boolean required') unless [true, false].include? activated
+    @activated = activated
+    logger.debug('Activated: ' + activated.to_s)
   end
 
   def valid
