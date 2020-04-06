@@ -36,56 +36,56 @@ class Centreon::HostGroup
   attr_reader :icon_image
 
   def id=(id)
-    raise('wrong type: integer required') unless id.is_a?(Integer)
+    raise('wrong type: integer required for id') unless id.is_a?(Integer)
     @id = id
     logger.debug('ID: ' + id.to_s)
   end
 
   def name=(name)
-    raise('wrong type: string required') unless name.is_a?(String)
+    raise('wrong type: string required for name') unless name.is_a?(String)
     raise("wrong value: name can't be empty") if name.empty?
     @name = name
     logger.debug('Name: ' + name)
   end
 
   def activated=(activated)
-    raise('wrong type: boolean required') unless [true, false].include? activated
+    raise('wrong type: boolean required for activated') unless [true, false].include? activated
     @activated = activated
     logger.debug('Activated: ' + activated.to_s)
   end
 
   def description=(value)
-    raise('wrong type: string required') unless value.is_a?(String)
+    raise('wrong type: string required for description') unless value.is_a?(String)
     @description = value
     logger.debug('Description: ' + value)
   end
 
   def comment=(value)
-    raise('wrong type: string required') unless value.is_a?(String)
+    raise('wrong type: string required for comment') unless value.is_a?(String)
     @comment = value
     logger.debug('Comment: ' + value)
   end
 
   def note=(value)
-    raise('wrong type: string required') unless value.is_a?(String)
+    raise('wrong type: string required for note') unless value.is_a?(String)
     @note = value
     logger.debug('Note: ' + value)
   end
 
   def note_url=(value)
-    raise('wrong type: string required') unless value.is_a?(String)
+    raise('wrong type: string required for note_url') unless value.is_a?(String)
     @note_url = value
     logger.debug('Note URL: ' + value)
   end
 
   def action_url=(value)
-    raise('wrong type: string required') unless value.is_a?(String)
+    raise('wrong type: string required for action_url') unless value.is_a?(String)
     @action_url = value
     logger.debug('Action URL: ' + value)
   end
 
   def icon_image=(value)
-    raise('wrong type: string required') unless value.is_a?(String)
+    raise('wrong type: string required for icon_image') unless value.is_a?(String)
     @icon_image = value
     logger.debug('Icon image: ' + value)
   end

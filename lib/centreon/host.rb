@@ -20,7 +20,7 @@ class Centreon::Host < Centreon::HostModel
   attr_reader :groups
 
   def poller=(poller)
-    raise('wrong type: string required') unless poller.is_a?(String)
+    raise('wrong type: string required for poller') unless poller.is_a?(String)
     @poller = poller
     logger.debug('Poller: ' + poller)
   end

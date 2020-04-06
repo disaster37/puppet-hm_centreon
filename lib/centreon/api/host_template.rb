@@ -15,6 +15,7 @@ class Centreon::APIClient::HostTemplate
 
   # Return all hosts templates from centreon
   def fetch(name = nil, lazzy = true)
+    raise('wrong type: boolean required for lazzy') unless [true, false].include? lazzy
     host_templates = []
     show(name).each do |data|
       host_template = ::Centreon::HostTemplate.new
@@ -36,7 +37,7 @@ class Centreon::APIClient::HostTemplate
       host_templates << host_template
     end
 
-    host_templates
+    return host_templates
   end
 
   # Load additional data for given host template
@@ -59,10 +60,49 @@ class Centreon::APIClient::HostTemplate
     # get_param(host_template.name "comment").each do |data|
     #    host_template.comment = data["comment"] unless data["comment"].nil?
     # end
+    get_param(host_template.name, "action_url|active_checks_enabled|check_command|check_command_arguments|check_interval|check_period|icon_image|max_check_attempts|notes|notes_url|passive_checks_enabled|retry_check_interval|snmp_community|snmp_version|timezone").each do |data|
+        host_template.comment = data["comment"] unless data["comment"].nil?
+        host_template.snmp_community = data["snmp_community"] unless data["snmp_community"].nil?
+        host_template.snmp_version = data["snmp_version"] unless data["snmp_version"].nil?
+        host_template.timezone = data["timezone"] unless data["timezone"].nil?
+        host_template.check_command = data["check_command"] unless data["check_command"].nil?
+        data["check_command_args"].split('!').each do |arg|
+            host_template.add_check_command_arg(arg) unless arg.empty?
+        end unless data["check_command_args"].nil?
+        host_template.check_interval = data["check_interval"].to_i unless data["check_interval"].nil?
+        host_template.retry_check_interval = data["retry_check_interval"].to_i unless data["retry_check_interval"].nil?
+        host_template.max_check_attempts = data["max_check_attempts"].to_i unless data["max_check_attempts"].nil?
+        host_template.check_period = data["check_period"] unless data["check_period"].nil?
+        host_template.note_url = data["notes_url"] unless data["notes_url"].nil?
+        host_template.action_url = data["action_url"] unless data["action_url"].nil?
+        host_template.note = data["notes"] unless data["notes"].nil?
+        host_template.icon_image = data["icon_image"] unless data["icon_image"].nil?
+
+        case data['active_check']
+        when '0'
+            host_template.active_check = 'false'
+        when '1'
+            host_template.active_check = 'true'
+        when '2'
+            host_template.active_check = 'default'
+        end
+
+        case data['passive_check']
+        when '0'
+            host_template.passive_check = 'false'
+        when '1'
+            host_template.passive_check = 'true'
+        when '2'
+            host_template.passive_check = 'default'
+        end
+    end
   end
 
   # Get one host template from monitoring
   def get(name, lazzy = true)
+    raise('wrong type: String required for name') unless name.is_a?(String)
+    raise("wrong value: name can't be empty") if name.empty?
+    raise('wrong type: boolean required for lazzy') unless [true, false].include? lazzy
     # Search if host exist
     host_templates = fetch(name, lazzy)
 
@@ -85,6 +125,41 @@ class Centreon::APIClient::HostTemplate
 
     # Set extra parameters
     set_param(host_template.name, 'comment', host_template.comment) unless host_template.comment.nil?
+    set_param(host_template.name, 'snmp_community', host_template.snmp_community) unless host_template.snmp_community.nil?
+    set_param(host_template.name, 'snmp_version', host_template.snmp_version) unless host_template.snmp_version.nil?
+    set_param(host_template.name, 'timezone', host_template.timezone) unless host_template.timezone.nil?
+    set_param(host_template.name, 'check_command', host_template.check_command) unless host_template.check_command.nil?
+    set_param(host_template.name, 'check_command_args', '!' + host_template.check_command_args.join('!'))
+    set_param(host_template.name, 'check_interval', host_template.check_interval) unless host_template.check_interval.nil?
+    set_param(host_template.name, 'retry_check_interval', host_template.retry_check_interval) unless host_template.retry_check_interval.nil?
+    set_param(host_template.name, 'max_check_attempts', host_template.max_check_attempts) unless host_template.max_check_attempts.nil?
+    set_param(host_template.name, 'check_period', host_template.check_period) unless host_template.check_period.nil?
+    case host_template.active_check
+    when 'false'
+        active_check = '0'
+    when 'true'
+        active_check = '1'
+    when 'default'
+        active_check = '2'
+    else
+        active_check = nil
+    end
+    set_param(host_template.name, 'active_check', active_check) unless active_check.nil?
+    case host_template.passive_check
+    when 'false'
+        passive_check = '0'
+    when 'true'
+        passive_check = '1'
+    when 'default'
+        passive_check = '2'
+    else
+        passive_check = nil
+    end
+    set_param(host_template.name, 'passive_check', passive_check) unless passive_check.nil?
+    set_param(host_template.name, 'notes_url', host_template.note_url) unless host_template.note_url.nil?
+    set_param(host_template.name, 'action_url', host_template.action_url) unless host_template.action_url.nil?
+    set_param(host_template.name, 'notes', host_template.note) unless host_template.note.nil?
+    set_param(host_template.name, 'icon_image', host_template.icon_image) unless host_template.icon_image.nil?
 
     # Disable it if needed
     disable(host_template.name) unless host_template.activated
@@ -96,13 +171,47 @@ class Centreon::APIClient::HostTemplate
   end
 
   # Update host template on centreon
-  def update(host_template, templates = true, macros = true, activated = true)
+  def update(host_template, templates = true, macros = true, activated = true, check_command_args = true)
     raise('wrong type: Centreon::HostTemplate required') unless host_template.is_a?(::Centreon::HostTemplate)
     raise('wrong value: host template must be valid') unless host_template.valid
 
     set_param(host_template.name, 'alias', host_template.description) unless host_template.description.nil?
     set_param(host_template.name, 'address', host_template.address) unless host_template.address.nil?
     set_param(host_template.name, 'comment', host_template.comment) unless host_template.comment.nil?
+    set_param(host_template.name, 'snmp_community', host_template.snmp_community) unless host_template.snmp_community.nil?
+    set_param(host_template.name, 'snmp_version', host_template.snmp_version) unless host_template.snmp_version.nil?
+    set_param(host_template.name, 'timezone', host_template.timezone) unless host_template.timezone.nil?
+    set_param(host_template.name, 'check_command', host_template.check_command) unless host_template.check_command.nil?
+    set_param(host_template.name, 'check_interval', host_template.check_interval) unless host_template.check_interval.nil?
+    set_param(host_template.name, 'retry_check_interval', host_template.retry_check_interval) unless host_template.retry_check_interval.nil?
+    set_param(host_template.name, 'max_check_attempts', host_template.max_check_attempts) unless host_template.max_check_attempts.nil?
+    set_param(host_template.name, 'check_period', host_template.check_period) unless host_template.check_period.nil?
+    case host_template.active_check
+    when 'false'
+        active_check = '0'
+    when 'true'
+        active_check = '1'
+    when 'default'
+        active_check = '2'
+    else
+        active_check = nil
+    end
+    set_param(host_template.name, 'active_check', active_check) unless active_check.nil?
+    case host_template.passive_check
+    when 'false'
+        passive_check = '0'
+    when 'true'
+        passive_check = '1'
+    when 'default'
+        passive_check = '2'
+    else
+        passive_check = nil
+    end
+    set_param(host_template.name, 'passive_check', passive_check) unless passive_check.nil?
+    set_param(host_template.name, 'notes_url', host_template.note_url) unless host_template.note_url.nil?
+    set_param(host_template.name, 'action_url', host_template.action_url) unless host_template.action_url.nil?
+    set_param(host_template.name, 'notes', host_template.note) unless host_template.note.nil?
+    set_param(host_template.name, 'icon_image', host_template.icon_image) unless host_template.icon_image.nil?
     if activated
       enable(host_template.name) if host_template.activated
       disable(host_template.name) unless host_template.activated
@@ -120,6 +229,10 @@ class Centreon::APIClient::HostTemplate
       elsif templates
         set_templates(host_template.name, host_template.templates_to_s)
       end
+    end
+
+    if check_command_args
+        set_param(host_template.name, 'check_command_args', '!' + host_template.check_command_args.join('!'))
     end
 
     return unless macros

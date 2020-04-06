@@ -14,6 +14,22 @@ RSpec.describe 'Test Centreon::Host' do
       expect(host.groups).to eq []
       expect(host.templates).to eq []
       expect(host.macros).to eq []
+      expect(host.check_command_args).to eq []
+      expect(host.snmp_community).to eq nil
+      expect(host.snmp_version).to eq nil
+      expect(host.timezone).to eq nil
+      expect(host.check_command).to eq nil
+      expect(host.check_interval).to eq nil
+      expect(host.retry_check_interval).to eq nil
+      expect(host.max_check_attempts).to eq nil
+      expect(host.check_period).to eq nil
+      expect(host.active_check).to eq nil
+      expect(host.passive_check).to eq nil
+      expect(host.note_url).to eq nil
+      expect(host.action_url).to eq nil
+      expect(host.note).to eq nil
+      expect(host.icon_image).to eq nil
+
     end
 
     it 'test set/get id' do
@@ -59,6 +75,9 @@ RSpec.describe 'Test Centreon::Host' do
       host = ::Centreon::Host.new
       host.comment = 'test'
       expect(host.comment).to eq 'test'
+
+      host.comment = ''
+      expect(host.comment).to eq ''
     end
 
     it 'test add/get group' do
@@ -128,6 +147,123 @@ RSpec.describe 'Test Centreon::Host' do
 
       host.name = 'test'
       expect(host.valid_name).to eq true
+    end
+
+    it 'test set/get snmp_community' do
+      host = ::Centreon::Host.new
+      host.snmp_community = 'test'
+      expect(host.snmp_community).to eq 'test'
+
+      host.snmp_community = ''
+      expect(host.snmp_community).to eq ''
+    end
+
+    it 'test set/get snmp_version' do
+      host = ::Centreon::Host.new
+      host.snmp_version = 'test'
+      expect(host.snmp_version).to eq 'test'
+
+      host.snmp_version = ''
+      expect(host.snmp_version).to eq ''
+    end
+
+    it 'test set/get timezone' do
+      host = ::Centreon::Host.new
+      host.timezone = 'test'
+      expect(host.timezone).to eq 'test'
+
+      host.timezone = ''
+      expect(host.timezone).to eq ''
+    end
+
+    it 'test set/get check_command' do
+      host = ::Centreon::Host.new
+      host.check_command = 'test'
+      expect(host.check_command).to eq 'test'
+
+      host.check_command = ''
+      expect(host.check_command).to eq ''
+    end
+
+    it 'test set/get check_command_args' do
+      host = ::Centreon::Host.new
+      host.add_check_command_arg('test')
+      expect(host.check_command_args).to eq ['test']
+    end
+
+    it 'test set/get check_interval' do
+      host = ::Centreon::Host.new
+      host.check_interval = 10
+      expect(host.check_interval).to eq 10
+    end
+
+    it 'test set/get retry_check_interval' do
+      host = ::Centreon::Host.new
+      host.retry_check_interval = 10
+      expect(host.retry_check_interval).to eq 10
+    end
+
+    it 'test set/get max_check_attempts' do
+      host = ::Centreon::Host.new
+      host.max_check_attempts = 10
+      expect(host.max_check_attempts).to eq 10
+    end
+
+    it 'test set/get check_period' do
+      host = ::Centreon::Host.new
+      host.check_period = 'test'
+      expect(host.check_period).to eq 'test'
+
+      host.check_period = ''
+      expect(host.check_period).to eq ''
+    end
+
+    it 'test set/get active_check' do
+      host = ::Centreon::Host.new
+      host.active_check = 'default'
+      expect(host.active_check).to eq 'default'
+    end
+
+    it 'test set/get passive_check' do
+      host = ::Centreon::Host.new
+      host.passive_check = 'default'
+      expect(host.passive_check).to eq 'default'
+    end
+
+    it 'test set/get note_url' do
+      host = ::Centreon::Host.new
+      host.note_url = 'test'
+      expect(host.note_url).to eq 'test'
+
+      host.note_url = ''
+      expect(host.note_url).to eq ''
+    end
+
+    it 'test set/get action_url' do
+      host = ::Centreon::Host.new
+      host.action_url = 'test'
+      expect(host.action_url).to eq 'test'
+
+      host.action_url = ''
+      expect(host.action_url).to eq ''
+    end
+
+    it 'test set/get note' do
+      host = ::Centreon::Host.new
+      host.note = 'test'
+      expect(host.note).to eq 'test'
+
+      host.note = ''
+      expect(host.note).to eq ''
+    end
+
+    it 'test set/get icon_image' do
+      host = ::Centreon::Host.new
+      host.icon_image = 'test'
+      expect(host.icon_image).to eq 'test'
+
+      host.icon_image = ''
+      expect(host.icon_image).to eq ''
     end
   end
 end

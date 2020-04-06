@@ -26,20 +26,20 @@ class Centreon::ServiceGroup
   attr_reader :activated
 
   def id=(id)
-    raise('wrong type: integer required') unless id.is_a?(Integer)
+    raise('wrong type: integer required for id') unless id.is_a?(Integer)
     @id = id
     logger.debug('ID: ' + id.to_s)
   end
 
   def name=(name)
-    raise('wrong type: string required') unless name.is_a?(String)
+    raise('wrong type: string required for name') unless name.is_a?(String)
     raise("wrong value: name can't be empty") if name.empty?
     @name = name
     logger.debug('Name: ' + name)
   end
 
   def description=(value)
-    raise('wrong type: string required') unless value.is_a?(String)
+    raise('wrong type: string required for description') unless value.is_a?(String)
     @description = value
     logger.debug('Description: ' + value)
   end
@@ -52,13 +52,13 @@ class Centreon::ServiceGroup
   end
   
   def comment=(value)
-    raise('wrong type: string required') unless value.is_a?(String)
+    raise('wrong type: string required for comment') unless value.is_a?(String)
     @comment = value
     logger.debug('Comment: ' + value)
   end
   
   def activated=(activated)
-    raise('wrong type: boolean required') unless [true, false].include? activated
+    raise('wrong type: boolean required for activated') unless [true, false].include? activated
     @activated = activated
     logger.debug('Activated: ' + activated.to_s)
   end

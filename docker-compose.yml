@@ -15,4 +15,10 @@ services:
     hostname: puppet
     domainname: test.local
     working_dir: $PWD
+    links:
+      - centreon:centreon
+
+  centreon:
+    image: webcenter/centreon:latest
+
 

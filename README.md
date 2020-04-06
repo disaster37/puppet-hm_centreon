@@ -69,3 +69,25 @@ The resource `centreon_service_group` have the following parameters:
   - **description** (optional): The description for service group
   - **comment** (optional): The comment for service group
   - **enable** (optional): Enable or disable service group. Default to `true`
+
+### Centreon host template
+
+The following example will configure host template on Centreon.
+
+```puppet
+centreon_host_template{'HT_TEST':
+    ensure      => 'present',
+    description => ''
+}
+```
+
+The resource `centreon_host_template` have the following parameters:
+  - **title**: The host template name
+  - **ensure**: present or absent
+  - **description** (optional): The description for host group
+  - **comment** (optional): The comment for host group
+  - **note** (optional): The note for host group
+  - **note_url** (optional): The note url for host group
+  - **action_url** (optional): The action url for host group
+  - **icon_image** (optional): The icon image for host group
+  - **enable** (optional): Enable or disable host group. Default to `true`
