@@ -84,7 +84,10 @@ Puppet::Type.newtype(:centreon_host_template) do
 
   newproperty(:snmp_version) do
     desc 'The SNMP version of the host template.'
-    newvalues('1', '2c', '3')
+
+    validate do |value|
+      raise 'SNMP version should be 1, 2c or 3' unless ['1', '2c', '3'].include? value
+    end
   end
 
   newproperty(:timezone) do

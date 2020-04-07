@@ -33,9 +33,10 @@ hosts.each do |host|
   on host, "echo 'export http_proxy=" + ENV['http_proxy'] + "' >> /root/.bashrc"
   on host, "echo 'export https_proxy=" + ENV['https_proxy'] + "' >> /root/.bashrc"
   on host, "echo 'export no_proxy=\"" + ENV['no_proxy'] + ",#{host.name},10.221.78.61\"' >> /root/.bashrc"
-  on host, "echo 'export CENTREON_URL=" + ENV['CENTREON_URL'] + "' >> /root/.bashrc"
-  on host, "echo 'export CENTREON_USERNAME=" + ENV['CENTREON_USERNAME'] + "' >> /root/.bashrc"
-  on host, "echo 'export CENTREON_PASSWORD=" + ENV['CENTREON_PASSWORD'] + "' >> /root/.bashrc"
+  on host, "echo 'export CENTREON_URL=http://172.17.0.1/centreon/api/index.php' >> /root/.bashrc"
+  on host, "echo 'export CENTREON_USERNAME=admin' >> /root/.bashrc"
+  on host, "echo 'export CENTREON_PASSWORD=admin' >> /root/.bashrc"
+  on host, "echo 'export CENTREON_DEBUG=true' >> /root/.bashrc"
 
   # Facts for role/profile
   on(host, 'mkdir -p /etc/puppetlabs/facter/facts.d')
@@ -76,8 +77,7 @@ RSpec.configure do |c|
       # scp_to(host, hiera_file, '/etc/puppetlabs/puppet/hiera.yaml')
       # scp_to(host, '/tmp/puppet/hieradata', '/etc/puppetlabs/code')
       # scp_to(host, '/tmp/puppet/modules', '/etc/puppetlabs/code')
-      on(host, '/opt/puppetlabs/puppet/bin/gem install rest-client webmock')
-      scp_to(host, File.expand_path(File.join(__FILE__, '../fixtures/puppetlabs_centreon_configuration.ini')), '/etc/puppetlabs/puppet/puppetlabs_centreon_configuration.ini')
+      on(host, '/opt/puppetlabs/puppet/bin/gem install rest-client')
     end
   end
 end

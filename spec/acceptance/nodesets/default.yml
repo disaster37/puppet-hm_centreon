@@ -27,4 +27,4 @@ HOSTS:
 CONFIG:
   type: foss
   trace_limit: 1000
-#  log_level: verbose
+  log_level: verbose

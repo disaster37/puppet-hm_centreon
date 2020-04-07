@@ -13,7 +13,9 @@ class Centreon::APIClient::HostGroup
     @client = client
   end
 
-  def fetch(name = nil)
+  def fetch(name = nil, lazzy = true)
+    raise('wrong type: boolean required for lazzy') unless [true, false].include? lazzy
+
     r = if name.nil?
           @client.post({
             'action' => 'show',
@@ -33,29 +35,47 @@ class Centreon::APIClient::HostGroup
       host_group.id = data['id'].to_i
       host_group.name = data['name']
       host_group.description = data['alias']
+
+      load(host_group) unless lazzy
+
       host_groups << host_group
     end
 
     host_groups
   end
 
-  def add(group)
-    raise('wrong type: Centreon::HostGroup required') unless group.is_a?(::Centreon::HostGroup)
-    raise('wrong value: host group must be valid') unless group.valid
+  def load(host_group)
+    raise('wrong type: Centreon::HostGroup required') unless host_group.is_a?(::Centreon::HostGroup)
+    raise('wrong value: host_group must be valid') unless host_group.valid
+
+    get_param(host_group.name, 'comment|activate|notes|notes_url|action_url|icon_image').each do |data|
+      logger.debug('Params: ' + data.to_s)
+      host_group.comment = data['comment'] unless data['comment'].nil?
+      host_group.activated = !data['activate'].to_i.zero? unless data['activate'].nil?
+      host_group.note = data['notes'] unless data['notes'].nil?
+      host_group.note_url = data['notes_url'] unless data['notes_url'].nil?
+      host_group.action_url = data['action_url'] unless data['action_url'].nil?
+      host_group.icon_image = data['icon_image'] unless data['icon_image'].nil?
+    end
+  end
+
+  def add(host_group)
+    raise('wrong type: Centreon::HostGroup required') unless host_group.is_a?(::Centreon::HostGroup)
+    raise('wrong value: host group must be valid') unless host_group.valid
 
     @client.post({
       'action' => 'add',
       'object' => 'hg',
-      'values' => '%s;%s' % [group.name, group.description],
+      'values' => '%s;%s' % [host_group.name, host_group.description],
     }.to_json)
 
     # Add optional item
-    set_param(group.name, 'comment', group.comment) unless group.comment.nil?
-    set_param(group.name, 'notes', group.note) unless group.note.nil?
-    set_param(group.name, 'notes_url', group.note_url) unless group.note_url.nil?
-    set_param(group.name, 'action_url', group.action_url) unless group.action_url.nil?
-    set_param(group.name, 'icon_image', group.icon_image) unless group.icon_image.nil?
-    set_param(group.name, 'activate', 0) unless group.activated
+    set_param(host_group.name, 'comment', host_group.comment) unless host_group.comment.nil?
+    set_param(host_group.name, 'notes', host_group.note) unless host_group.note.nil?
+    set_param(host_group.name, 'notes_url', host_group.note_url) unless host_group.note_url.nil?
+    set_param(host_group.name, 'action_url', host_group.action_url) unless host_group.action_url.nil?
+    set_param(host_group.name, 'icon_image', host_group.icon_image) unless host_group.icon_image.nil?
+    set_param(host_group.name, 'activate', 0) unless host_group.activated
   end
 
   def delete(name)
@@ -69,20 +89,20 @@ class Centreon::APIClient::HostGroup
     }.to_json)
   end
 
-  def update(group, activated = true)
-    raise('wrong type: Centreon::HostGroup required') unless group.is_a?(::Centreon::HostGroup)
-    raise('wrong value: host group must be valid') unless group.valid
+  def update(host_group, activated = true)
+    raise('wrong type: Centreon::HostGroup required') unless host_group.is_a?(::Centreon::HostGroup)
+    raise('wrong value: host group must be valid') unless host_group.valid
 
-    set_param(group.name, 'alias', group.description) unless group.description.nil?
-    set_param(group.name, 'comment', group.comment) unless group.comment.nil?
-    set_param(group.name, 'notes', group.note) unless group.note.nil?
-    set_param(group.name, 'notes_url', group.note_url) unless group.note_url.nil?
-    set_param(group.name, 'action_url', group.action_url) unless group.action_url.nil?
-    set_param(group.name, 'icon_image', group.icon_image) unless group.icon_image.nil?
+    set_param(host_group.name, 'alias', host_group.description) unless host_group.description.nil?
+    set_param(host_group.name, 'comment', host_group.comment) unless host_group.comment.nil?
+    set_param(host_group.name, 'notes', host_group.note) unless host_group.note.nil?
+    set_param(host_group.name, 'notes_url', host_group.note_url) unless host_group.note_url.nil?
+    set_param(host_group.name, 'action_url', host_group.action_url) unless host_group.action_url.nil?
+    set_param(host_group.name, 'icon_image', host_group.icon_image) unless host_group.icon_image.nil?
 
     return unless activated
-    set_param(group.name, 'activate', 1) if group.activated
-    set_param(group.name, 'activate', 0) unless group.activated
+    set_param(host_group.name, 'activate', 1) if host_group.activated
+    set_param(host_group.name, 'activate', 0) unless host_group.activated
   end
 
   private
@@ -99,5 +119,20 @@ class Centreon::APIClient::HostGroup
       'object' => 'hg',
       'values' => '%s;%s;%s' % [name, property, value.to_s],
     }.to_json)
+  end
+
+  def get_param(name, property)
+    raise('wrong type: String required for name') unless name.is_a?(String)
+    raise('wrong value: name must be valid') unless !name.nil? && !name.empty?
+    raise('wrong type: String required for property') unless property.is_a?(String)
+    raise('wrong value: property must be valid') unless !property.nil? && !property.empty?
+
+    r = @client.post({
+      'action' => 'getparam',
+      'object' => 'hg',
+      'values' => '%s;%s' % [name, property],
+    }.to_json)
+
+    JSON.parse(r)['result']
   end
 end

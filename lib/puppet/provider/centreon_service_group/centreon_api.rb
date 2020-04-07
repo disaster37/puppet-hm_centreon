@@ -13,11 +13,7 @@ Puppet::Type.type(:centreon_service_group).provide(:centreon_api, parent: ::Pupp
   def self.prefetch(resources)
     resources.keys.each do |resource_name|
       filters = []
-      client(resources[resource_name][:config]).service_group.fetch(resources[resource_name][:name]).each do |service_group|
-        # Because of get_param not implemented on Centreon
-        service_group.activated = resources[resource_name][:enable] unless resources[resource_name][:enable].nil?
-        service_group.comment = resources[resource_name][:comment] unless resources[resource_name][:comment].nil?
-
+      client(resources[resource_name][:config]).service_group.fetch(resources[resource_name][:name], false).each do |service_group|
         hash = service_group_to_hash(service_group)
         filters << new(hash) unless hash.empty?
       end
@@ -79,7 +75,7 @@ Puppet::Type.type(:centreon_service_group).provide(:centreon_api, parent: ::Pupp
     service_group.comment = @property_flush[:comment] unless @property_flush[:comment].nil?
 
     # Update host group
-    client(resource[:config]).service_group.update(service_group)
+    client(resource[:config]).service_group.update(service_group, !@property_flush[:enable].nil?)
   end
 
   # Getter and setter

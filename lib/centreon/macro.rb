@@ -44,7 +44,7 @@ class Centreon::Macro
   def password=(value)
     raise('wrong type: boolean required') unless [true, false].include? value
     @password = value
-    logger.debug('Value: ' + value.to_s)
+    logger.debug('Password: ' + value.to_s)
   end
 
   def source=(value)

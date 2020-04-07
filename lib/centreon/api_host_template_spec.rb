@@ -112,7 +112,7 @@ RSpec.describe 'Test Centreon::Client::HostTemplate' do
           }
       ')
       stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
-        .with(body: '{"action":"getparam","object":"htpl","values":"test;action_url|active_checks_enabled|check_command|check_command_arguments|check_interval|check_period|icon_image|max_check_attempts|notes|notes_url|passive_checks_enabled|retry_check_interval|snmp_community|snmp_version|timezone"}')
+        .with(body: '{"action":"getparam","object":"htpl","values":"test;comment|action_url|active_checks_enabled|check_command|check_command_arguments|check_interval|check_period|icon_image|max_check_attempts|notes|notes_url|passive_checks_enabled|retry_check_interval|snmp_community|snmp_version|timezone"}') # rubocop:disable LineLength
         .to_return(status: 200, body: '
           {
               "result": [
@@ -122,13 +122,13 @@ RSpec.describe 'Test Centreon::Client::HostTemplate' do
                       "snmp_version": "3",
                       "timezone": "timezone",
                       "check_command": "check_command",
-                      "check_command_args": "!arg1!arg2",
+                      "check_command_arguments": "!arg1!arg2",
                       "check_interval": "10",
                       "retry_check_interval": "1",
                       "max_check_attempts": "3",
                       "check_period": "check_period",
-                      "active_check": "2",
-                      "passive_check": "2",
+                      "active_checks_enabled": "2",
+                      "passive_checks_enabled": "2",
                       "notes_url": "notes_url",
                       "action_url": "action_url",
                       "notes": "notes",
@@ -158,12 +158,12 @@ RSpec.describe 'Test Centreon::Client::HostTemplate' do
         retry_check_interval: 1,
         max_check_attempts: 3,
         check_period: 'check_period',
-        active_check: 'default',
-        passive_check: 'default',
+        active_checks_enabled: 'default',
+        passive_checks_enabled: 'default',
         note_url: 'notes_url',
         action_url: 'action_url',
         note: 'notes',
-        icon_image: 'icon_image'
+        icon_image: 'icon_image',
       )
 
       expect(host_templates[0].templates.length).to eq 1
@@ -225,7 +225,7 @@ RSpec.describe 'Test Centreon::Client::HostTemplate' do
           }
       ')
       stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
-        .with(body: '{"action":"getparam","object":"htpl","values":"test;action_url|active_checks_enabled|check_command|check_command_arguments|check_interval|check_period|icon_image|max_check_attempts|notes|notes_url|passive_checks_enabled|retry_check_interval|snmp_community|snmp_version|timezone"}')
+        .with(body: '{"action":"getparam","object":"htpl","values":"test;comment|action_url|active_checks_enabled|check_command|check_command_arguments|check_interval|check_period|icon_image|max_check_attempts|notes|notes_url|passive_checks_enabled|retry_check_interval|snmp_community|snmp_version|timezone"}') # rubocop:disable LineLength
         .to_return(status: 200, body: '
           {
               "result": [
@@ -235,13 +235,13 @@ RSpec.describe 'Test Centreon::Client::HostTemplate' do
                       "snmp_version": "3",
                       "timezone": "timezone",
                       "check_command": "check_command",
-                      "check_command_args": "!arg1!arg2",
+                      "check_command_arguments": "!arg1!arg2",
                       "check_interval": "10",
                       "retry_check_interval": "1",
                       "max_check_attempts": "3",
                       "check_period": "check_period",
-                      "active_check": "2",
-                      "passive_check": "2",
+                      "active_checks_enabled": "2",
+                      "passive_checks_enabled": "2",
                       "notes_url": "notes_url",
                       "action_url": "action_url",
                       "notes": "notes",
@@ -270,12 +270,12 @@ RSpec.describe 'Test Centreon::Client::HostTemplate' do
         retry_check_interval: 1,
         max_check_attempts: 3,
         check_period: 'check_period',
-        active_check: 'default',
-        passive_check: 'default',
+        active_checks_enabled: 'default',
+        passive_checks_enabled: 'default',
         note_url: 'notes_url',
         action_url: 'action_url',
         note: 'notes',
-        icon_image: 'icon_image'
+        icon_image: 'icon_image',
       )
 
       expect(host_template.templates.length).to eq 1
@@ -337,7 +337,7 @@ RSpec.describe 'Test Centreon::Client::HostTemplate' do
           }
       ')
       stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
-        .with(body: '{"action":"getparam","object":"htpl","values":"test;action_url|active_checks_enabled|check_command|check_command_arguments|check_interval|check_period|icon_image|max_check_attempts|notes|notes_url|passive_checks_enabled|retry_check_interval|snmp_community|snmp_version|timezone"}')
+        .with(body: '{"action":"getparam","object":"htpl","values":"test;comment|action_url|active_checks_enabled|check_command|check_command_arguments|check_interval|check_period|icon_image|max_check_attempts|notes|notes_url|passive_checks_enabled|retry_check_interval|snmp_community|snmp_version|timezone"}') # rubocop:disable LineLength
         .to_return(status: 200, body: '
           {
               "result": [
@@ -347,13 +347,13 @@ RSpec.describe 'Test Centreon::Client::HostTemplate' do
                       "snmp_version": "3",
                       "timezone": "timezone",
                       "check_command": "check_command",
-                      "check_command_args": "!arg1!arg2",
+                      "check_command_arguments": "!arg1!arg2",
                       "check_interval": "10",
                       "retry_check_interval": "1",
                       "max_check_attempts": "3",
                       "check_period": "check_period",
-                      "active_check": "2",
-                      "passive_check": "2",
+                      "active_checks_enabled": "2",
+                      "passive_checks_enabled": "2",
                       "notes_url": "notes_url",
                       "action_url": "action_url",
                       "notes": "notes",
@@ -384,12 +384,12 @@ RSpec.describe 'Test Centreon::Client::HostTemplate' do
         retry_check_interval: 1,
         max_check_attempts: 3,
         check_period: 'check_period',
-        active_check: 'default',
-        passive_check: 'default',
+        active_checks_enabled: 'default',
+        passive_checks_enabled: 'default',
         note_url: 'notes_url',
         action_url: 'action_url',
         note: 'notes',
-        icon_image: 'icon_image'
+        icon_image: 'icon_image',
       )
 
       expect(host_template.templates.length).to eq 1
@@ -445,7 +445,7 @@ RSpec.describe 'Test Centreon::Client::HostTemplate' do
           }
       ')
       stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
-        .with(body: '{"action":"setparam","object":"htpl","values":"test;check_command_args;!arg1!arg2"}')
+        .with(body: '{"action":"setparam","object":"htpl","values":"test;check_command_arguments;!arg1!arg2"}')
         .to_return(status: 200, body: '
           {
           }
@@ -475,13 +475,13 @@ RSpec.describe 'Test Centreon::Client::HostTemplate' do
           }
       ')
       stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
-        .with(body: '{"action":"setparam","object":"htpl","values":"test;active_check;2"}')
+        .with(body: '{"action":"setparam","object":"htpl","values":"test;active_checks_enabled;2"}')
         .to_return(status: 200, body: '
           {
           }
       ')
       stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
-        .with(body: '{"action":"setparam","object":"htpl","values":"test;passive_check;2"}')
+        .with(body: '{"action":"setparam","object":"htpl","values":"test;passive_checks_enabled;2"}')
         .to_return(status: 200, body: '
           {
           }
@@ -543,8 +543,8 @@ RSpec.describe 'Test Centreon::Client::HostTemplate' do
       host_template.retry_check_interval = 1
       host_template.max_check_attempts = 3
       host_template.check_period = 'check_period'
-      host_template.active_check = 'default'
-      host_template.passive_check = 'default'
+      host_template.active_checks_enabled = 'default'
+      host_template.passive_checks_enabled = 'default'
       host_template.note_url = 'notes_url'
       host_template.action_url = 'action_url'
       host_template.note = 'notes'
@@ -591,7 +591,7 @@ RSpec.describe 'Test Centreon::Client::HostTemplate' do
           }
       ')
       stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
-        .with(body: '{"action":"setparam","object":"htpl","values":"test;check_command_args;!arg1!arg2"}')
+        .with(body: '{"action":"setparam","object":"htpl","values":"test;check_command_arguments;!arg1!arg2"}')
         .to_return(status: 200, body: '
           {
           }
@@ -621,13 +621,13 @@ RSpec.describe 'Test Centreon::Client::HostTemplate' do
           }
       ')
       stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
-        .with(body: '{"action":"setparam","object":"htpl","values":"test;active_check;2"}')
+        .with(body: '{"action":"setparam","object":"htpl","values":"test;active_checks_enabled;2"}')
         .to_return(status: 200, body: '
           {
           }
       ')
       stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
-        .with(body: '{"action":"setparam","object":"htpl","values":"test;passive_check;2"}')
+        .with(body: '{"action":"setparam","object":"htpl","values":"test;passive_checks_enabled;2"}')
         .to_return(status: 200, body: '
           {
           }
@@ -722,8 +722,8 @@ RSpec.describe 'Test Centreon::Client::HostTemplate' do
       host_template.retry_check_interval = 1
       host_template.max_check_attempts = 3
       host_template.check_period = 'check_period'
-      host_template.active_check = 'default'
-      host_template.passive_check = 'default'
+      host_template.active_checks_enabled = 'default'
+      host_template.passive_checks_enabled = 'default'
       host_template.note_url = 'notes_url'
       host_template.action_url = 'action_url'
       host_template.note = 'notes'

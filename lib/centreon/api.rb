@@ -75,6 +75,6 @@ class Centreon::Client
   attr_reader :host_template
 
   attr_reader :service_template
-  
+
   attr_reader :service_group
 end

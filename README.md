@@ -45,7 +45,7 @@ The resource `centreon_host_group` have the following parameters:
   - **title**: The host group name
   - **ensure**: present or absent
   - **description** (optional): The description for host group
-  - **comment** (optional): The comment for host group
+  - **comment** (optional): The comment for host group. We can't update the field because of `getparam` is not implemented.
   - **note** (optional): The note for host group
   - **note_url** (optional): The note url for host group
   - **action_url** (optional): The action url for host group
@@ -77,17 +77,86 @@ The following example will configure host template on Centreon.
 ```puppet
 centreon_host_template{'HT_TEST':
     ensure      => 'present',
-    description => ''
+    description => 'my host template'
 }
 ```
 
 The resource `centreon_host_template` have the following parameters:
   - **title**: The host template name
   - **ensure**: present or absent
-  - **description** (optional): The description for host group
-  - **comment** (optional): The comment for host group
-  - **note** (optional): The note for host group
-  - **note_url** (optional): The note url for host group
-  - **action_url** (optional): The action url for host group
-  - **icon_image** (optional): The icon image for host group
+  - **description** (optional): The description
+  - **comment** (optional): The comment
+  - **address** (optional): The IP or hostname
   - **enable** (optional): Enable or disable host group. Default to `true`
+  - **templates** (optional): List of host templates
+  - **macros** (optional): List of macros
+  - **snmp_community** (optional): The SNMP community
+  - **snmp_version** (optional): The SNMP version
+  - **timezone** (optional): The timezone
+  - **check_command** (optional): The check command
+  - **check_command_args** (optional): The list of command arguments
+  - **check_interval** (optional): The normal check check_interval
+  - **retry_check_interval** (optional): The retry check interval
+  - **max_check_attempts** (optional): The maximum check attempts to be hard state
+  - **check_period** (optional): The check check period
+  - **active_check** (optional): To enable active check. Default to `default`
+  - **passive_check** (optional): To enable passive check. Default to `default`
+  - **note** (optional): The note
+  - **note_url** (optional): The note url
+  - **action_url** (optional): The action
+  - **icon_image** (optional): The icon image
+  
+
+  The `macro` hash have the following parameters:
+    - **name**: The macro name
+    - **value**: The macro value
+    - **description** (optional): The macro description
+    - **is_password** (optional): Set to true if macro contain password
+
+
+### Centreon host
+
+The following example will configure host on Centreon.
+
+```puppet
+centreon_host{'TEST':
+    ensure      => 'present',
+    description => 'my host',
+    address     => '127.0.0.1',
+    poller      => 'Central'
+}
+```
+
+The resource `centreon_host` have the following parameters:
+  - **title**: The host name
+  - **ensure**: present or absent
+  - **address**: The IP or hostname
+  - **poller**: The poller witch monitor the host
+  - **description** (optional): The description for host
+  - **comment** (optional): The comment for host group
+  - **enable** (optional): Enable or disable host group. Default to `true`
+  - **templates** (optional): List of host templates
+  - **groups** (optional): List of host groups
+  - **macros** (optional): List of macros
+  - **snmp_community** (optional): The SNMP community
+  - **snmp_version** (optional): The SNMP version
+  - **timezone** (optional): The timezone
+  - **check_command** (optional): The check command
+  - **check_command_args** (optional): The list of command arguments
+  - **check_interval** (optional): The normal check check_interval
+  - **retry_check_interval** (optional): The retry check interval
+  - **max_check_attempts** (optional): The maximum check attempts to be hard state
+  - **check_period** (optional): The check check period
+  - **active_check** (optional): To enable active check. Default to `default`
+  - **passive_check** (optional): To enable passive check. Default to `default`
+  - **note** (optional): The note
+  - **note_url** (optional): The note url
+  - **action_url** (optional): The action
+  - **icon_image** (optional): The icon image
+  
+
+  The `macro` hash have the following parameters:
+    - **name**: The macro name
+    - **value**: The macro value
+    - **description** (optional): The macro description
+    - **is_password** (optional): Set to true if macro contain password

@@ -20,9 +20,9 @@ class Centreon::ServiceGroup
   attr_reader :description
 
   attr_reader :services
-  
+
   attr_reader :comment
-  
+
   attr_reader :activated
 
   def id=(id)
@@ -50,13 +50,13 @@ class Centreon::ServiceGroup
     @services << service
     logger.debug('Add service: ' + service.to_s)
   end
-  
+
   def comment=(value)
     raise('wrong type: string required for comment') unless value.is_a?(String)
     @comment = value
     logger.debug('Comment: ' + value)
   end
-  
+
   def activated=(activated)
     raise('wrong type: boolean required for activated') unless [true, false].include? activated
     @activated = activated

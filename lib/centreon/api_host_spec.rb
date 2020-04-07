@@ -136,12 +136,27 @@ RSpec.describe 'Test Centreon::Client::Host' do
           }
       ')
       stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
-        .with(body: '{"action":"getparam","object":"host","values":"test;comment"}')
+        .with(body: '{"action":"getparam","object":"host","values":"test;comment|action_url|active_checks_enabled|check_command|check_command_arguments|check_interval|check_period|icon_image|max_check_attempts|notes|notes_url|passive_checks_enabled|retry_check_interval|snmp_community|snmp_version|timezone"}') # rubocop:disable LineLength
         .to_return(status: 200, body: '
           {
               "result": [
                   {
-                      "comment": "foo"
+                      "comment": "foo",
+                      "snmp_community": "snmp_community",
+                      "snmp_version": "3",
+                      "timezone": "timezone",
+                      "check_command": "check_command",
+                      "check_command_arguments": "!arg1!arg2",
+                      "check_interval": "10",
+                      "retry_check_interval": "1",
+                      "max_check_attempts": "3",
+                      "check_period": "check_period",
+                      "active_checks_enabled": "2",
+                      "passive_checks_enabled": "2",
+                      "notes_url": "notes_url",
+                      "action_url": "action_url",
+                      "notes": "notes",
+                      "icon_image": "icon_image"
                   }
               ]
           }
@@ -157,6 +172,22 @@ RSpec.describe 'Test Centreon::Client::Host' do
         address: '127.0.0.1',
         activated: true,
         poller: 'poller1',
+        comment: 'foo',
+        snmp_community: 'snmp_community',
+        snmp_version: '3',
+        timezone: 'timezone',
+        check_command: 'check_command',
+        check_command_args: ['arg1', 'arg2'],
+        check_interval: 10,
+        retry_check_interval: 1,
+        max_check_attempts: 3,
+        check_period: 'check_period',
+        active_checks_enabled: 'default',
+        passive_checks_enabled: 'default',
+        note_url: 'notes_url',
+        action_url: 'action_url',
+        note: 'notes',
+        icon_image: 'icon_image',
       )
 
       expect(hosts[0].templates.length).to eq 1
@@ -248,12 +279,27 @@ RSpec.describe 'Test Centreon::Client::Host' do
           }
       ')
       stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
-        .with(body: '{"action":"getparam","object":"host","values":"test;comment"}')
+        .with(body: '{"action":"getparam","object":"host","values":"test;comment|action_url|active_checks_enabled|check_command|check_command_arguments|check_interval|check_period|icon_image|max_check_attempts|notes|notes_url|passive_checks_enabled|retry_check_interval|snmp_community|snmp_version|timezone"}') # rubocop:disable LineLength
         .to_return(status: 200, body: '
           {
               "result": [
                   {
-                      "comment": "foo"
+                      "comment": "foo",
+                      "snmp_community": "snmp_community",
+                      "snmp_version": "3",
+                      "timezone": "timezone",
+                      "check_command": "check_command",
+                      "check_command_arguments": "!arg1!arg2",
+                      "check_interval": "10",
+                      "retry_check_interval": "1",
+                      "max_check_attempts": "3",
+                      "check_period": "check_period",
+                      "active_checks_enabled": "2",
+                      "passive_checks_enabled": "2",
+                      "notes_url": "notes_url",
+                      "action_url": "action_url",
+                      "notes": "notes",
+                      "icon_image": "icon_image"
                   }
               ]
           }
@@ -268,6 +314,22 @@ RSpec.describe 'Test Centreon::Client::Host' do
         address: '127.0.0.1',
         activated: true,
         poller: 'poller1',
+        comment: 'foo',
+        snmp_community: 'snmp_community',
+        snmp_version: '3',
+        timezone: 'timezone',
+        check_command: 'check_command',
+        check_command_args: ['arg1', 'arg2'],
+        check_interval: 10,
+        retry_check_interval: 1,
+        max_check_attempts: 3,
+        check_period: 'check_period',
+        active_checks_enabled: 'default',
+        passive_checks_enabled: 'default',
+        note_url: 'notes_url',
+        action_url: 'action_url',
+        note: 'notes',
+        icon_image: 'icon_image',
       )
 
       expect(host.templates.length).to eq 1
@@ -359,12 +421,27 @@ RSpec.describe 'Test Centreon::Client::Host' do
           }
       ')
       stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
-        .with(body: '{"action":"getparam","object":"host","values":"test;comment"}')
+        .with(body: '{"action":"getparam","object":"host","values":"test;comment|action_url|active_checks_enabled|check_command|check_command_arguments|check_interval|check_period|icon_image|max_check_attempts|notes|notes_url|passive_checks_enabled|retry_check_interval|snmp_community|snmp_version|timezone"}') # rubocop:disable LineLength
         .to_return(status: 200, body: '
           {
               "result": [
                   {
-                      "comment": "foo"
+                      "comment": "foo",
+                      "snmp_community": "snmp_community",
+                      "snmp_version": "3",
+                      "timezone": "timezone",
+                      "check_command": "check_command",
+                      "check_command_arguments": "!arg1!arg2",
+                      "check_interval": "10",
+                      "retry_check_interval": "1",
+                      "max_check_attempts": "3",
+                      "check_period": "check_period",
+                      "active_checks_enabled": "2",
+                      "passive_checks_enabled": "2",
+                      "notes_url": "notes_url",
+                      "action_url": "action_url",
+                      "notes": "notes",
+                      "icon_image": "icon_image"
                   }
               ]
           }
@@ -381,6 +458,22 @@ RSpec.describe 'Test Centreon::Client::Host' do
         name: 'test',
         address: '127.0.0.1',
         poller: 'poller1',
+        comment: 'foo',
+        snmp_community: 'snmp_community',
+        snmp_version: '3',
+        timezone: 'timezone',
+        check_command: 'check_command',
+        check_command_args: ['arg1', 'arg2'],
+        check_interval: 10,
+        retry_check_interval: 1,
+        max_check_attempts: 3,
+        check_period: 'check_period',
+        active_checks_enabled: 'default',
+        passive_checks_enabled: 'default',
+        note_url: 'notes_url',
+        action_url: 'action_url',
+        note: 'notes',
+        icon_image: 'icon_image',
       )
 
       expect(host.templates.length).to eq 1

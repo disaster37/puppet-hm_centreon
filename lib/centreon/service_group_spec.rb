@@ -34,7 +34,7 @@ RSpec.describe 'Test Centreon::ServiceGroup' do
       service_group.description = ''
       expect(service_group.description).to eq ''
     end
-    
+
     it 'test set/get comment' do
       service_group = ::Centreon::ServiceGroup.new
       service_group.comment = 'test'
@@ -43,7 +43,7 @@ RSpec.describe 'Test Centreon::ServiceGroup' do
       service_group.comment = ''
       expect(service_group.comment).to eq ''
     end
-    
+
     it 'test set/get activated' do
       service_group = ::Centreon::ServiceGroup.new
       service_group.activated = true

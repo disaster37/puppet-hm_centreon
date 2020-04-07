@@ -9,6 +9,8 @@ module PuppetX::Centreon
         # expand port to to_port and from_port
         new_macro = Marshal.load(Marshal.dump(macro))
         new_macro[:name] = new_macro[:name].upcase unless new_macro[:name].nil?
+        new_macro['description'] = '' if new_macro[:description].nil?
+        new_macro['is_password'] = false if new_macro[:is_password].nil?
 
         new_macro
       end

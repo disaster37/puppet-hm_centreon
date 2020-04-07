@@ -24,8 +24,8 @@ class Centreon::HostModel
     @retry_check_interval = nil
     @max_check_attempts = nil
     @check_period = nil
-    @active_check = nil
-    @passive_check = nil
+    @active_checks_enabled = nil
+    @passive_checks_enabled = nil
     @templates = []
     @macros = []
     @services = []
@@ -75,10 +75,9 @@ class Centreon::HostModel
 
   attr_reader :check_period
 
-  attr_reader :active_check
+  attr_reader :active_checks_enabled
 
-  attr_reader :passive_check
-
+  attr_reader :passive_checks_enabled
 
   def templates_to_s
     if !@templates.empty?
@@ -211,16 +210,16 @@ class Centreon::HostModel
     logger.debug('check_period: ' + value)
   end
 
-  def active_check=(value)
-    raise('wrong type: string required for active_check (true, false or default)') unless ['true', 'false', 'default'].include? value
-    @active_check = value
-    logger.debug('active_check: ' + value)
+  def active_checks_enabled=(value)
+    raise('wrong type: string required for active_checks_enabled (true, false or default)') unless ['true', 'false', 'default'].include? value
+    @active_checks_enabled = value
+    logger.debug('active_checks_enabled: ' + value)
   end
 
-  def passive_check=(value)
-    raise('wrong type: string required for passive_check (true, false or default') unless ['true', 'false', 'default'].include? value
-    @passive_check = value
-    logger.debug('passive_check: ' + value)
+  def passive_checks_enabled=(value)
+    raise('wrong type: string required for passive_checks_enabled (true, false or default') unless ['true', 'false', 'default'].include? value
+    @passive_checks_enabled = value
+    logger.debug('passive_checks_enabled: ' + value)
   end
 
   def add_check_command_arg(arg)

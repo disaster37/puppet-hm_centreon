@@ -13,7 +13,7 @@ class Centreon::APIClient::ServiceGroup
     @client = client
   end
 
-  def fetch(name = nil)
+  def fetch(name = nil, lazzy = true)
     r = if name.nil?
           @client.post({
             'action' => 'show',
@@ -33,10 +33,24 @@ class Centreon::APIClient::ServiceGroup
       service_group.id = data['id'].to_i
       service_group.name = data['name']
       service_group.description = data['alias']
+
+      load(service_group) unless lazzy
+
       service_groups << service_group
     end
 
     service_groups
+  end
+
+  def load(service_group)
+    raise('wrong type: Centreon::ServiceGroup required') unless service_group.is_a?(::Centreon::ServiceGroup)
+    raise('wrong value: service group must be valid') unless service_group.valid
+
+    get_param(service_group.name, 'comment|activate').each do |data|
+      logger.debug('Params: ' + data.to_s)
+      service_group.comment = data['comment'] unless data['comment'].nil?
+      service_group.activated = !data['activate'].to_i.zero? unless data['activate'].nil?
+    end
   end
 
   def add(group)
@@ -78,6 +92,21 @@ class Centreon::APIClient::ServiceGroup
   end
 
   private
+
+  def get_param(name, property)
+    raise('wrong type: String required for name') unless name.is_a?(String)
+    raise('wrong value: name must be valid') unless !name.nil? && !name.empty?
+    raise('wrong type: String required for property') unless property.is_a?(String)
+    raise('wrong value: property must be valid') unless !property.nil? && !property.empty?
+
+    r = @client.post({
+      'action' => 'getparam',
+      'object' => 'sg',
+      'values' => '%s;%s' % [name, property],
+    }.to_json)
+
+    JSON.parse(r)['result']
+  end
 
   def set_param(name, property, value)
     raise('wrong type: String required') unless name.is_a?(String)

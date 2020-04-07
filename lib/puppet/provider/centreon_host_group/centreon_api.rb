@@ -13,15 +13,7 @@ Puppet::Type.type(:centreon_host_group).provide(:centreon_api, parent: ::PuppetX
   def self.prefetch(resources)
     resources.keys.each do |resource_name|
       filters = []
-      client(resources[resource_name][:config]).host_group.fetch(resources[resource_name][:name]).each do |host_group|
-        # Because of get_param not implemented on Centreon
-        host_group.activated = resources[resource_name][:enable] unless resources[resource_name][:enable].nil?
-        host_group.comment = resources[resource_name][:comment] unless resources[resource_name][:comment].nil?
-        host_group.note = resources[resource_name][:note] unless resources[resource_name][:note].nil?
-        host_group.note_url = resources[resource_name][:note_url] unless resources[resource_name][:note_url].nil?
-        host_group.action_url = resources[resource_name][:action_url] unless resources[resource_name][:action_url].nil?
-        host_group.icon_image = resources[resource_name][:icon_image] unless resources[resource_name][:icon_image].nil?
-
+      client(resources[resource_name][:config]).host_group.fetch(resources[resource_name][:name], false).each do |host_group|
         hash = host_group_to_hash(host_group)
         filters << new(hash) unless hash.empty?
       end
@@ -95,7 +87,7 @@ Puppet::Type.type(:centreon_host_group).provide(:centreon_api, parent: ::PuppetX
     host_group.icon_image = @property_flush[:icon_image] unless @property_flush[:icon_image].nil?
 
     # Update host group
-    client(resource[:config]).host_group.update(host_group)
+    client(resource[:config]).host_group.update(host_group, !@property_flush[:enable].nil?)
   end
 
   # Getter and setter

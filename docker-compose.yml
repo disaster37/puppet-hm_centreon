@@ -20,5 +20,13 @@ services:
 
   centreon:
     image: webcenter/centreon:latest
+    ports:
+      - 80:80
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup
+      - ../centreon/www/class/centreon-clapi:/usr/share/centreon/www/class/centreon-clapi:ro
+    cap_add:
+      - SYS_ADMIN
+    tty: true
 
 

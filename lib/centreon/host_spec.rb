@@ -23,13 +23,12 @@ RSpec.describe 'Test Centreon::Host' do
       expect(host.retry_check_interval).to eq nil
       expect(host.max_check_attempts).to eq nil
       expect(host.check_period).to eq nil
-      expect(host.active_check).to eq nil
-      expect(host.passive_check).to eq nil
+      expect(host.active_checks_enabled).to eq nil
+      expect(host.passive_checks_enabled).to eq nil
       expect(host.note_url).to eq nil
       expect(host.action_url).to eq nil
       expect(host.note).to eq nil
       expect(host.icon_image).to eq nil
-
     end
 
     it 'test set/get id' do
@@ -218,16 +217,16 @@ RSpec.describe 'Test Centreon::Host' do
       expect(host.check_period).to eq ''
     end
 
-    it 'test set/get active_check' do
+    it 'test set/get active_checks_enabled' do
       host = ::Centreon::Host.new
-      host.active_check = 'default'
-      expect(host.active_check).to eq 'default'
+      host.active_checks_enabled = 'default'
+      expect(host.active_checks_enabled).to eq 'default'
     end
 
-    it 'test set/get passive_check' do
+    it 'test set/get passive_checks_enabled' do
       host = ::Centreon::Host.new
-      host.passive_check = 'default'
-      expect(host.passive_check).to eq 'default'
+      host.passive_checks_enabled = 'default'
+      expect(host.passive_checks_enabled).to eq 'default'
     end
 
     it 'test set/get note_url' do

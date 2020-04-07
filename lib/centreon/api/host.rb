@@ -78,10 +78,44 @@ class Centreon::APIClient::Host
     end
 
     # Load extra params
-    # BUG centreon: the field comment can't be call from API, only clapi
-    # get_param(host.name, "comment").each do |data|
-    #    host.comment = data["comment"] unless data["comment"].nil?
-    # end
+    get_param(host.name, 'comment|action_url|active_checks_enabled|check_command|check_command_arguments|check_interval|check_period|icon_image|max_check_attempts|notes|notes_url|passive_checks_enabled|retry_check_interval|snmp_community|snmp_version|timezone').each do |data| # rubocop:disable LineLength
+      host.comment = data['comment'] unless data['comment'].nil?
+      host.snmp_community = data['snmp_community'] unless data['snmp_community'].nil?
+      host.snmp_version = data['snmp_version'] unless data['snmp_version'].nil?
+      host.timezone = data['timezone'] unless data['timezone'].nil?
+      host.check_command = data['check_command'] unless data['check_command'].nil?
+      unless data['check_command_arguments'].nil?
+        data['check_command_arguments'].split('!').each do |arg|
+          host.add_check_command_arg(arg) unless arg.empty?
+        end
+      end
+      host.check_interval = data['check_interval'].to_i unless data['check_interval'].nil?
+      host.retry_check_interval = data['retry_check_interval'].to_i unless data['retry_check_interval'].nil?
+      host.max_check_attempts = data['max_check_attempts'].to_i unless data['max_check_attempts'].nil?
+      host.check_period = data['check_period'] unless data['check_period'].nil?
+      host.note_url = data['notes_url'] unless data['notes_url'].nil?
+      host.action_url = data['action_url'] unless data['action_url'].nil?
+      host.note = data['notes'] unless data['notes'].nil?
+      host.icon_image = data['icon_image'] unless data['icon_image'].nil?
+
+      case data['active_checks_enabled']
+      when '0'
+        host.active_checks_enabled = 'false'
+      when '1'
+        host.active_checks_enabled = 'true'
+      when '2'
+        host.active_checks_enabled = 'default'
+      end
+
+      case data['passive_checks_enabled']
+      when '0'
+        host.passive_checks_enabled = 'false'
+      when '1'
+        host.passive_checks_enabled = 'true'
+      when '2'
+        host.passive_checks_enabled = 'default'
+      end
+    end
   end
 
   # Get one host from monitoring
@@ -107,7 +141,43 @@ class Centreon::APIClient::Host
     }.to_json)
 
     # Set extra parameters
+    # Set extra parameters
     set_param(host.name, 'comment', host.comment) unless host.comment.nil?
+    set_param(host.name, 'snmp_community', host.snmp_community) unless host.snmp_community.nil?
+    set_param(host.name, 'snmp_version', host.snmp_version) unless host.snmp_version.nil?
+    set_param(host.name, 'timezone', host.timezone) unless host.timezone.nil?
+    set_param(host.name, 'check_command', host.check_command) unless host.check_command.nil?
+    set_param(host.name, 'check_command_arguments', '!' + host.check_command_args.join('!')) unless host.check_command_args.empty?
+    set_param(host.name, 'check_interval', host.check_interval) unless host.check_interval.nil?
+    set_param(host.name, 'retry_check_interval', host.retry_check_interval) unless host.retry_check_interval.nil?
+    set_param(host.name, 'max_check_attempts', host.max_check_attempts) unless host.max_check_attempts.nil?
+    set_param(host.name, 'check_period', host.check_period) unless host.check_period.nil?
+    active_check = case host.active_checks_enabled
+                   when 'false'
+                     '0'
+                   when 'true'
+                     '1'
+                   when 'default'
+                     '2'
+                   else
+                     nil
+                   end
+    set_param(host.name, 'active_checks_enabled', active_check) unless active_check.nil?
+    passive_check = case host.passive_checks_enabled
+                    when 'false'
+                      '0'
+                    when 'true'
+                      '1'
+                    when 'default'
+                      '2'
+                    else
+                      nil
+                    end
+    set_param(host.name, 'passive_checks_enabled', passive_check) unless passive_check.nil?
+    set_param(host.name, 'notes_url', host.note_url) unless host.note_url.nil?
+    set_param(host.name, 'action_url', host.action_url) unless host.action_url.nil?
+    set_param(host.name, 'notes', host.note) unless host.note.nil?
+    set_param(host.name, 'icon_image', host.icon_image) unless host.icon_image.nil?
 
     # Disable it if needed
     disable(host.name) unless host.activated
@@ -121,7 +191,7 @@ class Centreon::APIClient::Host
     apply_template(host.name) unless host.templates.empty?
   end
 
-  def update(host, groups = true, templates = true, macros = true, activated = true)
+  def update(host, groups = true, templates = true, macros = true, activated = true, check_command_args = true)
     raise('wrong type: Centreon::Host required') unless host.is_a?(::Centreon::Host)
     raise('wrong value: host must be valid') unless host.valid_name
 
@@ -133,6 +203,40 @@ class Centreon::APIClient::Host
       enable(host.name) if host.activated
       disable(host.name) unless host.activated
     end
+    set_param(host.name, 'snmp_community', host.snmp_community) unless host.snmp_community.nil?
+    set_param(host.name, 'snmp_version', host.snmp_version) unless host.snmp_version.nil?
+    set_param(host.name, 'timezone', host.timezone) unless host.timezone.nil?
+    set_param(host.name, 'check_command', host.check_command) unless host.check_command.nil?
+    set_param(host.name, 'check_interval', host.check_interval) unless host.check_interval.nil?
+    set_param(host.name, 'retry_check_interval', host.retry_check_interval) unless host.retry_check_interval.nil?
+    set_param(host.name, 'max_check_attempts', host.max_check_attempts) unless host.max_check_attempts.nil?
+    set_param(host.name, 'check_period', host.check_period) unless host.check_period.nil?
+    active_check = case host.active_checks_enabled
+                   when 'false'
+                     '0'
+                   when 'true'
+                     '1'
+                   when 'default'
+                     '2'
+                   else
+                     nil
+                   end
+    set_param(host.name, 'active_checks_enabled', active_check) unless active_check.nil?
+    passive_check = case host.passive_checks_enabled
+                    when 'false'
+                      '0'
+                    when 'true'
+                      '1'
+                    when 'default'
+                      '2'
+                    else
+                      nil
+                    end
+    set_param(host.name, 'passive_checks_enabled', passive_check) unless passive_check.nil?
+    set_param(host.name, 'notes_url', host.note_url) unless host.note_url.nil?
+    set_param(host.name, 'action_url', host.action_url) unless host.action_url.nil?
+    set_param(host.name, 'notes', host.note) unless host.note.nil?
+    set_param(host.name, 'icon_image', host.icon_image) unless host.icon_image.nil?
 
     if groups
       # Set groups if needed or remove all groups
@@ -164,18 +268,25 @@ class Centreon::APIClient::Host
       apply_template(host.name)
     end
 
-    return unless macros
+    if check_command_args
+      if host.check_command_args.empty?
+        set_param(host.name, 'check_command_arguments', '')
+      else
+        set_param(host.name, 'check_command_arguments', '!' + host.check_command_args.join('!'))
+      end
+    end
 
+    return unless macros
     current_macros = get_macros(host.name)
     host.macros.each do |macro|
       is_already_exist = false
       current_macros.each do |current_macro|
         next unless current_macro.name == macro.name
-        unless macro.compare(current_macro)
-          set_macro(host.name, macro)
-          break
+
+        if macro.compare(current_macro)
+          is_already_exist = true
         end
-        is_already_exist = true
+
         current_macros.delete(current_macro)
         break
       end
