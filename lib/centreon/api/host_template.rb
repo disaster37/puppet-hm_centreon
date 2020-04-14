@@ -37,7 +37,7 @@ class Centreon::APIClient::HostTemplate
       host_templates << host_template
     end
 
-    host_templates
+    return host_templates
   end
 
   # Load additional data for given host template
@@ -109,7 +109,7 @@ class Centreon::APIClient::HostTemplate
       return host_templates[0]
     end
 
-    nil
+    return nil
   end
 
   # Create new host template on monitoring
@@ -341,7 +341,7 @@ class Centreon::APIClient::HostTemplate
           }.to_json)
         end
 
-    JSON.parse(r)['result']
+    return JSON.parse(r)['result']
   end
 
   # Get param for host template from Centreon
@@ -357,7 +357,7 @@ class Centreon::APIClient::HostTemplate
       'values' => '%s;%s' % [name, property],
     }.to_json)
 
-    JSON.parse(r)['result']
+    return JSON.parse(r)['result']
   end
 
   # Get all host template on given host name
@@ -379,7 +379,7 @@ class Centreon::APIClient::HostTemplate
       templates << host_template
     end
 
-    templates
+    return templates
   end
 
   # Get all macro on given host name

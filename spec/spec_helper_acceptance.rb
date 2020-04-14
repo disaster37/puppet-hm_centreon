@@ -46,7 +46,7 @@ hosts.each do |host|
     version_to_install = '1.' + Puppet.version.split('.')[1..-1] * '.'
     install_puppet_agent_on(host, version: version_to_install)
   when 5
-    install_puppet_agent_on(host, version: Puppet.version, puppet_collection: 'puppet5')
+    install_puppet_agent_on(host, version: '5.5.19', puppet_collection: 'puppet5')
   else
     puts 'unsupported puppet version'
     exit

@@ -14,6 +14,13 @@ Puppet::Type.newtype(:centreon_service_template) do
     end
   end
 
+  newproperty(:description) do
+    desc 'The description of the service.'
+    validate do |value|
+      raise 'description should be a String' unless value.is_a?(String)
+    end
+  end
+
   newproperty(:command) do
     desc 'The command of the service.'
     validate do |value|
@@ -110,6 +117,37 @@ Puppet::Type.newtype(:centreon_service_template) do
     end
   end
 
+  newproperty(:note) do
+    desc 'The note of the service.'
+    validate do |value|
+      raise 'note should be a String' unless value.is_a?(String)
+    end
+  end
+
+  newproperty(:icon_image) do
+    desc 'The icon_image of the service.'
+    validate do |value|
+      raise 'icon_image should be a String' unless value.is_a?(String)
+    end
+  end
+
+  newproperty(:check_period) do
+    desc 'The check_period of the service.'
+    validate do |value|
+      raise 'check_period should be a String' unless value.is_a?(String)
+    end
+  end
+
+  newproperty(:is_volatile) do
+    desc 'The is_volatile of the service.'
+
+    defaultto('default')
+
+    validate do |value|
+      raise 'is_volatile should be a true, false or default' unless ['true', 'false', 'default'].include? value
+    end
+  end
+
   newproperty(:macros, array_matching: :all) do
     desc 'The macros of the service template.'
 
@@ -131,6 +169,48 @@ Puppet::Type.newtype(:centreon_service_template) do
     end
   end
 
+  newproperty(:categories, array_matching: :all) do
+    desc 'The categories of the service.'
+
+    defaultto([])
+
+    def insync?(is)
+      is.to_set == should.to_set
+    end
+
+    validate do |value|
+      raise 'category should be a String' unless value.is_a?(String)
+    end
+  end
+
+  newproperty(:service_traps, array_matching: :all) do
+    desc 'The service traps relation of the service.'
+
+    defaultto([])
+
+    def insync?(is)
+      is.to_set == should.to_set
+    end
+
+    validate do |value|
+      raise 'service trap should be a String' unless value.is_a?(String)
+    end
+  end
+
+  newproperty(:host_templates, array_matching: :all) do
+    desc 'The host templates relation of the service.'
+
+    defaultto([])
+
+    def insync?(is)
+      is.to_set == should.to_set
+    end
+
+    validate do |value|
+      raise 'host template should be a String' unless value.is_a?(String)
+    end
+  end
+
   newparam(:config) do
     desc 'The Centreon configuration to use'
 
@@ -148,5 +228,13 @@ Puppet::Type.newtype(:centreon_service_template) do
 
   autorequire(:centreon_service_template) do
     self[:template]
+  end
+
+  autorequire(:centreon_command) do
+    self[:command]
+  end
+
+  autorequire(:centreon_host_template) do
+    self[:host_templates]
   end
 end

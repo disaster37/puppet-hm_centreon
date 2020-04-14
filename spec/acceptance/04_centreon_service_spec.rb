@@ -6,14 +6,18 @@ apply_manifest_opts = {
   trace: true,
 }
 
-describe 'Centreon host resource:' do
+describe 'Centreon service resource:' do
   describe 'Manage With minimal parameter' do
     it 'create successfully' do
       pp = <<-EOS
-        centreon_host{'test_rspec':
+        centreon_host{'test':
           ensure  => 'present',
           address => '127.0.0.1',
           poller  => 'Central'
+        }
+        centreon_service{'test|test_rspec':
+          ensure  => 'present',
+          template => 'ST1',
         }
       EOS
       result = apply_manifest(pp, apply_manifest_opts)
@@ -27,46 +31,45 @@ describe 'Centreon host resource:' do
   describe 'Manage With all parameter' do
     it 'create successfully' do
       pp = <<-EOS
-        centreon_host_template{'HT_TEST':
-          ensure => 'present'
-        }
-        centreon_host_group{'HG_TEST':
-          ensure => 'present'
+        centreon_host{'test':
+          ensure  => 'present',
+          address => '127.0.0.1',
+          poller  => 'Central'
         }
         centreon_command{'ping':
             ensure => 'present',
             type   => 'check',
             line   => 'ping'
         }
-        centreon_host{'test_rspec2':
+        centreon_service_group{'SG1':
+          ensure => 'present'
+        }
+        centreon_service{'test|test_rspec2':
           ensure               => 'present',
           enable               => true,
-          address              => '127.0.0.1',
-          poller               => 'Central',
-          description          => 'my host',
+          command              => 'ping',
+          command_args         => ['arg1'],
+          template             => 'ST1',
+          normal_check_interval => 10,
+          retry_check_interval => 1,
+          max_check_attempts     => 3,
+          active_check => 'true',
+          passive_check => 'true',
+          note                 => 'this is my note',
+          note_url             => 'http://localhost/note',
+          action_url           => 'http://localhost/action',
           comment              => 'Managed by puppet',
-          templates            => ['HT_TEST'],
-          groups               => ['HG_TEST'],
+          check_period         => 'none',
+          is_volatile          => false,
+          groups               => ['SG1'],
           macros               => [
               {
                   name  => 'MACRO1',
                   value => 'foo',
               }
           ],
-          snmp_community       => 'public',
-          snmp_version         => '2c',
-          timezone             => 'Europe/Paris',
-          check_command        => 'ping',
-          check_command_args   => ['arg1'],
-          check_interval       => 10,
-          retry_check_interval => 1,
-          max_check_attempts   => 3,
-          check_period         => 'none',
-          active_check         => 'true',
-          passive_check        => 'true',
-          note                 => 'this is my note',
-          note_url             => 'http://localhost/note',
-          action_url           => 'http://localhost/action',
+          categories => ['Ping'],
+          service_traps => ['3com - brDatabaseFull']
         }
       EOS
       result = apply_manifest(pp, apply_manifest_opts)
@@ -80,46 +83,45 @@ describe 'Centreon host resource:' do
   describe 'Update' do
     it 'update successfully' do
       pp = <<-EOS
-        centreon_host_template{'HT_TEST':
-          ensure => 'present'
-        }
-        centreon_host_group{'HG_TEST':
-          ensure => 'present'
+        centreon_host{'test':
+          ensure  => 'present',
+          address => '127.0.0.1',
+          poller  => 'Central'
         }
         centreon_command{'ping':
             ensure => 'present',
             type   => 'check',
             line   => 'ping'
         }
-        centreon_host{'test_rspec':
+        centreon_service_group{'SG1':
+          ensure => 'present'
+        }
+        centreon_service{'test|test_rspec':
           ensure               => 'present',
           enable               => true,
-          address              => '127.0.0.1',
-          poller               => 'Central',
-          description          => 'my host',
+          command              => 'ping',
+          command_args         => ['arg1'],
+          template             => 'ST1',
+          normal_check_interval => 10,
+          retry_check_interval => 1,
+          max_check_attempts     => 3,
+          active_check => 'true',
+          passive_check => 'true',
+          note                 => 'this is my note',
+          note_url             => 'http://localhost/note',
+          action_url           => 'http://localhost/action',
           comment              => 'Managed by puppet',
-          templates            => ['HT_TEST'],
-          groups               => ['HG_TEST'],
+          check_period         => 'none',
+          is_volatile          => false,
+          groups               => ['SG1'],
           macros               => [
               {
                   name  => 'MACRO1',
                   value => 'foo',
               }
           ],
-          snmp_community       => 'public',
-          snmp_version         => '2c',
-          timezone             => 'Europe/Paris',
-          check_command        => 'ping',
-          check_command_args   => ['arg1'],
-          check_interval       => 10,
-          retry_check_interval => 1,
-          max_check_attempts   => 3,
-          check_period         => 'none',
-          active_check         => 'true',
-          passive_check        => 'true',
-          note                 => 'this is my note',
-          note_url             => 'http://localhost/note',
-          action_url           => 'http://localhost/action',
+          categories => ['Ping'],
+          service_traps => ['3com - brDatabaseFull']
         }
       EOS
       result = apply_manifest(pp, apply_manifest_opts)
@@ -133,10 +135,10 @@ describe 'Centreon host resource:' do
   describe 'Destroy' do
     it 'destroy successfully' do
       pp = <<-EOS
-        centreon_host{'test_rspec':
+        centreon_service{'test_rspec':
           ensure      => 'absent',
         }
-        centreon_host{'test_rspec2':
+        centreon_service{'test_rspec2':
           ensure      => 'absent',
         }
       EOS

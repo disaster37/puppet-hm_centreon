@@ -15,6 +15,7 @@ class Centreon::APIClient::Host
 
   # Return all hosts in centreon
   def fetch(name = nil, lazzy = true)
+    raise('wrong type: boolean required for lazzy') unless [true, false].include? lazzy
     r = if name.nil?
           @client.post({
             'action' => 'show',
@@ -120,6 +121,7 @@ class Centreon::APIClient::Host
 
   # Get one host from monitoring
   def get(name, lazzy = true)
+    raise('wrong type: boolean required for lazzy') unless [true, false].include? lazzy
     # Search if host exist
     hosts = fetch(name, lazzy)
 
@@ -417,7 +419,7 @@ class Centreon::APIClient::Host
       templates << host_template
     end
 
-    templates
+    return templates
   end
 
   # Get all host group on given host name

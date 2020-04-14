@@ -211,4 +211,8 @@ Puppet::Type.newtype(:centreon_host_template) do
   autorequire(:centreon_host_template) do
     self[:templates]
   end
+
+  autorequire(:centreon_command) do
+    self[:check_command]
+  end
 end

@@ -13,7 +13,7 @@ Puppet::Type.newtype(:centreon_service) do
   newparam(:service_name, namevar: true) do
     desc 'The name of the service'
     validate do |value|
-      raise 'service name must have a name' if value == ''
+      raise 'service must have a name' if value == ''
       raise 'service name should be a String' unless value.is_a?(String)
     end
   end
@@ -57,6 +57,7 @@ Puppet::Type.newtype(:centreon_service) do
   newproperty(:template) do
     desc 'The template of the service.'
     validate do |value|
+      raise 'service must have a template' if value == ''
       raise 'template should be a String' unless value.is_a?(String)
     end
   end
@@ -122,6 +123,37 @@ Puppet::Type.newtype(:centreon_service) do
     end
   end
 
+  newproperty(:note) do
+    desc 'The note of the service.'
+    validate do |value|
+      raise 'note should be a String' unless value.is_a?(String)
+    end
+  end
+
+  newproperty(:icon_image) do
+    desc 'The icon_image of the service.'
+    validate do |value|
+      raise 'icon_image should be a String' unless value.is_a?(String)
+    end
+  end
+
+  newproperty(:check_period) do
+    desc 'The check_period of the service.'
+    validate do |value|
+      raise 'check_period should be a String' unless value.is_a?(String)
+    end
+  end
+
+  newproperty(:is_volatile) do
+    desc 'The is_volatile of the service.'
+
+    defaultto('default')
+
+    validate do |value|
+      raise 'is_volatile should be a true, false or default' unless ['true', 'false', 'default'].include? value
+    end
+  end
+
   newproperty(:groups, array_matching: :all) do
     desc 'The groups of the service.'
 
@@ -157,6 +189,34 @@ Puppet::Type.newtype(:centreon_service) do
     end
   end
 
+  newproperty(:categories, array_matching: :all) do
+    desc 'The categories of the service.'
+
+    defaultto([])
+
+    def insync?(is)
+      is.to_set == should.to_set
+    end
+
+    validate do |value|
+      raise 'category should be a String' unless value.is_a?(String)
+    end
+  end
+
+  newproperty(:service_traps, array_matching: :all) do
+    desc 'The service traps relation of the service.'
+
+    defaultto([])
+
+    def insync?(is)
+      is.to_set == should.to_set
+    end
+
+    validate do |value|
+      raise 'service trap should be a String' unless value.is_a?(String)
+    end
+  end
+
   newparam(:config) do
     desc 'The Centreon configuration to use'
 
@@ -182,6 +242,10 @@ Puppet::Type.newtype(:centreon_service) do
 
   autorequire(:centreon_service_template) do
     self[:template]
+  end
+
+  autorequire(:centreon_command) do
+    self[:command]
   end
 
   def self.title_patterns

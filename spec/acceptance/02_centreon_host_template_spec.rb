@@ -25,6 +25,12 @@ describe 'Centreon host template resource:' do
   describe 'Manage With all parameter' do
     it 'create successfully' do
       pp = <<-EOS
+        centreon_command{'ping':
+            ensure => 'present',
+            type   => 'check',
+            line   => 'ping'
+        }
+
         centreon_host_template{'test_rspec2':
           ensure               => 'present',
           enable               => true,
@@ -65,6 +71,12 @@ describe 'Centreon host template resource:' do
   describe 'Update' do
     it 'update successfully' do
       pp = <<-EOS
+        centreon_command{'ping':
+            ensure => 'present',
+            type   => 'check',
+            line   => 'ping'
+        }
+        
         centreon_host_template{'test_rspec':
           ensure               => 'present',
           enable               => true,

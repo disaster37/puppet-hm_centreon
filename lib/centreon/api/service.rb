@@ -26,17 +26,24 @@ class Centreon::APIClient::Service
     }.to_json)
   end
 
-  def fetch(service_name = nil, lazzy = true)
+  def fetch(host_name = nil, service_name = nil, lazzy = true)
+    raise('wrong type: boolean required for lazzy') unless [true, false].include? lazzy
     r = if service_name.nil? || service_name.empty?
           @client.post({
             'action' => 'show',
             'object' => 'service',
           }.to_json)
-        else
+        elsif host_name.nil? || host_name.empty?
           @client.post({
             'action' => 'show',
             'object' => 'service',
             'values' => service_name,
+          }.to_json)
+        else
+            @client.post({
+            'action' => 'show',
+            'object' => 'service',
+            'values' => '%s;%s' % [host_name, service_name],
           }.to_json)
         end
 
@@ -49,9 +56,9 @@ class Centreon::APIClient::Service
       service.host = host
       service.id = data['id'].to_i
       service.name = data['description']
-      service.command = data['check command']
+      service.check_command = data['check command']
       data['check command arg'].split('!').each do |arg|
-        service.add_command_arg(arg) unless arg.empty?
+        service.add_check_command_arg(arg) unless arg.empty?
       end
       service.normal_check_interval = data['normal check interval'].to_i unless data['normal check interval'].empty?
       service.retry_check_interval = data['retry check interval'].to_i unless data['retry check interval'].empty?
@@ -59,20 +66,20 @@ class Centreon::APIClient::Service
 
       case data['active checks enabled']
       when '0'
-        service.active_check_enabled = 'false'
+        service.active_checks_enabled = 'false'
       when '1'
-        service.active_check_enabled = 'true'
+        service.active_checks_enabled = 'true'
       when '2'
-        service.active_check_enabled = 'default'
+        service.active_checks_enabled = 'default'
       end
 
       case data['passive checks enabled']
       when '0'
-        service.passive_check_enabled = 'false'
+        service.passive_checks_enabled = 'false'
       when '1'
-        service.passive_check_enabled = 'true'
+        service.passive_checks_enabled = 'true'
       when '2'
-        service.passive_check_enabled = 'default'
+        service.passive_checks_enabled = 'default'
       end
 
       case data['activate']
@@ -87,64 +94,7 @@ class Centreon::APIClient::Service
       services << service
     end
 
-    fetch_service_group(nil, services) unless lazzy
-
-    services
-  end
-
-  def fetch_service_group(service_group_name = nil, services = [])
-    r = if service_group_name.nil?
-          @client.post({
-            'action' => 'show',
-            'object' => 'sg',
-          }.to_json)
-        else
-          @client.post({
-            'action' => 'show',
-            'object' => 'sg',
-            'values' => service_group_name,
-          }.to_json)
-        end
-
-    service_groups = []
-    JSON.parse(r)['result'].each do |data|
-      service_group = Centreon::ServiceGroup.new
-      service_group.id = data['id'].to_i
-      service_group.name = data['name']
-      service_group.description = data['alias']
-
-      # Load services associated to current sg
-      r = @client.post({
-        'action' => 'getservice',
-        'object' => 'sg',
-        'values' => service_group.name,
-      }.to_json)
-
-      JSON.parse(r)['result'].each do |data2|
-        is_service_found = false
-        services.each do |service|
-          next unless data2['host name'] == service.host.name && data2['service description'] == service.name
-          service_group.add_service(service)
-          service.add_group(service_group)
-          is_service_found = true
-          logger.debug('Found service group: ' + service_group.to_s)
-          break
-        end
-        next if is_service_found
-        host = Centreon::Host.new
-        host.id = data2['host id'].to_i
-        host.name = data2['host name']
-        service = Centreon::Service.new
-        service.id = data2['service id'].to_i
-        service.name = data2['service description']
-        service.host = host
-        service_group.add_service(service)
-      end
-
-      service_groups << service_group
-    end
-
-    service_groups
+    return services
   end
 
   # Load additional data for given service
@@ -157,14 +107,40 @@ class Centreon::APIClient::Service
       service.add_macro(macro)
     end
 
+    # Load catagories
+    get_categories(service.host.name, service.name).each do |category|
+        service.add_category(category)
+    end
+
+    # Load services groups
+    get_service_groups(service.host.name, service.name).each do |service_group|
+        service.add_group(service_group)
+    end
+
+    # Load service traps
+    get_service_traps(service.host.name, service.name).each do |service_trap|
+        service.add_service_trap(service_trap)
+    end
+
     # Load extra params
-    # BUG Centreon, not yet implemented
-    # get_param(service.host.name, service.name, "template|notes_url|action_url|comment").each do |data|
-    #    service.template = data["template"] unless data["template"].nil?
-    #    service.comment = data["comment"] unless data["comment"].nil?
-    #    service.note_url = data["notes_url"] unless data["notes_url"].nil?
-    #    service.action_url = data["action_url"] unless data["action_url"].nil?
-    # end
+    get_param(service.host.name, service.name, "template|notes_url|action_url|comment|notes|check_period|is_volatile|icon_image").each do |data|
+        logger.debug("Params: " + data.to_s)
+        service.template = data["template"] unless data["template"].nil?
+        service.comment = data["comment"] unless data["comment"].nil?
+        service.note_url = data["notes_url"] unless data["notes_url"].nil?
+        service.action_url = data["action_url"] unless data["action_url"].nil?
+        service.check_period = data["check_period"] unless data["check_period"].nil?
+        service.note = data["notes"] unless data["notes"].nil?
+        service.icon_image = data["icon_image"] unless data["icon_image"].nil?
+        case data['is_volatile']
+        when '0'
+            service.volatile_enabled = 'false'
+        when '1'
+            service.volatile_enabled = 'true'
+        when '2'
+            service.volatile_enabled = 'default'
+        end
+    end
   end
 
   # Get one host from monitoring
@@ -173,9 +149,10 @@ class Centreon::APIClient::Service
     raise('wrong value: host_name must be valid') unless !host_name.nil? && !host_name.empty?
     raise('wrong type: String required for service_name') unless service_name.is_a?(String)
     raise('wrong value: service_name must be valid') unless !service_name.nil? && !service_name.empty?
-
+    raise('wrong type: boolean required for lazzy') unless [true, false].include? lazzy
+    
     # Search if host exist
-    services = fetch(service_name)
+    services = fetch(host_name, service_name)
     found_service = nil
     services.each do |service|
       if service.host.name == host_name && service.name == service_name
@@ -186,10 +163,9 @@ class Centreon::APIClient::Service
 
     if !found_service.nil? && !lazzy
       load(found_service)
-      fetch_service_group(nil, [found_service])
     end
 
-    found_service
+    return found_service
   end
 
   def add(service)
@@ -203,21 +179,51 @@ class Centreon::APIClient::Service
 
     # Set extra parameters
     set_param(service.host.name, service.name, 'comment', service.comment) unless service.comment.nil?
-    set_param(service.host.name, service.name, 'check_command', service.command) unless service.command.nil?
+    set_param(service.host.name, service.name, 'check_command', service.check_command) unless service.check_command.nil?
     set_param(service.host.name, service.name, 'normal_check_interval', service.normal_check_interval) unless service.normal_check_interval.nil?
     set_param(service.host.name, service.name, 'retry_check_interval', service.retry_check_interval) unless service.retry_check_interval.nil?
     set_param(service.host.name, service.name, 'max_check_attempts', service.max_check_attempts) unless service.max_check_attempts.nil?
-    set_param(service.host.name, service.name, 'active_checks_enabled', '0') if !service.active_check_enabled.nil? && service.active_check_enabled == 'false'
-    set_param(service.host.name, service.name, 'active_checks_enabled', '1') if !service.active_check_enabled.nil? && service.active_check_enabled == 'true'
-    set_param(service.host.name, service.name, 'active_checks_enabled', '2') if !service.active_check_enabled.nil? && service.active_check_enabled == 'default'
-    set_param(service.host.name, service.name, 'passive_checks_enabled', '0') if !service.passive_check_enabled.nil? && service.passive_check_enabled == 'false'
-    set_param(service.host.name, service.name, 'passive_checks_enabled', '1') if !service.passive_check_enabled.nil? && service.passive_check_enabled == 'true'
-    set_param(service.host.name, service.name, 'passive_checks_enabled', '2') if !service.passive_check_enabled.nil? && service.passive_check_enabled == 'default'
     set_param(service.host.name, service.name, 'notes_url', service.note_url) unless service.note_url.nil?
     set_param(service.host.name, service.name, 'action_url', service.action_url) unless service.action_url.nil?
-    set_param(service.host.name, service.name, 'check_command_arguments', '!' + service.command_args.join('!'))
+    set_param(service.host.name, service.name, 'check_command_arguments', '!' + service.check_command_args.join('!')) unless service.check_command_args.empty?
     set_param(service.host.name, service.name, 'activate', '0') unless service.activated
     set_param(service.host.name, service.name, 'activate', '1') if service.activated
+    active_check = case service.active_checks_enabled
+    when 'false'
+        '0'
+    when 'true'
+        '1'
+    when 'default'
+        '2'
+    else
+        nil
+    end
+    set_param(service.host.name, service.name, 'active_checks_enabled', active_check) unless active_check.nil?
+    passive_check = case service.passive_checks_enabled
+    when 'false'
+        '0'
+    when 'true'
+        '1'
+    when 'default'
+        '2'
+    else
+        nil
+    end
+    set_param(service.host.name, service.name, 'passive_checks_enabled', passive_check) unless passive_check.nil?
+    is_volatile = case service.volatile_enabled
+    when 'false'
+        '0'
+    when 'true'
+        '1'
+    when 'default'
+        '2'
+    else
+        nil
+    end
+    set_param(service.host.name, service.name, 'is_volatile', is_volatile) unless is_volatile.nil?
+    set_param(service.host.name, service.name, 'check_period', service.check_period) unless service.check_period.nil?
+    set_param(service.host.name, service.name, 'notes', service.note) unless service.note.nil?
+    set_param(service.host.name, service.name, 'icon_image', service.icon_image) unless service.icon_image.nil?
 
     # Set macros
     service.macros.each do |macro|
@@ -225,87 +231,149 @@ class Centreon::APIClient::Service
     end
 
     # Set services groups
-    service.groups.each do |service_group|
-      set_service_group(service.host.name, service.name, service_group.name)
+    if !service.groups.empty?
+        set_service_groups(service.host.name, service.name, service.groups_to_s)
+    end
+
+    # Set categories
+    if !service.categories.empty?
+        set_categories(service.host.name, service.name, service.categories_to_s)
+    end
+
+    # Set service traps
+    if !service.service_traps.empty?
+        set_service_traps(service.host.name, service.name, service.service_traps_to_s)
     end
   end
 
-  def update(service, groups = true, macros = true, activated = true, check_command_arguments = true)
+  def update(service, groups = true, macros = true, activated = true, check_command_args = true, categories = true, traps = true)
     raise('wrong type: Centreon::Service required') unless service.is_a?(::Centreon::Service)
     raise('wrong value: service must be valid') unless service.valid
 
     set_param(service.host.name, service.name, 'template', service.template) unless service.template.nil?
     set_param(service.host.name, service.name, 'comment', service.comment) unless service.comment.nil?
-    set_param(service.host.name, service.name, 'check_command', service.command) unless service.command.nil?
+    set_param(service.host.name, service.name, 'check_command', service.check_command) unless service.check_command.nil?
     set_param(service.host.name, service.name, 'normal_check_interval', service.normal_check_interval) unless service.normal_check_interval.nil?
     set_param(service.host.name, service.name, 'retry_check_interval', service.retry_check_interval) unless service.retry_check_interval.nil?
     set_param(service.host.name, service.name, 'max_check_attempts', service.max_check_attempts) unless service.max_check_attempts.nil?
-    set_param(service.host.name, service.name, 'active_checks_enabled', '0') if !service.active_check_enabled.nil? && service.active_check_enabled == 'false'
-    set_param(service.host.name, service.name, 'active_checks_enabled', '1') if !service.active_check_enabled.nil? && service.active_check_enabled == 'true'
-    set_param(service.host.name, service.name, 'active_checks_enabled', '2') if !service.active_check_enabled.nil? && service.active_check_enabled == 'default'
-    set_param(service.host.name, service.name, 'passive_checks_enabled', '0') if !service.passive_check_enabled.nil? && service.passive_check_enabled == 'false'
-    set_param(service.host.name, service.name, 'passive_checks_enabled', '1') if !service.passive_check_enabled.nil? && service.passive_check_enabled == 'true'
-    set_param(service.host.name, service.name, 'passive_checks_enabled', '2') if !service.passive_check_enabled.nil? && service.passive_check_enabled == 'default'
     set_param(service.host.name, service.name, 'notes_url', service.note_url) unless service.note_url.nil?
     set_param(service.host.name, service.name, 'action_url', service.action_url) unless service.action_url.nil?
     set_param(service.host.name, service.name, 'activate', '0') if !service.activated && activated
     set_param(service.host.name, service.name, 'activate', '1') if service.activated && activated
+    active_check = case service.active_checks_enabled
+    when 'false'
+        '0'
+    when 'true'
+        '1'
+    when 'default'
+        '2'
+    else
+        nil
+    end
+    set_param(service.host.name, service.name, 'active_checks_enabled', active_check) unless active_check.nil?
+    passive_check = case service.passive_checks_enabled
+    when 'false'
+        '0'
+    when 'true'
+        '1'
+    when 'default'
+        '2'
+    else
+        nil
+    end
+    set_param(service.host.name, service.name, 'passive_checks_enabled', passive_check) unless passive_check.nil?
+    is_volatile = case service.volatile_enabled
+    when 'false'
+        '0'
+    when 'true'
+        '1'
+    when 'default'
+        '2'
+    else
+        nil
+    end
+    set_param(service.host.name, service.name, 'is_volatile', is_volatile) unless is_volatile.nil?
+    set_param(service.host.name, service.name, 'check_period', service.check_period) unless service.check_period.nil?
+    set_param(service.host.name, service.name, 'notes', service.note) unless service.note.nil?
+    set_param(service.host.name, service.name, 'icon_image', service.icon_image) unless service.icon_image.nil?
 
-    if check_command_arguments
-      set_param(service.host.name, service.name, 'check_command_arguments', '!' + service.command_args.join('!')) unless service.command_args.empty?
+    if check_command_args
+      if service.check_command_args.empty?
+        set_param(service.host.name, service.name, 'check_command_arguments', '')
+      else
+        set_param(service.host.name, service.name, 'check_command_arguments', '!' + service.check_command_args.join('!'))
+      end
     end
 
     # Set macros
     if macros
-      current_macros = get_macros(service.host.name, service.name)
-      service.macros.each do |macro|
-        is_already_exist = false
+        current_macros = get_macros(service.host.name, service.name)
+        service.macros.each do |macro|
+            is_already_exist = false
+            current_macros.each do |current_macro|
+                next unless current_macro.name == macro.name
+
+                if macro.compare(current_macro)
+                is_already_exist = true
+                end
+
+                current_macros.delete(current_macro)
+                break
+            end
+
+            unless is_already_exist
+                set_macro(service.host.name, service.name, macro)
+            end
+        end
+
+        # Remove old macros
         current_macros.each do |current_macro|
-          next unless current_macro.name == macro.name
-          unless macro.compare(current_macro)
-            set_macro(service.host.name, service.name, macro)
-          end
-          is_already_exist = true
-          current_macros.delete(current_macro)
-          break
+            delete_macro(service.host.name, service.name, current_macro.name)
         end
+    end
 
-        unless is_already_exist
-          set_macro(service.host.name, service.name, macro)
+    # Set categories
+    if categories
+        if service.categories.empty?
+            service_tmp = Centreon::Service.new
+            service_tmp.host = service.host
+            service_tmp.name = service.name
+            get_categories(service.host.name, service.name).each do |category|
+                service_tmp.add_category(category)
+            end
+            delete_categories(service.host.name, service.name, service_tmp.categories_to_s)
+        else
+            set_categories(service.host.name, service.name, service.categories_to_s)
         end
-      end
+    end
 
-      # Remove old macros
-      current_macros.each do |current_macro|
-        delete_macro(service.host.name, service.name, current_macro.name)
-      end
+    if traps
+        if service.service_traps.empty?
+            service_tmp = Centreon::Service.new
+            service_tmp.host = service.host
+            service_tmp.name = service.name
+            get_service_traps(service.host.name, service.name).each do |service_trap|
+                service_tmp.add_service_trap(service_trap)
+            end
+            delete_service_traps(service.host.name, service.name, service_tmp.service_traps_to_s)
+
+        else
+            set_service_traps(service.host.name, service.name, service.service_traps_to_s)
+        end
     end
 
     # Set service groups
     return unless groups
-
-    service_tmp = Centreon::Service.new
-    service_tmp.host = service.host
-    service_tmp.name = service.name
-    fetch_service_group(nil, [service_tmp])
-    current_groups = service_tmp.groups
-    service.groups.each do |group|
-      is_already_exist = false
-      current_groups.each do |current_group|
-        next unless current_group.name == group.name
-        is_already_exist = true
-        current_groups.delete(current_group)
-        break
-      end
-
-      unless is_already_exist
-        set_service_group(service.host.name, service.name, group.name)
-      end
-    end
-
-    # Remove old groups
-    current_groups.each do |current_group|
-      delete_service_group(service.host.name, service.name, current_group.name)
+    if service.groups.empty?
+        service_tmp = Centreon::Service.new
+        service_tmp.host = service.host
+        service_tmp.name = service.name
+        get_service_groups(service.host.name, service.name).each do |service_group|
+            service_tmp.add_group(service_group)
+        end
+        delete_service_groups(service.host.name, service.name, service_tmp.groups_to_s)
+    else
+        set_service_groups(service.host.name, service.name, service.groups_to_s)
     end
   end
 
@@ -341,7 +409,7 @@ class Centreon::APIClient::Service
       'values' => '%s;%s;%s' % [host_name, service_name, name],
     }.to_json)
 
-    JSON.parse(r)['result']
+    return JSON.parse(r)['result']
   end
 
   def set_host(host_name, service_name, new_host_name)
@@ -387,7 +455,7 @@ class Centreon::APIClient::Service
       end
     end
 
-    macros
+    return macros
   end
 
   def set_macro(host_name, service_name, macro)
@@ -434,33 +502,162 @@ class Centreon::APIClient::Service
     }.to_json)
   end
 
-  def set_service_group(host_name, service_name, name)
+  def get_categories(host_name, service_name)
     raise('wrong type: String required for host_name') unless host_name.is_a?(String)
     raise('wrong value: host_name must be valid') unless !host_name.nil? && !host_name.empty?
     raise('wrong type: String required for service_name') unless service_name.is_a?(String)
     raise('wrong value: service_name must be valid') unless !service_name.nil? && !service_name.empty?
-    raise('wrong type: String required for name') unless name.is_a?(String)
-    raise('wrong value: name must be valid') unless !name.nil? && !name.empty?
+  
+    r = @client.post({
+      'action' => 'getcategory',
+      'object' => 'service',
+      'values' => '%s;%s' % [host_name, service_name],
+    }.to_json)
 
-    @client.post({
-      'action' => 'addservice',
-      'object' => 'sg',
-      'values' => '%s;%s,%s' % [name, host_name, service_name],
+    logger.debug("Categories: " + r)
+
+    categories = []
+    JSON.parse(r)['result'].each do |data|
+      categories << data['name']
+    end
+
+    return categories
+  end
+
+  def set_categories(host_name, service_name, categories)
+    raise('wrong type: String required for host_name') unless host_name.is_a?(String)
+    raise('wrong value: host_name must be valid') unless !host_name.nil? && !host_name.empty?
+    raise('wrong type: String required for service_name') unless service_name.is_a?(String)
+    raise('wrong value: service_name must be valid') unless !service_name.nil? && !service_name.empty?
+    raise('wrong type: String required for categories') unless categories.is_a?(String)
+    raise('wrong value: categories must be valid') unless !categories.nil? && !categories.empty?
+
+    r = @client.post({
+      'action' => 'setcategory',
+      'object' => 'service',
+      'values' => '%s;%s;%s' % [host_name, service_name, categories],
     }.to_json)
   end
 
-  def delete_service_group(host_name, service_name, name)
+  def delete_categories(host_name, service_name, categories)
     raise('wrong type: String required for host_name') unless host_name.is_a?(String)
     raise('wrong value: host_name must be valid') unless !host_name.nil? && !host_name.empty?
     raise('wrong type: String required for service_name') unless service_name.is_a?(String)
     raise('wrong value: service_name must be valid') unless !service_name.nil? && !service_name.empty?
-    raise('wrong type: String required for name') unless name.is_a?(String)
-    raise('wrong value: name must be valid') unless !name.nil? && !name.empty?
+    raise('wrong type: String required for categories') unless categories.is_a?(String)
+    raise('wrong value: categories must be valid') unless !categories.nil? && !categories.empty?
 
-    @client.post({
-      'action' => 'delservice',
-      'object' => 'sg',
-      'values' => '%s;%s;%s' % [host_name, service_name, name],
+    r = @client.post({
+      'action' => 'delcategory',
+      'object' => 'service',
+      'values' => '%s;%s;%s' % [host_name, service_name, categories],
+    }.to_json)
+  end
+
+  def get_service_groups(host_name, service_name)
+    raise('wrong type: String required for host_name') unless host_name.is_a?(String)
+    raise('wrong value: host_name must be valid') unless !host_name.nil? && !host_name.empty?
+    raise('wrong type: String required for service_name') unless service_name.is_a?(String)
+    raise('wrong value: service_name must be valid') unless !service_name.nil? && !service_name.empty?
+
+    r = @client.post({
+      'action' => 'getservicegroup',
+      'object' => 'service',
+      'values' => '%s;%s' % [host_name, service_name],
+    }.to_json)
+
+    logger.debug("Service group: " + r)
+
+    service_groups = []
+    JSON.parse(r)['result'].each do |data|
+        service_group = Centreon::ServiceGroup.new
+        service_group.id = data['id'].to_i
+        service_group.name = data['name']
+        service_groups << service_group
+    end
+
+    return service_groups
+  end
+
+  def set_service_groups(host_name, service_name, service_groups)
+    raise('wrong type: String required for host_name') unless host_name.is_a?(String)
+    raise('wrong value: host_name must be valid') unless !host_name.nil? && !host_name.empty?
+    raise('wrong type: String required for service_name') unless service_name.is_a?(String)
+    raise('wrong value: service_name must be valid') unless !service_name.nil? && !service_name.empty?
+    raise('wrong type: String required for service_groups') unless service_groups.is_a?(String)
+    raise('wrong value: service_groups must be valid') unless !service_groups.nil? && !service_groups.empty?
+
+    r = @client.post({
+      'action' => 'setservicegroup',
+      'object' => 'service',
+      'values' => '%s;%s;%s' % [host_name, service_name, service_groups],
+    }.to_json)
+  end
+
+  def delete_service_groups(host_name, service_name, service_groups)
+    raise('wrong type: String required for host_name') unless host_name.is_a?(String)
+    raise('wrong value: host_name must be valid') unless !host_name.nil? && !host_name.empty?
+    raise('wrong type: String required for service_name') unless service_name.is_a?(String)
+    raise('wrong value: service_name must be valid') unless !service_name.nil? && !service_name.empty?
+    raise('wrong type: String required for service_groups') unless service_groups.is_a?(String)
+    raise('wrong value: service_groups must be valid') unless !service_groups.nil? && !service_groups.empty?
+
+    r = @client.post({
+      'action' => 'delservicegroup',
+      'object' => 'service',
+      'values' => '%s;%s;%s' % [host_name, service_name, service_groups],
+    }.to_json)
+  end
+
+  def get_service_traps(host_name, service_name)
+    raise('wrong type: String required for host_name') unless host_name.is_a?(String)
+    raise('wrong value: host_name must be valid') unless !host_name.nil? && !host_name.empty?
+    raise('wrong type: String required for service_name') unless service_name.is_a?(String)
+    raise('wrong value: service_name must be valid') unless !service_name.nil? && !service_name.empty?
+
+    r = @client.post({
+      'action' => 'gettrap',
+      'object' => 'service',
+      'values' => '%s;%s' % [host_name, service_name],
+    }.to_json)
+
+    logger.debug("Traps: " + r)
+
+    traps = []
+    JSON.parse(r)['result'].each do |data|
+      traps << data['name']
+    end
+
+    return traps
+  end
+
+  def set_service_traps(host_name, service_name, service_traps)
+    raise('wrong type: String required for host_name') unless host_name.is_a?(String)
+    raise('wrong value: host_name must be valid') unless !host_name.nil? && !host_name.empty?
+    raise('wrong type: String required for service_name') unless service_name.is_a?(String)
+    raise('wrong value: service_name must be valid') unless !service_name.nil? && !service_name.empty?
+    raise('wrong type: String required for service_traps') unless service_traps.is_a?(String)
+    raise('wrong value: service_traps must be valid') unless !service_traps.nil? && !service_traps.empty?
+
+    r = @client.post({
+      'action' => 'settrap',
+      'object' => 'service',
+      'values' => '%s;%s;%s' % [host_name, service_name, service_traps],
+    }.to_json)
+  end
+
+  def delete_service_traps(host_name, service_name, service_traps)
+    raise('wrong type: String required for host_name') unless host_name.is_a?(String)
+    raise('wrong value: host_name must be valid') unless !host_name.nil? && !host_name.empty?
+    raise('wrong type: String required for service_name') unless service_name.is_a?(String)
+    raise('wrong value: service_name must be valid') unless !service_name.nil? && !service_name.empty?
+    raise('wrong type: String required for service_traps') unless service_traps.is_a?(String)
+    raise('wrong value: service_traps must be valid') unless !service_traps.nil? && !service_traps.empty?
+
+    r = @client.post({
+      'action' => 'deltrap',
+      'object' => 'service',
+      'values' => '%s;%s;%s' % [host_name, service_name, service_traps],
     }.to_json)
   end
 end

@@ -14,6 +14,8 @@ class Centreon::APIClient::ServiceGroup
   end
 
   def fetch(name = nil, lazzy = true)
+    raise('wrong type: boolean required for lazzy') unless [true, false].include? lazzy
+    
     r = if name.nil?
           @client.post({
             'action' => 'show',
@@ -39,7 +41,7 @@ class Centreon::APIClient::ServiceGroup
       service_groups << service_group
     end
 
-    service_groups
+    return service_groups
   end
 
   def load(service_group)
@@ -105,7 +107,7 @@ class Centreon::APIClient::ServiceGroup
       'values' => '%s;%s' % [name, property],
     }.to_json)
 
-    JSON.parse(r)['result']
+    return JSON.parse(r)['result']
   end
 
   def set_param(name, property, value)

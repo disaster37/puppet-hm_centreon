@@ -9,6 +9,7 @@ require_relative './api/service.rb'
 require_relative './api/host_template.rb'
 require_relative './api/service_template.rb'
 require_relative './api/service_group.rb'
+require_relative './api/command.rb'
 
 # API client for Centreon
 class Centreon::Client
@@ -64,6 +65,7 @@ class Centreon::Client
     @host_template = Centreon::APIClient::HostTemplate.new(@client)
     @service_template = Centreon::APIClient::ServiceTemplate.new(@client)
     @service_group = Centreon::APIClient::ServiceGroup.new(@client)
+    @command = Centreon::APIClient::Command.new(@client)
   end
 
   attr_reader :host
@@ -77,4 +79,6 @@ class Centreon::Client
   attr_reader :service_template
 
   attr_reader :service_group
+
+  attr_reader :command
 end
