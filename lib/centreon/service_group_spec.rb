@@ -1,3 +1,4 @@
+require_relative './helper.rb'
 require_relative './service_group.rb'
 require_relative './service.rb'
 require_relative './host.rb'

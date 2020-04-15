@@ -1,0 +1,27 @@
+# Golang CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-go/ for more details
+version: 2.1
+orbs:
+  codecov: codecov/codecov@1.0.5
+jobs:
+  test:
+    docker:
+      - image: circleci/ruby
+    steps:
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - checkout
+      - run: docker-compose run puppet bash -c "gem install webmock simplecov rest-client && rspec lib/centreon/*_spec.rb"
+      - run: docker-compose run --rm puppet rspec lib/centreon/*_spec.rb
+      - codecov/upload:
+          file: coverage/.resultset.jon
+          flags: unittest
+workflows:
+  version: 2
+  build-workflow:
+    jobs:
+      - test:
+          filters:
+            tags:
+              only: /.*/

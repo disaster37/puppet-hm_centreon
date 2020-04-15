@@ -1,3 +1,4 @@
+require_relative './helper.rb'
 require 'webmock/rspec'
 
 require_relative './api.rb'

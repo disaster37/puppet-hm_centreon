@@ -1,3 +1,4 @@
+require_relative './helper.rb'
 require_relative './command.rb'
 
 RSpec.describe 'Test Centreon::command' do

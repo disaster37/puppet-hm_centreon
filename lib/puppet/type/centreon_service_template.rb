@@ -9,14 +9,15 @@ Puppet::Type.newtype(:centreon_service_template) do
   newparam(:name, namevar: true) do
     desc 'The name of the service'
     validate do |value|
-      raise 'service name must have a name' if value == ''
-      raise 'service name should be a String' unless value.is_a?(String)
+      raise 'service template must have a name' if value == ''
+      raise 'name should be a String' unless value.is_a?(String)
     end
   end
 
   newproperty(:description) do
     desc 'The description of the service.'
     validate do |value|
+      raise 'service template must have a description' if value == ''
       raise 'description should be a String' unless value.is_a?(String)
     end
   end

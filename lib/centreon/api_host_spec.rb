@@ -1,3 +1,4 @@
+require_relative './helper.rb'
 require 'webmock/rspec'
 
 require_relative './api.rb'
@@ -511,6 +512,96 @@ RSpec.describe 'Test Centreon::Client::Host' do
           }
       ')
       stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
+        .with(body: '{"action":"setparam","object":"host","values":"test;check_command;ping"}')
+        .to_return(status: 200, body: '
+          {
+          }
+      ')
+      stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
+        .with(body: '{"action":"setparam","object":"host","values":"test;check_command_arguments;!arg1"}')
+        .to_return(status: 200, body: '
+          {
+          }
+      ')
+      stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
+        .with(body: '{"action":"setparam","object":"host","values":"test;action_url;http://127.0.0.1"}')
+        .to_return(status: 200, body: '
+          {
+          }
+      ')
+      stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
+        .with(body: '{"action":"setparam","object":"host","values":"test;active_checks_enabled;1"}')
+        .to_return(status: 200, body: '
+          {
+          }
+      ')
+      stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
+        .with(body: '{"action":"setparam","object":"host","values":"test;check_interval;10"}')
+        .to_return(status: 200, body: '
+          {
+          }
+      ')
+      stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
+        .with(body: '{"action":"setparam","object":"host","values":"test;check_period;none"}')
+        .to_return(status: 200, body: '
+          {
+          }
+      ')
+      stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
+        .with(body: '{"action":"setparam","object":"host","values":"test;icon_image;image"}')
+        .to_return(status: 200, body: '
+          {
+          }
+      ')
+      stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
+        .with(body: '{"action":"setparam","object":"host","values":"test;max_check_attempts;3"}')
+        .to_return(status: 200, body: '
+          {
+          }
+      ')
+      stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
+        .with(body: '{"action":"setparam","object":"host","values":"test;notes;note"}')
+        .to_return(status: 200, body: '
+          {
+          }
+      ')
+      stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
+        .with(body: '{"action":"setparam","object":"host","values":"test;notes_url;http://localhost"}')
+        .to_return(status: 200, body: '
+          {
+          }
+      ')
+      stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
+        .with(body: '{"action":"setparam","object":"host","values":"test;passive_checks_enabled;1"}')
+        .to_return(status: 200, body: '
+          {
+          }
+      ')
+      stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
+        .with(body: '{"action":"setparam","object":"host","values":"test;retry_check_interval;1"}')
+        .to_return(status: 200, body: '
+          {
+          }
+      ')
+      stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
+        .with(body: '{"action":"setparam","object":"host","values":"test;snmp_community;public"}')
+        .to_return(status: 200, body: '
+          {
+          }
+      ')
+      stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
+        .with(body: '{"action":"setparam","object":"host","values":"test;snmp_version;2c"}')
+        .to_return(status: 200, body: '
+          {
+          }
+      ')
+      stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
+        .with(body: '{"action":"setparam","object":"host","values":"test;timezone;Europe/Paris"}')
+        .to_return(status: 200, body: '
+          {
+          }
+      ')
+      stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
         .with(body: '{"action":"setmacro","object":"host","values":"test;MACRO1;foo;0;"}')
         .to_return(status: 200, body: '
           {
@@ -546,7 +637,21 @@ RSpec.describe 'Test Centreon::Client::Host' do
       macro1.value = 'foo'
       host.add_macro(macro1)
       host.activated = true
-
+      host.check_command = 'ping'
+      host.add_check_command_arg('arg1')
+      host.note = 'note'
+      host.note_url = 'http://localhost'
+      host.action_url = 'http://127.0.0.1'
+      host.icon_image = 'image'
+      host.snmp_community = 'public'
+      host.snmp_version = '2c'
+      host.timezone = 'Europe/Paris'
+      host.check_interval = 10
+      host.retry_check_interval = 1
+      host.max_check_attempts = 3
+      host.check_period = 'none'
+      host.active_checks_enabled = 'true'
+      host.passive_checks_enabled = 'true'
       client.host.add(host)
     end
 
@@ -559,6 +664,102 @@ RSpec.describe 'Test Centreon::Client::Host' do
       ')
       stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
         .with(body: '{"action":"setparam","object":"host","values":"test;comment;foo"}')
+        .to_return(status: 200, body: '
+          {
+          }
+      ')
+      stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
+        .with(body: '{"action":"setparam","object":"host","values":"test;check_command;ping"}')
+        .to_return(status: 200, body: '
+          {
+          }
+      ')
+      stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
+        .with(body: '{"action":"setparam","object":"host","values":"test;check_command_arguments;!arg1"}')
+        .to_return(status: 200, body: '
+          {
+          }
+      ')
+      stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
+        .with(body: '{"action":"setparam","object":"host","values":"test;action_url;http://127.0.0.1"}')
+        .to_return(status: 200, body: '
+          {
+          }
+      ')
+      stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
+        .with(body: '{"action":"setparam","object":"host","values":"test;active_checks_enabled;1"}')
+        .to_return(status: 200, body: '
+          {
+          }
+      ')
+      stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
+        .with(body: '{"action":"setparam","object":"host","values":"test;check_interval;10"}')
+        .to_return(status: 200, body: '
+          {
+          }
+      ')
+      stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
+        .with(body: '{"action":"setparam","object":"host","values":"test;check_period;none"}')
+        .to_return(status: 200, body: '
+          {
+          }
+      ')
+      stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
+        .with(body: '{"action":"setparam","object":"host","values":"test;icon_image;image"}')
+        .to_return(status: 200, body: '
+          {
+          }
+      ')
+      stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
+        .with(body: '{"action":"setparam","object":"host","values":"test;max_check_attempts;3"}')
+        .to_return(status: 200, body: '
+          {
+          }
+      ')
+      stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
+        .with(body: '{"action":"setparam","object":"host","values":"test;notes;note"}')
+        .to_return(status: 200, body: '
+          {
+          }
+      ')
+      stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
+        .with(body: '{"action":"setparam","object":"host","values":"test;notes_url;http://localhost"}')
+        .to_return(status: 200, body: '
+          {
+          }
+      ')
+      stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
+        .with(body: '{"action":"setparam","object":"host","values":"test;passive_checks_enabled;1"}')
+        .to_return(status: 200, body: '
+          {
+          }
+      ')
+      stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
+        .with(body: '{"action":"setparam","object":"host","values":"test;retry_check_interval;1"}')
+        .to_return(status: 200, body: '
+          {
+          }
+      ')
+      stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
+        .with(body: '{"action":"setparam","object":"host","values":"test;snmp_community;public"}')
+        .to_return(status: 200, body: '
+          {
+          }
+      ')
+      stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
+        .with(body: '{"action":"setparam","object":"host","values":"test;snmp_version;2c"}')
+        .to_return(status: 200, body: '
+          {
+          }
+      ')
+      stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
+        .with(body: '{"action":"setparam","object":"host","values":"test;timezone;Europe/Paris"}')
+        .to_return(status: 200, body: '
+          {
+          }
+      ')
+      stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
+        .with(body: '{"action":"setmacro","object":"host","values":"test;MACRO1;foo;0;"}')
         .to_return(status: 200, body: '
           {
           }
@@ -641,6 +842,21 @@ RSpec.describe 'Test Centreon::Client::Host' do
       macro1.name = 'macro1'
       macro1.value = 'foo'
       host.add_macro(macro1)
+      host.check_command = 'ping'
+      host.add_check_command_arg('arg1')
+      host.note = 'note'
+      host.note_url = 'http://localhost'
+      host.action_url = 'http://127.0.0.1'
+      host.icon_image = 'image'
+      host.snmp_community = 'public'
+      host.snmp_version = '2c'
+      host.timezone = 'Europe/Paris'
+      host.check_interval = 10
+      host.retry_check_interval = 1
+      host.max_check_attempts = 3
+      host.check_period = 'none'
+      host.active_checks_enabled = 'true'
+      host.passive_checks_enabled = 'true'
 
       client.host.update(host)
     end

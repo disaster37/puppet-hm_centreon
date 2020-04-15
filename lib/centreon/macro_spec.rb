@@ -1,3 +1,4 @@
+require_relative './helper.rb'
 require_relative './macro.rb'
 
 RSpec.describe 'Test Centreon::Macro' do

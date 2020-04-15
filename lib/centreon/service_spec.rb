@@ -1,3 +1,4 @@
+require_relative './helper.rb'
 require_relative './service.rb'
 
 RSpec.describe 'Test Centreon::Service' do

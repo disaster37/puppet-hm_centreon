@@ -1,3 +1,4 @@
+require_relative './helper.rb'
 require_relative './host.rb'
 
 RSpec.describe 'Test Centreon::Host' do

@@ -1,3 +1,4 @@
+require_relative './helper.rb'
 require_relative './host_template.rb'
 require_relative './service_template.rb'
 

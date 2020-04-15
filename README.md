@@ -7,6 +7,8 @@ yum install gcc-c++
 /opt/puppetlabs/puppet/bin/gem install rest-client
 ```
 
+This provided need [Centreon pull request](https://github.com/centreon/centreon/pull/8571)
+
 ## Usages
 
 ### Basic Centreon backend
@@ -199,7 +201,7 @@ centreon_service_template{'ST_TEST':
 The resource `centreon_service_template` have the following parameters:
   - **title**: The service template name
   - **ensure**: present or absent
-  - **description** (optional): The name used when generate service
+  - **description**: The name used when generate service
   - **comment** (optional): The comment
   - **enable** (optional): Enable or disable. Default to `true`
   - **template** (optional): The linked service template
@@ -227,3 +229,65 @@ The resource `centreon_service_template` have the following parameters:
     - **value**: The macro value
     - **description** (optional): The macro description
     - **is_password** (optional): Set to true if macro contain password
+
+
+### Centreon service
+
+The following example will configure service on Centreon.
+
+```puppet
+centreon_service_template{'test|ping':
+    ensure   => 'present',
+    template => 'ST1',
+}
+```
+
+The resource `centreon_service` have the following parameters:
+  - **title**: The unique service name. It composed by `HOST_NAME|SERVICE_NAME`
+  - **ensure**: present or absent
+  - **template**: The linked service template
+  - **comment** (optional): The comment
+  - **enable** (optional): Enable or disable. Default to `true`
+  
+  - **macros** (optional): List of macros
+  - **command** (optional): The check command
+  - **command_args** (optional): The list of command arguments
+  - **normal_check_interval** (optional): The normal check check_interval
+  - **retry_check_interval** (optional): The retry check interval
+  - **max_check_attempts** (optional): The maximum check attempts to be hard state
+  - **check_period** (optional): The check check period
+  - **active_check** (optional): To enable active check. Default to `default`
+  - **passive_check** (optional): To enable passive check. Default to `default`
+  - **note** (optional): The note
+  - **note_url** (optional): The note url
+  - **action_url** (optional): The action
+  - **icon_image** (optional): The icon image
+  - **is_volatile** (optional): To set service as volatile. Default to `default`
+  - **categories** (optional): The list of categories. Default to `[]`
+  - **services_traps** (optional): The list of service traps. Default to `[]`
+  - **groups** (optional): The list of service group. Default to `[]`
+  
+
+  The `macro` hash have the following parameters:
+    - **name**: The macro name
+    - **value**: The macro value
+    - **description** (optional): The macro description
+    - **is_password** (optional): Set to true if macro contain password
+
+
+## Contribute
+
+Pull request are always welcome ;)
+
+Please follow this instruction:
+  - Clone the repository and create feature / fix branch from master branch
+  - Add feature / fix, what you want
+  - Add rspec unit test if you modify Centreon librairy. Run `rspec rspec lib/centreon/*_spec.rb`
+  - Add puppet acceptance test to validate provider change. Run `rspec spec/acceptance/*_spec.rb`
+  - Fix documentation if needed
+  - Make a pull request and look CircleCI status
+
+
+> To run test, you can use `docker-compose run --rm puppet bash` and wait some time that centreon finish setup. 
+> run `gem install webmock rest-client`.
+> Then run rspec command on it.
