@@ -11,8 +11,9 @@ jobs:
     steps:
       - setup_remote_docker
       - checkout
-      - run: docker-compose run puppet bash -c 'pwd && ls -al . && echo $PWD && rspec lib/centreon/*_spec.rb'
-      - run: docker-compose run --rm puppet rspec lib/centreon/*_spec.rb
+      - run: docker-compose build puppet-ci
+      - run: docker-compose run puppet-ci rspec lib/centreon/*_spec.rb
+      - run: docker-compose run puppet rspec lib/centreon/*_spec.rb
       - codecov/upload:
           file: coverage/.resultset.jon
           flags: unittest

@@ -18,6 +18,26 @@ services:
     links:
       - centreon:centreon
 
+  puppet-ci:
+    image: webcenter/puppet-centreon:test
+    build:
+      context: ./
+      dockerfile: .circleci/Dockerfile
+      args:
+        http_proxy: ${http_proxy}
+        https_proxy: ${https_proxy}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - http_proxy=${http_proxy}
+      - https_proxy=${https_proxy}
+      - no_proxy=127.0.0.1,.test.local,10.221.78.61
+    hostname: puppet
+    domainname: test.local
+    working_dir: /project
+    links:
+      - centreon:centreon
+
   centreon:
     image: webcenter/centreon:latest
     ports:
