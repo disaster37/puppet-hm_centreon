@@ -31,7 +31,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
       - CI=${CI}
-      - CODECOV_TOKEN = ${CODECOV_TOKEN}
+      - CODECOV_TOKEN=${CODECOV_TOKEN}
     hostname: puppet
     domainname: test.local
     links:
