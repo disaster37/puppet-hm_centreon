@@ -7,3 +7,5 @@ RUN gem install webmock simplecov rest-client
 
 COPY ./ /project/
 
+WORKDIR /project
+

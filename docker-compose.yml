@@ -34,7 +34,6 @@ services:
       - no_proxy=127.0.0.1,.test.local,10.221.78.61
     hostname: puppet
     domainname: test.local
-    working_dir: /project
     links:
       - centreon:centreon
 
