@@ -11,7 +11,7 @@ jobs:
     steps:
       - setup_remote_docker
       - checkout
-      - run: docker-compose run puppet bash -c 'gem install webmock simplecov rest-client && ls -al lib/centreon && rspec lib/centreon/*_spec.rb'
+      - run: docker-compose run puppet bash -c 'pwd && ls -al . && echo $PWD && rspec lib/centreon/*_spec.rb'
       - run: docker-compose run --rm puppet rspec lib/centreon/*_spec.rb
       - codecov/upload:
           file: coverage/.resultset.jon
