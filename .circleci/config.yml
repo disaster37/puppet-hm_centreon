@@ -9,8 +9,7 @@ jobs:
     docker:
       - image: circleci/ruby
     steps:
-      - setup_remote_docker:
-          docker_layer_caching: true
+      - setup_remote_docker
       - checkout
       - run: docker-compose run puppet bash -c "gem install webmock simplecov rest-client && rspec lib/centreon/*_spec.rb"
       - run: docker-compose run --rm puppet rspec lib/centreon/*_spec.rb
