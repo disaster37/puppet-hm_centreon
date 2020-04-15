@@ -23,6 +23,17 @@ HOSTS:
         host_path: .
         container_path: /etc/puppetlabs/code/environments/production/modules/hm_centreon
         opts: ro
+  centos-7-x64-ci:
+    roles:
+      - default
+    platform: el-7-x86_64
+    hypervisor: docker
+    docker_cmd: '["/usr/sbin/init"]'
+    docker_image_commands:
+      - 'yum install -y crontabs initscripts iproute openssl sysvinit-tools tar wget which ss gcc-c++'
+      - 'systemctl mask getty@tty1.service'
+    image: centos:7
+    docker_preserve_image: true
 
 CONFIG:
   type: foss
