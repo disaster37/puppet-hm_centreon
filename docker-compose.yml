@@ -26,6 +26,7 @@ services:
       args:
         http_proxy: ${http_proxy}
         https_proxy: ${https_proxy}
+        PWD: ${PWD}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
