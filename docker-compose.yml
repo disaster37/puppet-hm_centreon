@@ -4,14 +4,15 @@ services:
     image: webcenter/puppet-dev:latest
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /sys/fs/cgroup:/sys/fs/cgroup
+      - /sys/fs/cgroup
       - ./:$PWD
       - .:/etc/puppetlabs/code/modules/hm_centreon:ro
     environment:
       - http_proxy=${http_proxy}
       - https_proxy=${https_proxy}
       - no_proxy=127.0.0.1,.test.local,10.221.78.61
-    privileged: true
+    cap_add:
+      - SYS_ADMIN
     hostname: puppet
     domainname: test.local
     working_dir: $PWD
@@ -43,7 +44,7 @@ services:
     ports:
       - 80:80
     volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup
+      - /sys/fs/cgroup
       - ../centreon/www/class/centreon-clapi:/usr/share/centreon/www/class/centreon-clapi:ro
       - ../centreon/lib/Centreon:/usr/share/centreon/lib/Centreon:ro
     cap_add:
