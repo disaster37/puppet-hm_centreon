@@ -11,7 +11,10 @@ jobs:
       - checkout
       - run: docker-compose build puppet-ci
       - run: docker-compose run puppet-ci bash -c 'rspec lib/centreon/*_spec.rb'
-      - run: until $(docker-compose run --rm puppet-ci bash -c 'curl --head --fail --output /dev/null --silent http://centreon/centreon/install_finish.html'); do sleep 5; done
+      - run: sleep 200
+      - run: docker-compose run --rm puppet-ci bash -c '/usr/bin/curl -vvv http://centreon/centreon/install_finish.html
+
+      - run: until $(docker-compose run --rm puppet-ci bash -c '/usr/bin/curl --head --fail --output /dev/null --silent http://centreon/centreon/install_finish.html'); do sleep 5; done
       - run: docker-compose run puppet-ci bash -c 'BEAKER_set=ci rspec spec/acceptance/*_spec.rb'
 workflows:
   version: 2
