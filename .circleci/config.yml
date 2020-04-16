@@ -11,7 +11,7 @@ jobs:
       - checkout
       - run: docker-compose build puppet-ci
       - run: |
-          docker-compose up centreon-ci &&\
+          docker-compose run centreon-ci &&\
           docker-compose run puppet-ci bash -c 'rspec lib/centreon/*_spec.rb' &&\
           sleep 200 &&\
           docker-compose logs centreon-ci &&\

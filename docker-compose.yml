@@ -52,9 +52,9 @@ services:
 
   centreon-ci:
     image: webcenter/centreon:latest
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup
     cap_add:
       - SYS_ADMIN
+    volumes:
+      - /sys/fs/cgroup
 
 
