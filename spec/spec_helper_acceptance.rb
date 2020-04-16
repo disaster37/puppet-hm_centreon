@@ -75,11 +75,6 @@ RSpec.configure do |c|
 
     hosts.each do |host|
       on(host, '/opt/puppetlabs/puppet/bin/gem install rest-client')
-      
-      # When CI lauch test
-      if ENV['CI'] == "true"
-        scp_to(host, "#{module_root}/spec/fixtures/hieradata", '/etc/puppetlabs/code/environments/production/hieradata')
-      end
     end
   end
 end
