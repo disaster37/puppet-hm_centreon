@@ -53,10 +53,13 @@ services:
 
   centreon-ci:
     image: webcenter/centreon:latest
-    volumes:
-      - /sys/fs/cgroup
+    tmpfs:
       - /run
+      - /sys/fs/cgroup
     cap_add:
       - SYS_ADMIN
+    security_opt:
+      - seccomp:unconfined
+      
 
 
