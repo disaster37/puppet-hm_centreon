@@ -10,19 +10,6 @@ HOSTS:
       - 'systemctl mask getty@tty1.service'
     image: centos:7
     docker_preserve_image: true
-    mount_folders:
-      r10k:
-        host_path: ./vendor
-        container_path: /etc/puppetlabs/code
-        opts: rw
-      hiera:
-        host_path: ./spec/fixtures/hieradata
-        container_path: /etc/puppetlabs/code/environments/production/hieradata
-        opts: ro
-      module:
-        host_path: .
-        container_path: /etc/puppetlabs/code/environments/production/modules/hm_centreon
-        opts: ro
 
 CONFIG:
   type: foss

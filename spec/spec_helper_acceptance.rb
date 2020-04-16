@@ -61,9 +61,7 @@ hosts.each do |host|
 end
 
 RSpec.configure do |c|
-  # module_root = File.expand_path(File.join(File.dirname(__FILE__), '..'))
-  # hiera_file = File.expand_path(File.join(__FILE__, '../fixtures/hiera.yaml'))
-  # hiera_folder = File.expand_path(File.join(__FILE__, '../fixtures/hieradata'))
+  module_root = File.expand_path(File.join(File.dirname(__FILE__), '..'))
 
   # Readable test descriptions
   c.formatter = :documentation
@@ -71,13 +69,18 @@ RSpec.configure do |c|
   # Configuire all nodes in nodeset
   c.before :suite do
     # Install module
-    # puppet_module_install(:source => module_root, :module_name => 'hm_profile')
+    if ENV['CI'] == "true"
+        puppet_module_install(:source => module_root, :module_name => 'hm_centreon')
+    end
 
     hosts.each do |host|
-      # scp_to(host, hiera_file, '/etc/puppetlabs/puppet/hiera.yaml')
-      # scp_to(host, '/tmp/puppet/hieradata', '/etc/puppetlabs/code')
-      # scp_to(host, '/tmp/puppet/modules', '/etc/puppetlabs/code')
       on(host, '/opt/puppetlabs/puppet/bin/gem install rest-client')
+      
+      # When CI lauch test
+      if ENV['CI'] == "true"
+        scp_to(host, "#{module_root}/vendor", '/etc/puppetlabs/code')
+        scp_to(host, "#{module_root}/spec/fixtures/hieradata", '/etc/puppetlabs/code/environments/production/hieradata')
+      end
     end
   end
 end
