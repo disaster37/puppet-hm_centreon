@@ -36,8 +36,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     hostname: puppet
     domainname: test.local
-    links:
-      - centreon:centreon-ci
+    depends_on:
+      - centreon-ci
     networks:
       - ci
 
