@@ -36,12 +36,22 @@ services:
     hostname: puppet
     domainname: test.local
     links:
-      - centreon:centreon
+      - centreon:centreon-ci
 
   centreon:
     image: webcenter/centreon:latest
     ports:
       - 80:80
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup
+      - ../centreon/www/class/centreon-clapi:/usr/share/centreon/www/class/centreon-clapi:ro
+      - ../centreon/lib/Centreon:/usr/share/centreon/lib/Centreon:ro
+    cap_add:
+      - SYS_ADMIN
+    tty: true
+
+  centreon-ci:
+    image: webcenter/centreon:latest
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup
       - ../centreon/www/class/centreon-clapi:/usr/share/centreon/www/class/centreon-clapi:ro
