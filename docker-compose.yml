@@ -63,7 +63,9 @@ services:
     stop_signal: RTMIN+3
     privileged: true
     networks:
-      - ci
+      - ci:
+        aliases:
+          - centreon
       
 
 
