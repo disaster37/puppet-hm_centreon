@@ -25,16 +25,14 @@ services:
       dockerfile: .circleci/Dockerfile
       args:
         PWD: ${PWD}
-      environment:
-      - http_proxy=${http_proxy}
-      - https_proxy=${https_proxy}
-      - no_proxy=127.0.0.1,.test.local,10.221.78.61
-      - CI=${CI}
-      - CODECOV_TOKEN=${CODECOV_TOKEN}
+    environment:
+    - http_proxy=${http_proxy}
+    - https_proxy=${https_proxy}
+    - no_proxy=127.0.0.1,.test.local,10.221.78.61
+    - CI=${CI}
+    - CODECOV_TOKEN=${CODECOV_TOKEN}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-    environment:
-      
     hostname: puppet
     domainname: test.local
     links:
