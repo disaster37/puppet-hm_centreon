@@ -53,6 +53,8 @@ services:
 
   centreon-ci:
     image: webcenter/centreon:latest
+    ports:
+      - 80:80
     tmpfs:
       - /run
       - /sys/fs/cgroup
