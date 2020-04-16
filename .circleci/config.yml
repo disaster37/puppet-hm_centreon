@@ -13,7 +13,7 @@ jobs:
       - run: |
           docker-compose up -d centreon-ci &&\
           docker-compose run puppet-ci bash -c 'rspec lib/centreon/*_spec.rb' &&\
-          docker-compose logs centreon &&\
+          docker-compose logs centreon-ci &&\
           sleep 200 &&\
           docker-compose run --rm puppet-ci bash -c '/usr/bin/curl -vvv http://centreon/centreon/install_finish.html' &&\
           until $(docker-compose run --rm puppet-ci bash -c '/usr/bin/curl --head --fail --output /dev/null --silent http://centreon/centreon/install_finish.html'); do sleep 5; done &&\
