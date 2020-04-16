@@ -68,7 +68,8 @@ RSpec.configure do |c|
 
   # Configuire all nodes in nodeset
   c.before :suite do
-    # Install module
+    # Install module only on CI
+    # We use docker mount point on local test
     if ENV['CI'] == "true"
         puppet_module_install(:source => module_root, :module_name => 'hm_centreon')
     end
