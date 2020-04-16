@@ -53,9 +53,10 @@ services:
 
   centreon-ci:
     image: webcenter/centreon:latest
-    cap_add:
-      - SYS_ADMIN
     volumes:
       - /sys/fs/cgroup
+      - /run
+    cap_add:
+      - SYS_ADMIN
 
 

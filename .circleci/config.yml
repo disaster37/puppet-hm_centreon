@@ -9,15 +9,8 @@ jobs:
     steps:
       - setup_remote_docker
       - checkout
-      - run: docker-compose build puppet-ci
       - run: |
-          docker-compose up -d centreon-ci &&\
-          docker-compose run puppet-ci bash -c 'rspec lib/centreon/*_spec.rb' &&\
-          sleep 200 &&\
-          docker-compose logs centreon-ci &&\
-          docker-compose run --rm puppet-ci bash -c '/usr/bin/curl -vvv http://centreon/centreon/install_finish.html' &&\
-          until $(docker-compose run --rm puppet-ci bash -c '/usr/bin/curl --head --fail --output /dev/null --silent http://centreon/centreon/install_finish.html'); do sleep 5; done &&\
-          docker-compose run puppet-ci bash -c 'BEAKER_set=ci rspec spec/acceptance/*_spec.rb'
+          docker-compose run centreon-ci ls -al /
 workflows:
   version: 2
   build-workflow:
