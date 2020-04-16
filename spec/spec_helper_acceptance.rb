@@ -78,7 +78,6 @@ RSpec.configure do |c|
       
       # When CI lauch test
       if ENV['CI'] == "true"
-        scp_to(host, "#{module_root}/vendor", '/etc/puppetlabs/code')
         scp_to(host, "#{module_root}/spec/fixtures/hieradata", '/etc/puppetlabs/code/environments/production/hieradata')
       end
     end
