@@ -13,7 +13,9 @@ jobs:
       - run: |
           docker-compose up -d centreon-ci
           docker-compose exec centreon-ci sh /init_centreon.sh
+          docker-compose exec centreon-ci ls -al /usr/share/centreon/www/
           docker-compose run puppet-ci bash -c 'rspec lib/centreon/*_spec.rb'
+          docker-compose exec centreon-ci ls -al /usr/share/centreon/www/
           sleep 500
           docker-compose exec centreon-ci ps aux
           docker-compose exec centreon-ci ls -al /usr/share/centreon/www/
