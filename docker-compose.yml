@@ -38,6 +38,8 @@ services:
     domainname: test.local
     links:
       - centreon:centreon-ci
+    networks:
+      - ci
 
   centreon:
     image: webcenter/centreon:latest
@@ -60,6 +62,10 @@ services:
       - /sys/fs/cgroup
     stop_signal: RTMIN+3
     privileged: true
+    networks:
+      - ci
       
 
 
+networks:
+  ci:
