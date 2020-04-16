@@ -56,6 +56,5 @@ services:
       - /sys/fs/cgroup:/sys/fs/cgroup
     cap_add:
       - SYS_ADMIN
-    tty: true
 
 
