@@ -1,46 +1,49 @@
 {
-  "name": "disaster37-hm_centreon",
-  "version": "0.1.1",
-  "author": "disaster37",
-  "summary": "",
-  "license": "MIT",
-  "source": "",
-  "dependencies": [
-
-  ],
-  "operatingsystem_support": [
-    {
-      "operatingsystem": "CentOS",
-      "operatingsystemrelease": [
-        "7"
-      ]
-    },
-    {
-      "operatingsystem": "OracleLinux",
-      "operatingsystemrelease": [
-        "7"
-      ]
-    },
-    {
-      "operatingsystem": "RedHat",
-      "operatingsystemrelease": [
-        "8"
-      ]
-    },
-    {
-      "operatingsystem": "Scientific",
-      "operatingsystemrelease": [
-        "7"
-      ]
-    }
-  ],
-  "requirements": [
-    {
-      "name": "puppet",
-      "version_requirement": ">= 4.10.0 < 7.0.0"
-    }
-  ],
-  "pdk-version": "1.12.0",
-  "template-url": "pdk-default#1.12.0",
-  "template-ref": "1.12.0-0-g55d9ae2"
+    "name": "disaster37-hm_centreon",
+    "version": "0.1.1",
+    "author": "disaster37",
+    "summary": "",
+    "license": "MIT",
+    "source": "",
+    "dependencies": [
+        {
+            "name": "puppetlabs-stdlib",
+            "version_requirement": ">= 5.2.0 < 6.0.0"
+        }
+    ],
+    "operatingsystem_support": [
+        {
+            "operatingsystem": "CentOS",
+            "operatingsystemrelease": [
+                "7"
+            ]
+        },
+        {
+            "operatingsystem": "OracleLinux",
+            "operatingsystemrelease": [
+                "7"
+            ]
+        },
+        {
+            "operatingsystem": "RedHat",
+            "operatingsystemrelease": [
+                "8"
+            ]
+        },
+        {
+            "operatingsystem": "Scientific",
+            "operatingsystemrelease": [
+                "7"
+            ]
+        }
+    ],
+    "requirements": [
+        {
+            "name": "puppet",
+            "version_requirement": ">= 4.10.0 < 7.0.0"
+        }
+    ],
+    "pdk-version": "1.12.0",
+    "template-url": "pdk-default#1.12.0",
+    "template-ref": "1.12.0-0-g55d9ae2"
 }

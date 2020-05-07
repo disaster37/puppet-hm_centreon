@@ -77,7 +77,7 @@ Puppet::Type.type(:centreon_command).provide(:centreon_api, parent: ::PuppetX::C
     Puppet.info("Update command #{name}")
 
     command = ::Centreon::Command.new
-    command.name =@property_hash[:name]
+    command.name = @property_hash[:name]
     command.type = @property_flush[:type] unless @property_flush[:type].nil?
     command.line = @property_flush[:line] unless @property_flush[:line].nil?
     command.activated = @property_flush[:enable] unless @property_flush[:enable].nil?

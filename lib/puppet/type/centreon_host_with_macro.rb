@@ -1,3 +1,5 @@
+require_relative '../../puppet_x/centreon/macro_parser.rb'
+
 Puppet::Type.newtype(:centreon_host_with_macro) do
   @doc = 'Type representing association between host and macros.'
 
@@ -22,7 +24,7 @@ Puppet::Type.newtype(:centreon_host_with_macro) do
 
     def insync?(is)
       for_comparison = Marshal.load(Marshal.dump(should))
-      parser = Hm::Centreon::MacroParser.new(for_comparison)
+      parser = PuppetX::Centreon::MacroParser.new(for_comparison)
       to_create = parser.macros_to_create(is)
       to_create.empty?
     end
@@ -33,6 +35,8 @@ Puppet::Type.newtype(:centreon_host_with_macro) do
 
     munge do |value|
       value['name'] = value['name'].upcase if !value.nil? && !value['name'].nil?
+      value['description'] = '' if !value.nil? && value['description'].nil?
+      value['is_password'] = false if !value.nil? && value['is_password'].nil?
       super(value)
     end
   end

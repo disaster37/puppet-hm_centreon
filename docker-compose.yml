@@ -18,6 +18,7 @@ services:
     working_dir: $PWD
     links:
       - centreon:centreon
+    network_mode: bridge
 
   puppet-ci:
     image: webcenter/puppet-centreon:test
@@ -45,13 +46,15 @@ services:
     image: webcenter/centreon:latest
     ports:
       - 80:80
-    volumes:
+    tmpfs:
       - /sys/fs/cgroup
+    volumes:
       - ../centreon/www/class/centreon-clapi:/usr/share/centreon/www/class/centreon-clapi:ro
       - ../centreon/lib/Centreon:/usr/share/centreon/lib/Centreon:ro
     cap_add:
       - SYS_ADMIN
     tty: true
+    network_mode: bridge
 
   centreon-ci:
     image: webcenter/centreon:latest
@@ -66,7 +69,5 @@ services:
         aliases:
           - centreon
       
-
-
 networks:
   ci:

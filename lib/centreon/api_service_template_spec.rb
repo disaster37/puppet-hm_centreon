@@ -146,18 +146,18 @@ RSpec.describe 'Test Centreon::Client::ServiceTemplate' do
               ]
           }
       ')
-	  stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
+      stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
         .with(body: '{"action":"gettrap","object":"stpl","values":"service1"}')
         .to_return(status: 200, body: '
-          {
-              "result": [
-                  {
-                      "name": "trap",
-                      "id": "1"
-                  }
-              ]
-          }
-      ')
+            {
+                "result": [
+                    {
+                        "name": "trap",
+                        "id": "1"
+                    }
+                ]
+            }
+        ')
       stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
         .with(body: '{"action":"gethosttemplate","object":"stpl","values":"service1"}')
         .to_return(status: 200, body: '
@@ -193,7 +193,7 @@ RSpec.describe 'Test Centreon::Client::ServiceTemplate' do
         check_period: 'check_period',
         volatile_enabled: 'default',
         icon_image: 'icon_image',
-        description: 'my template'
+        description: 'my template',
       )
 
       expect(service_templates[0].macros.length).to eq 1
@@ -278,18 +278,18 @@ RSpec.describe 'Test Centreon::Client::ServiceTemplate' do
               ]
           }
       ')
-	  stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
+      stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
         .with(body: '{"action":"gettrap","object":"stpl","values":"service1"}')
         .to_return(status: 200, body: '
-          {
-              "result": [
-                  {
-                      "name": "trap",
-                      "id": "1"
-                  }
-              ]
-          }
-      ')
+            {
+                "result": [
+                    {
+                        "name": "trap",
+                        "id": "1"
+                    }
+                ]
+            }
+        ')
       stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
         .with(body: '{"action":"gethosttemplate","object":"stpl","values":"service1"}')
         .to_return(status: 200, body: '
@@ -325,7 +325,7 @@ RSpec.describe 'Test Centreon::Client::ServiceTemplate' do
         check_period: 'check_period',
         volatile_enabled: 'default',
         icon_image: 'icon_image',
-        description: 'my template'
+        description: 'my template',
       )
 
       expect(service_template.macros.length).to eq 1
@@ -406,18 +406,18 @@ RSpec.describe 'Test Centreon::Client::ServiceTemplate' do
               ]
           }
       ')
-	  stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
+      stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
         .with(body: '{"action":"gettrap","object":"stpl","values":"service1"}')
         .to_return(status: 200, body: '
-          {
-              "result": [
-                  {
-                      "name": "trap",
-                      "id": "1"
-                  }
-              ]
-          }
-      ')
+            {
+                "result": [
+                    {
+                        "name": "trap",
+                        "id": "1"
+                    }
+                ]
+            }
+        ')
       stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')
         .with(body: '{"action":"gethosttemplate","object":"stpl","values":"service1"}')
         .to_return(status: 200, body: '
@@ -430,7 +430,6 @@ RSpec.describe 'Test Centreon::Client::ServiceTemplate' do
               ]
           }
       ')
-      
 
       service_template = Centreon::ServiceTemplate.new
       service_template.name = 'service1'
@@ -447,7 +446,7 @@ RSpec.describe 'Test Centreon::Client::ServiceTemplate' do
         note: 'my notes',
         check_period: 'check_period',
         volatile_enabled: 'default',
-        icon_image: 'icon_image'
+        icon_image: 'icon_image',
       )
 
       expect(service_template.macros.length).to eq 1
@@ -587,7 +586,6 @@ RSpec.describe 'Test Centreon::Client::ServiceTemplate' do
           {
           }
       ')
-      
 
       service_template = Centreon::ServiceTemplate.new
       service_template.name = 'service1'
@@ -797,7 +795,6 @@ RSpec.describe 'Test Centreon::Client::ServiceTemplate' do
           {
           }
       ')
-      
 
       service_template = Centreon::ServiceTemplate.new
       service_template.name = 'service1'
@@ -824,7 +821,6 @@ RSpec.describe 'Test Centreon::Client::ServiceTemplate' do
       host_template = Centreon::HostTemplate.new
       host_template.name = 'HT1'
       service_template.add_host_template(host_template)
-
 
       macro = Centreon::Macro.new
       macro.name = 'macro1'

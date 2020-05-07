@@ -42,7 +42,7 @@ class Centreon::APIClient::Command
       commands << command
     end
 
-    return commands
+    commands
   end
 
   def load(command)
@@ -96,19 +96,18 @@ class Centreon::APIClient::Command
 
     set_param(command.name, 'line', command.line) unless command.line.nil?
     set_param(command.name, 'comment', command.comment) unless command.comment.nil?
-    set_param(command.name, 'type',command.type) unless command.type.nil?
+    set_param(command.name, 'type', command.type) unless command.type.nil?
     set_param(command.name, 'graph', command.graph) unless command.graph.nil?
     set_param(command.name, 'example', command.example) unless command.example.nil?
 
     if activated
-        set_param(command.name, 'activate', 0) unless command.activated
-        set_param(command.name, 'activate', 1) if command.activated
+      set_param(command.name, 'activate', 0) unless command.activated
+      set_param(command.name, 'activate', 1) if command.activated
     end
 
-    if enable_shell
-        set_param(command.name, 'enable_shell', 0) unless command.enable_shell
-        set_param(command.name, 'enable_shell', 1) if command.enable_shell
-    end
+    return unless enable_shell
+    set_param(command.name, 'enable_shell', 0) unless command.enable_shell
+    set_param(command.name, 'enable_shell', 1) if command.enable_shell
   end
 
   private
@@ -139,6 +138,6 @@ class Centreon::APIClient::Command
       'values' => '%s;%s' % [name, property],
     }.to_json)
 
-    return JSON.parse(r)['result']
+    JSON.parse(r)['result']
   end
 end

@@ -15,7 +15,6 @@ Puppet::Type.type(:centreon_service).provide(:centreon_api, parent: ::PuppetX::C
     resources.keys.each do |resource_name|
       filters = []
       client(resources[resource_name][:config]).service.fetch(resources[resource_name][:host], resources[resource_name][:service_name], false).each do |service|
-
         hash = service_to_hash(service)
         hash[:name] = resources[resource_name][:name]
 
@@ -106,11 +105,11 @@ Puppet::Type.type(:centreon_service).provide(:centreon_api, parent: ::PuppetX::C
     end
 
     resource[:categories].each do |category|
-        service.add_category(category)
+      service.add_category(category)
     end
 
     resource[:service_traps].each do |service_trap|
-        service.add_service_trap(service_trap)
+      service.add_service_trap(service_trap)
     end
 
     unless resource[:macros].nil?
@@ -193,7 +192,7 @@ Puppet::Type.type(:centreon_service).provide(:centreon_api, parent: ::PuppetX::C
     end
 
     # Update service
-    client(resource[:config]).service.update(service, !@property_flush[:groups].nil?, !@property_flush[:macros].nil?, !@property_flush[:enable].nil?, !@property_flush[:command_args].nil?, !@property_flush[:categories].nil?, !@property_flush[:service_traps].nil?)
+    client(resource[:config]).service.update(service, !@property_flush[:groups].nil?, !@property_flush[:macros].nil?, !@property_flush[:enable].nil?, !@property_flush[:command_args].nil?, !@property_flush[:categories].nil?, !@property_flush[:service_traps].nil?) # rubocop:disable LineLength
   end
 
   # Getter and setter
@@ -265,7 +264,7 @@ Puppet::Type.type(:centreon_service).provide(:centreon_api, parent: ::PuppetX::C
     @property_flush[:check_period] = value
   end
 
-  def is_volatile=(value)
+  def is_volatile=(value) # rubocop:disable PredicateName
     @property_flush[:is_volatile] = value
   end
 
@@ -284,5 +283,4 @@ Puppet::Type.type(:centreon_service).provide(:centreon_api, parent: ::PuppetX::C
   def service_traps=(value)
     @property_flush[:service_traps] = value
   end
-
 end

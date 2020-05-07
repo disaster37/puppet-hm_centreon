@@ -195,7 +195,7 @@ class Centreon::ServiceModel
   end
 
   def volatile_enabled=(value)
-     raise('wrong type: boolean required for volatile_enabled') unless ['true', 'false', 'default'].include? value
+    raise('wrong type: boolean required for volatile_enabled') unless ['true', 'false', 'default'].include? value
     @volatile_enabled = value
     logger.debug('volatile_enabled: ' + value)
   end

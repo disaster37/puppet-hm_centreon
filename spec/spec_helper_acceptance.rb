@@ -33,7 +33,7 @@ hosts.each do |host|
   on host, "echo 'export http_proxy=" + ENV['http_proxy'] + "' >> /root/.bashrc"
   on host, "echo 'export https_proxy=" + ENV['https_proxy'] + "' >> /root/.bashrc"
   on host, "echo 'export no_proxy=\"" + ENV['no_proxy'] + ",#{host.name},10.221.78.61\"' >> /root/.bashrc"
-  on host, "echo 'export CENTREON_URL=http://#{IPSocket.getaddress("centreon")}/centreon/api/index.php' >> /root/.bashrc"
+  on host, "echo 'export CENTREON_URL=http://#{IPSocket.getaddress('centreon')}/centreon/api/index.php' >> /root/.bashrc"
   on host, "echo 'export CENTREON_USERNAME=admin' >> /root/.bashrc"
   on host, "echo 'export CENTREON_PASSWORD=admin' >> /root/.bashrc"
   on host, "echo 'export CENTREON_DEBUG=true' >> /root/.bashrc"
@@ -70,8 +70,8 @@ RSpec.configure do |c|
   c.before :suite do
     # Install module only on CI
     # We use docker mount point on local test
-    if ENV['CI'] == "true"
-        puppet_module_install(:source => module_root, :module_name => 'hm_centreon')
+    if ENV['CI'] == 'true'
+      puppet_module_install(source: module_root, module_name: 'hm_centreon')
     end
 
     hosts.each do |host|

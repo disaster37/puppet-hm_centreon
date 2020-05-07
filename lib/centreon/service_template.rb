@@ -41,7 +41,6 @@ class Centreon::ServiceTemplate < Centreon::ServiceModel
     end
   end
 
-
   def valid
     !@name.nil? && !@name.empty?
   end

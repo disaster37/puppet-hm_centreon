@@ -41,7 +41,7 @@ class Centreon::APIClient::HostGroup
       host_groups << host_group
     end
 
-    return host_groups
+    host_groups
   end
 
   def load(host_group)
@@ -133,6 +133,6 @@ class Centreon::APIClient::HostGroup
       'values' => '%s;%s' % [name, property],
     }.to_json)
 
-    return JSON.parse(r)['result']
+    JSON.parse(r)['result']
   end
 end

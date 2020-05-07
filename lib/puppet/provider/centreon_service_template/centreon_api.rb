@@ -15,7 +15,6 @@ Puppet::Type.type(:centreon_service_template).provide(:centreon_api, parent: ::P
     resources.keys.each do |resource_name|
       filters = []
       client(resources[resource_name][:config]).service_template.fetch(resources[resource_name][:name], false).each do |service_template|
-
         hash = service_template_to_hash(service_template)
 
         filters << new(hash) unless hash.empty?
@@ -97,17 +96,17 @@ Puppet::Type.type(:centreon_service_template).provide(:centreon_api, parent: ::P
     end
 
     resource[:categories].each do |category|
-        service_template.add_category(category)
+      service_template.add_category(category)
     end
 
     resource[:service_traps].each do |service_trap|
-        service_template.add_service_trap(service_trap)
+      service_template.add_service_trap(service_trap)
     end
 
     resource[:host_templates].each do |name|
-        host_template = Centreon::HostTemplate.new
-        host_template.name = name
-        service_template.add_host_template(host_template)
+      host_template = Centreon::HostTemplate.new
+      host_template.name = name
+      service_template.add_host_template(host_template)
     end
 
     unless resource[:macros].nil?
@@ -170,12 +169,12 @@ Puppet::Type.type(:centreon_service_template).provide(:centreon_api, parent: ::P
         service_template.add_service_trap(name)
       end
     end
-    unless  @property_flush[:host_templates].nil?
-        @property_flush[:host_templates].each do |name|
-            host_template = Centreon::HostTemplate.new
-            host_template.name = name
-            service_template.add_host_template(host_template)
-        end
+    unless @property_flush[:host_templates].nil?
+      @property_flush[:host_templates].each do |name|
+        host_template = Centreon::HostTemplate.new
+        host_template.name = name
+        service_template.add_host_template(host_template)
+      end
     end
     unless @property_flush[:macros].nil?
       @property_flush[:macros].each do |hash|
@@ -189,7 +188,7 @@ Puppet::Type.type(:centreon_service_template).provide(:centreon_api, parent: ::P
     end
 
     # Update service
-    client(resource[:config]).service_template.update(service_template, !@property_flush[:macros].nil?, !@property_flush[:enable].nil?, !@property_flush[:command_args].nil?, !@property_flush[:categories].nil?, !@property_flush[:service_traps].nil?, !@property_flush[:host_templates].nil?)
+    client(resource[:config]).service_template.update(service_template, !@property_flush[:macros].nil?, !@property_flush[:enable].nil?, !@property_flush[:command_args].nil?, !@property_flush[:categories].nil?, !@property_flush[:service_traps].nil?, !@property_flush[:host_templates].nil?) # rubocop:disable LineLength
   end
 
   # Getter and setter
@@ -258,7 +257,7 @@ Puppet::Type.type(:centreon_service_template).provide(:centreon_api, parent: ::P
     @property_flush[:check_period] = value
   end
 
-  def is_volatile=(value)
+  def is_volatile=(value) # rubocop:disable PredicateName
     @property_flush[:is_volatile] = value
   end
 
@@ -277,7 +276,7 @@ Puppet::Type.type(:centreon_service_template).provide(:centreon_api, parent: ::P
   def service_traps=(value)
     @property_flush[:service_traps] = value
   end
-  
+
   def host_templates=(value)
     @property_flush[:host_templates] = value
   end

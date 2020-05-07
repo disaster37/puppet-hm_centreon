@@ -48,7 +48,7 @@ RSpec.describe 'Test Centreon::Client::Command' do
         id: 82,
         name: 'command1',
         type: 'check',
-        line: 'ls'
+        line: 'ls',
       )
     end
 

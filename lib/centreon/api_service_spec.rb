@@ -179,9 +179,8 @@ RSpec.describe 'Test Centreon::Client::Service' do
               ]
           }
       ')
-      
 
-      services = client.service.fetch(nil, nil,  false)
+      services = client.service.fetch(nil, nil, false)
 
       expect(services.length).to eq 1
       expect(services[0]).to have_attributes(
@@ -202,7 +201,7 @@ RSpec.describe 'Test Centreon::Client::Service' do
         note: 'my notes',
         check_period: 'check_period',
         volatile_enabled: 'default',
-        icon_image: 'icon_image'
+        icon_image: 'icon_image',
 
       )
       expect(services[0].host).not_to eq nil
@@ -341,7 +340,7 @@ RSpec.describe 'Test Centreon::Client::Service' do
         note: 'my notes',
         check_period: 'check_period',
         volatile_enabled: 'default',
-        icon_image: 'icon_image'
+        icon_image: 'icon_image',
       )
       expect(service.host).not_to eq nil
       expect(service.host.id).to eq 1
@@ -468,7 +467,7 @@ RSpec.describe 'Test Centreon::Client::Service' do
         note: 'my notes',
         check_period: 'check_period',
         volatile_enabled: 'default',
-        icon_image: 'icon_image'
+        icon_image: 'icon_image',
       )
       expect(service.host).not_to eq nil
       expect(service.host.name).to eq 'test'
@@ -662,7 +661,6 @@ RSpec.describe 'Test Centreon::Client::Service' do
 
       client.service.delete('test', 'service1')
     end
-
 
     it 'Test update' do
       stub_request(:post, 'localhost/centreon/api/index.php?action=action&object=centreon_clapi')

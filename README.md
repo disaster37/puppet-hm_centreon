@@ -186,6 +186,91 @@ The resource `centreon_host` have the following parameters:
     - **description** (optional): The macro description
     - **is_password** (optional): Set to true if macro contain password
 
+### Centreon host in host group
+
+`centreon_host_in_host_group` permit to attach on the flow groups to host. It usefull to add group to host on application profile.
+
+> Don't use `groups` parameter on host definition when you use `centreon_host_in_host_group`.
+> To remove groups, you need to put `ensure` as `absent`.
+
+The following example will add some groups on host.
+
+```puppet
+centreon_host_in_host_group{'test_app_groups':
+    ensure  => 'present',
+    host    => 'test',
+    groups  => ['HG_TEST', 'HG_TEST2'],
+}
+```
+
+The resource `centreon_host_in_host_group` have the following parameters:
+  - **title**: The unique arbitrary name. It not used by provider.
+  - **ensure**: present or absent
+  - **host**: The host to attach groups
+  - **groups**: The list of groups to attach.
+
+
+### Centreon host in host template
+
+`centreon_host_in_host_template` permit to attach on the flow templates to host. It usefull to add template to host on application profile.
+
+> Don't use `templates` parameter on host definition when you use `centreon_host_in_host_template`.
+> To remove templates, you need to put `ensure` as `absent`.
+
+The following example will add some templates on host.
+
+```puppet
+centreon_host_in_host_template{'test_app_templates':
+    ensure  => 'present',
+    host    => 'test',
+    groups  => ['HT_TEST', 'HT_TEST2'],
+}
+```
+
+The resource `centreon_host_in_host_template` have the following parameters:
+  - **title**: The unique arbitrary name. It not used by provider.
+  - **ensure**: present or absent
+  - **host**: The host to attach templates
+  - **templates**: The list of templates to attach.
+
+
+### Centreon host with macro
+
+`centreon_host_with_macro` permit to attach on the flow macros to host. It usefull to add macros to host on application profile.
+
+> Don't use `macros` parameter on host definition when you use `centreon_host_with_macros`.
+> To remove macros, you need to put `ensure` as `absent`.
+
+The following example will add some templates on host.
+
+```puppet
+centreon_host_with_macro{'test_app_templates':
+    ensure  => 'present',
+    host    => 'test',
+    macros  => [
+        {
+            name  => 'MACRO1',
+            value => 'foo',
+        },
+        {
+            name  => 'MACRO2',
+            value => 'bar',
+        }
+    ],
+}
+```
+
+The resource `centreon_host_in_host_template` have the following parameters:
+  - **title**: The unique arbitrary name. It not used by provider.
+  - **ensure**: present or absent
+  - **host**: The host to attach templates
+  - **macros**: The list of macros to attach.
+
+The `macro` hash have the following parameters:
+    - **name**: The macro name
+    - **value**: The macro value
+    - **description** (optional): The macro description
+    - **is_password** (optional): Set to true if macro contain password
 
 ### Centreon service template
 

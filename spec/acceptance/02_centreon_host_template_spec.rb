@@ -76,7 +76,7 @@ describe 'Centreon host template resource:' do
             type   => 'check',
             line   => 'ping'
         }
-        
+
         centreon_host_template{'test_rspec':
           ensure               => 'present',
           enable               => true,

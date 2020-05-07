@@ -71,6 +71,8 @@ Puppet::Type.newtype(:centreon_host_template) do
 
     munge do |value|
       value['name'] = value['name'].upcase if !value.nil? && !value['name'].nil?
+      value['description'] = '' if !value.nil? && value['description'].nil?
+      value['is_password'] = false if !value.nil? && value['is_password'].nil?
       super(value)
     end
   end

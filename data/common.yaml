@@ -1,1 +1,2 @@
 ---
+hm_centreon::puppet_path: '/opt/puppetlabs/puppet'

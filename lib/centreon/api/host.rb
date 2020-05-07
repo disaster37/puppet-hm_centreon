@@ -419,7 +419,7 @@ class Centreon::APIClient::Host
       templates << host_template
     end
 
-    return templates
+    templates
   end
 
   # Get all host group on given host name
