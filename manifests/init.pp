@@ -9,10 +9,12 @@ class hm_centreon(
 
   realize(Package['gcc-c++'])
 
-  package { 'rest-client':
-    ensure   => 'present',
-    provider => 'gem',
-    command  => "${puppet_path}/bin/gem",
-    require  => Package['gcc-c++'],
-  }
+  # Only work on Puppet 6
+  #package { 'rest-client':
+  #  ensure   => 'present',
+  #  name     => 'rest-client',
+  #  provider => 'gem',
+  #  command  => "${puppet_path}/bin/gem",
+  #  require  => Package['gcc-c++'],
+  #}
 }
