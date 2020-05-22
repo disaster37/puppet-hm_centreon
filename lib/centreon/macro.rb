@@ -30,9 +30,8 @@ class Centreon::Macro
   end
 
   def value=(value)
-    raise('wrong type: string required') unless value.is_a?(String)
     @value = value
-    logger.debug('Value: ' + value)
+    logger.debug('Value: ' + value.to_s)
   end
 
   def description=(value)
